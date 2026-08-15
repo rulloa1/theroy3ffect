@@ -37,7 +37,7 @@ export const Route = createFileRoute("/")({
 
 function Home() {
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [drawerSection, setDrawerSection] = useState<NavTarget | null>(null);
+  const [drawerSection, setDrawerSection] = useState<Exclude<NavTarget, "MENU"> | null>(null);
 
   return (
     <main className="relative flex min-h-screen flex-col overflow-hidden bg-[#030014]">
