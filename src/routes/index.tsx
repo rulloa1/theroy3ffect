@@ -8,10 +8,13 @@ import { FooterMarquee } from "@/components/FooterMarquee";
 import { InfoDrawer } from "@/components/InfoDrawer";
 import { Pricing } from "@/components/Pricing";
 
-import portraitAsset from "@/assets/rory-portrait-transparent.png.asset.json";
+import portraitAsset from "@/assets/rory-portrait-clean.png.asset.json";
+import ogImageAsset from "@/assets/og-preview.jpg.asset.json";
 
 const HERO_IMAGE = portraitAsset.url;
-const HERO_IMAGE_ABSOLUTE = `https://www.theroyeffect.com${portraitAsset.url}`;
+// Social crawlers flatten transparency onto white, so share previews use an
+// opaque JPEG composited on the site's deep-space background.
+const HERO_IMAGE_ABSOLUTE = `https://www.theroyeffect.com${ogImageAsset.url}`;
 
 export const Route = createFileRoute("/")({
   head: () => ({
