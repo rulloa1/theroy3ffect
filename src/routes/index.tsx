@@ -56,14 +56,14 @@ function Home() {
 
       <SiteHeader onNavigate={openDrawer} />
 
-      <div className="relative min-h-screen shrink-0">
+      <div className="relative flex min-h-screen shrink-0 flex-col overflow-hidden">
         <HeroContent />
 
         <img
           src={HERO_IMAGE}
           alt="Rory Ulloa"
           loading="eager"
-          className="pointer-events-auto absolute bottom-0 left-1/2 z-10 h-[95%] -translate-x-1/2 object-contain object-bottom grayscale contrast-125 brightness-95 drop-shadow-[0_25px_50px_rgba(0,0,0,0.5)] transition-transform duration-700 ease-out hover:scale-[1.04] md:h-[100%] lg:h-[110%]"
+          className="pointer-events-auto absolute bottom-0 left-1/2 z-10 h-[52%] max-w-[86vw] -translate-x-1/2 object-contain object-bottom grayscale contrast-125 brightness-95 drop-shadow-[0_25px_50px_rgba(0,0,0,0.5)] transition-transform duration-700 ease-out hover:scale-[1.04] sm:h-[58%] md:h-[64%] lg:h-[70%]"
         />
 
         <FooterMarquee />
