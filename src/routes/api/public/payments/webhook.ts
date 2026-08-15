@@ -214,12 +214,15 @@ export const Route = createFileRoute('/api/public/payments/webhook')({
         try {
           switch (event.type) {
             case 'checkout.session.completed':
-              await handleCheckoutCompleted(
-                stripe,
-                event.data.object as Stripe.Checkout.Session,
-                env,
-              )
+            case 'checkout.session.async_payment_succeeded': {
+              const session = event.data.object as Stripe.Checkout.Session
+              // Delayed methods (SEPA, boleto...) stay "unpaid" until they
+              // settle — wait for async_payment_succeeded before fulfilling.
+              if (session.payment_status !== 'unpaid') {
+                await handleCheckoutCompleted(stripe, session, env)
+              }
               break
+            }
             case 'customer.subscription.created':
             case 'customer.subscription.updated':
             case 'customer.subscription.deleted':
