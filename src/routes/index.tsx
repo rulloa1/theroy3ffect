@@ -308,7 +308,7 @@ function Portfolio() {
             <span className="absolute -left-5 top-1/3 grid size-11 place-items-center rounded-2xl [background:var(--gradient-neon)] shadow-[var(--shadow-glow)] animate-float">
               <Asterisk className="size-5 text-primary-foreground" />
             </span>
-            <span className="absolute -right-4 top-1/2 -rotate-6 rounded-full bg-signal/15 px-3 py-1 text-xs font-medium text-signal ring-1 ring-signal/40 backdrop-blur animate-float [animation-delay:-3s]">
+            <span className="absolute -right-4 bottom-28 -rotate-6 rounded-full bg-signal/15 px-3 py-1 text-xs font-medium text-signal ring-1 ring-signal/40 backdrop-blur animate-float [animation-delay:-3s]">
               • Available as freelancer
             </span>
           </div>
