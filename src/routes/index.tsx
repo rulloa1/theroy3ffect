@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { ParticleBackground } from "@/components/ParticleBackground";
-import { SiteHeader } from "@/components/SiteHeader";
+import { SiteHeader, type NavTarget } from "@/components/SiteHeader";
 import { HeroContent } from "@/components/HeroContent";
 import { FooterMarquee } from "@/components/FooterMarquee";
 import { InfoDrawer } from "@/components/InfoDrawer";
@@ -37,12 +37,18 @@ export const Route = createFileRoute("/")({
 
 function Home() {
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [drawerSection, setDrawerSection] = useState<Exclude<NavTarget, "MENU"> | null>(null);
 
   return (
     <main className="relative flex min-h-screen flex-col overflow-hidden bg-[#030014]">
       <ParticleBackground />
 
-      <SiteHeader onCommission={() => setDrawerOpen(true)} />
+      <SiteHeader
+        onNavigate={(target) => {
+          setDrawerSection(target === "MENU" ? null : target);
+          setDrawerOpen(true);
+        }}
+      />
 
       <HeroContent />
 
@@ -55,7 +61,14 @@ function Home() {
 
       <FooterMarquee />
 
-      <InfoDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
+      <InfoDrawer
+        open={drawerOpen}
+        section={drawerSection}
+        onClose={() => {
+          setDrawerOpen(false);
+          setDrawerSection(null);
+        }}
+      />
       <Toaster />
     </main>
   );
