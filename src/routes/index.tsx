@@ -254,7 +254,9 @@ function Portfolio() {
                 • Available as freelancer
               </span>
             </div>
-            <p className="script mt-4 text-right text-4xl text-foreground/90">Darrell Steward :)</p>
+            <p className="script mt-4 text-right text-4xl text-foreground/90">
+              Rory Ulloa&nbsp; &nbsp;-- theroyeffect
+            </p>
           </div>
         </div>
       </section>
