@@ -72,6 +72,12 @@ export const PRICING_TIERS = [
 ];
 
 export function Pricing({ onCommission }: { onCommission?: () => void }) {
+  const [activeTier, setActiveTier] = useState<{
+    name: string;
+    priceId: string;
+    depositLabel: string;
+  } | null>(null);
+
   return (
     <section id="pricing" className="relative z-20 w-full bg-[#030014] px-5 py-20 md:px-10 md:py-32">
       <div className="mx-auto max-w-7xl">
