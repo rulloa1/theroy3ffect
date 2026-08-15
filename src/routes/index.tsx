@@ -40,27 +40,31 @@ function Home() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerSection, setDrawerSection] = useState<Exclude<NavTarget, "MENU"> | null>(null);
 
+  const openDrawer = (target: NavTarget) => {
+    setDrawerSection(target === "MENU" ? null : target);
+    setDrawerOpen(true);
+  };
+
   return (
-    <main className="relative flex min-h-screen flex-col overflow-hidden bg-[#030014]">
+    <main className="relative flex min-h-screen flex-col overflow-x-hidden bg-[#030014]">
       <ParticleBackground />
 
-      <SiteHeader
-        onNavigate={(target) => {
-          setDrawerSection(target === "MENU" ? null : target);
-          setDrawerOpen(true);
-        }}
-      />
+      <SiteHeader onNavigate={openDrawer} />
 
-      <HeroContent />
+      <div className="relative min-h-screen shrink-0">
+        <HeroContent />
 
-      <img
-        src={HERO_IMAGE}
-        alt="Rory Ulloa"
-        loading="eager"
-        className="pointer-events-auto absolute bottom-0 left-1/2 z-10 h-[95%] -translate-x-1/2 object-contain object-bottom grayscale contrast-125 brightness-95 drop-shadow-[0_25px_50px_rgba(0,0,0,0.5)] transition-transform duration-700 ease-out hover:scale-[1.04] md:h-[100%] lg:h-[110%]"
-      />
+        <img
+          src={HERO_IMAGE}
+          alt="Rory Ulloa"
+          loading="eager"
+          className="pointer-events-auto absolute bottom-0 left-1/2 z-10 h-[95%] -translate-x-1/2 object-contain object-bottom grayscale contrast-125 brightness-95 drop-shadow-[0_25px_50px_rgba(0,0,0,0.5)] transition-transform duration-700 ease-out hover:scale-[1.04] md:h-[100%] lg:h-[110%]"
+        />
 
-      <FooterMarquee />
+        <FooterMarquee />
+      </div>
+
+      <Pricing onCommission={() => openDrawer("LET'S WORK")} />
 
       <InfoDrawer
         open={drawerOpen}
