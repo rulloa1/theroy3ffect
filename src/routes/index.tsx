@@ -45,7 +45,7 @@ function Home() {
 
       <SiteHeader
         onNavigate={(target) => {
-          setDrawerSection(target);
+          setDrawerSection(target === "MENU" ? null : target);
           setDrawerOpen(true);
         }}
       />

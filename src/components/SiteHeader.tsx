@@ -1,8 +1,8 @@
 import { Link } from "@tanstack/react-router";
 
-export type NavTarget = "PROJECTS" | "BLOG" | "ABOUT" | "RESUME" | "LET'S WORK";
+export type NavTarget = "PROJECTS" | "BLOG" | "ABOUT" | "RESUME" | "LET'S WORK" | "MENU";
 
-const LINKS: NavTarget[] = ["PROJECTS", "ABOUT", "BLOG"];
+const LINKS: Exclude<NavTarget, "MENU">[] = ["PROJECTS", "ABOUT", "BLOG"];
 
 export function SiteHeader({ onNavigate }: { onNavigate: (target: NavTarget) => void }) {
   return (
