@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as BriefRouteImport } from './routes/brief'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as CheckoutReturnRouteImport } from './routes/checkout.return'
 import { Route as ApiPublicBriefIntakeRouteImport } from './routes/api/public/brief-intake'
@@ -20,6 +21,11 @@ import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/l
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BriefRoute = BriefRouteImport.update({
+  id: '/brief',
+  path: '/brief',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -57,6 +63,7 @@ const LovableEmailTransactionalPreviewRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/brief': typeof BriefRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/api/public/brief-intake': typeof ApiPublicBriefIntakeRoute
@@ -66,6 +73,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/brief': typeof BriefRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/api/public/brief-intake': typeof ApiPublicBriefIntakeRoute
@@ -76,6 +84,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/brief': typeof BriefRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/api/public/brief-intake': typeof ApiPublicBriefIntakeRoute
@@ -87,6 +96,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/brief'
     | '/sitemap.xml'
     | '/checkout/return'
     | '/api/public/brief-intake'
@@ -96,6 +106,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/brief'
     | '/sitemap.xml'
     | '/checkout/return'
     | '/api/public/brief-intake'
@@ -105,6 +116,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/brief'
     | '/sitemap.xml'
     | '/checkout/return'
     | '/api/public/brief-intake'
@@ -115,6 +127,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  BriefRoute: typeof BriefRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   CheckoutReturnRoute: typeof CheckoutReturnRoute
   ApiPublicBriefIntakeRoute: typeof ApiPublicBriefIntakeRoute
@@ -130,6 +143,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/brief': {
+      id: '/brief'
+      path: '/brief'
+      fullPath: '/brief'
+      preLoaderRoute: typeof BriefRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sitemap.xml': {
@@ -179,6 +199,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  BriefRoute: BriefRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   CheckoutReturnRoute: CheckoutReturnRoute,
   ApiPublicBriefIntakeRoute: ApiPublicBriefIntakeRoute,

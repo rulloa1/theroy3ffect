@@ -92,11 +92,11 @@ function BriefPage() {
     setForm((prev) => ({ ...prev, [key]: value }));
 
   const validateStep = () => {
-    const fields = STEPS[step]!.fields;
+    const fields = STEPS[step]!.fields as readonly string[];
     const result = schema.safeParse(form);
     if (result.success) return true;
     const issue = result.error.issues.find((i) =>
-      fields.includes(i.path[0] as (typeof fields)[number]),
+      fields.includes(String(i.path[0])),
     );
     if (issue) {
       toast.error(issue.message);
