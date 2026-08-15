@@ -26,4 +26,8 @@ export interface TemplateEntry {
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'brief-confirmation': briefConfirmation,
   'brief-notification': briefNotification,
+  'order-confirmation': orderConfirmation,
+  'order-notification': orderNotification,
+  'subscription-notification': subscriptionNotification,
 }
+
