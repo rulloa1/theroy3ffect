@@ -21,20 +21,20 @@ export function HeroContent() {
   }, []);
 
   return (
-    <div className="pointer-events-none relative z-20 flex flex-1 flex-col items-center justify-center px-5 text-center">
+    <div className="pointer-events-none relative z-20 flex flex-col items-center justify-start px-5 pt-4 text-center sm:pt-6 md:pt-8">
       <h1 className="flex flex-col items-center leading-[0.85]">
         <span className="text-stroke-thin font-display text-[17px] uppercase tracking-[0.35em] sm:text-[32px] md:text-[50px] lg:text-[70px] md:[-webkit-text-stroke:2px_white]">
           DESIGN WITH
         </span>
         <ScrambleText
           text={WORDS[wordIndex]!}
-          className="font-display text-[50px] uppercase leading-[0.82] text-[#CCFF00] sm:text-[90px] md:text-[130px] lg:text-[180px]"
+          className="font-display text-[50px] uppercase leading-[0.82] text-[#FF3333] sm:text-[90px] md:text-[130px] lg:text-[180px]"
         />
       </h1>
 
       <motion.p
         key={bioKey}
-        className="mt-6 max-w-xl font-mono text-[11px] leading-relaxed text-white/50 sm:text-xs md:text-sm"
+        className="mt-3 max-w-xl font-mono text-[11px] leading-relaxed text-white/50 sm:text-xs md:mt-4 md:text-sm"
       >
         {BIO.split("").map((ch, i) => (
           <motion.span

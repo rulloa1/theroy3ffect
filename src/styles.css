@@ -44,20 +44,20 @@
   --card-foreground: #ffffff;
   --popover: #333333;
   --popover-foreground: #ffffff;
-  --primary: #ccff00;
+  --primary: #ff3333;
   --primary-foreground: #000000;
   --secondary: #333333;
   --secondary-foreground: #ffffff;
   --muted: #12102a;
   --muted-foreground: rgba(255, 255, 255, 0.5);
-  --accent: #ccff00;
+  --accent: #ff3333;
   --accent-foreground: #000000;
   --destructive: #ff4d4d;
   --destructive-foreground: #ffffff;
   --border: rgba(255, 255, 255, 0.1);
   --input: rgba(255, 255, 255, 0.15);
-  --ring: #ccff00;
-  --acid: #ccff00;
+  --ring: #ff3333;
+  --acid: #ff3333;
   --drawer: #333333;
   --energy: #88aaff;
 }
@@ -84,7 +84,7 @@
   }
 
   ::selection {
-    background: #ccff00;
+    background: #ff3333;
     color: #000000;
   }
 }

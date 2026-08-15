@@ -8,7 +8,7 @@ const MENU = ["PROJECTS", "BLOG", "ABOUT", "RESUME", "LET'S WORK"] as const;
 type MenuItem = (typeof MENU)[number];
 
 const fieldClass =
-  "w-full border-0 border-b border-white/30 bg-transparent px-0 py-3 text-sm text-white placeholder:text-white/40 focus:border-[#CCFF00] focus:outline-none focus:ring-0";
+  "w-full border-0 border-b border-white/30 bg-transparent px-0 py-3 text-sm text-white placeholder:text-white/40 focus:border-[#FF3333] focus:outline-none focus:ring-0";
 
 const briefSchema = z.object({
   name: z.string().trim().min(1, "Please add your name").max(100, "Name is too long"),
@@ -105,7 +105,7 @@ export function InfoDrawer({
                 type="button"
                 aria-label={active ? "Back to menu" : "Menu"}
                 onClick={() => setActive(null)}
-                className="flex items-center gap-2 font-mono text-xs tracking-widest text-white/60 hover:text-[#CCFF00]"
+                className="flex items-center gap-2 font-mono text-xs tracking-widest text-white/60 hover:text-[#FF3333]"
               >
                 {active ? <ArrowLeft className="size-4" /> : <Menu className="size-4" />}
                 {active ? "BACK" : "MENU"}
@@ -114,7 +114,7 @@ export function InfoDrawer({
                 type="button"
                 aria-label="Close menu"
                 onClick={close}
-                className="flex size-10 items-center justify-center rounded-full border border-white/15 text-white hover:bg-[#CCFF00] hover:text-black"
+                className="flex size-10 items-center justify-center rounded-full border border-white/15 text-white hover:bg-[#FF3333] hover:text-black"
               >
                 <X className="size-4" />
               </button>
@@ -130,7 +130,7 @@ export function InfoDrawer({
                         onClick={() => setActive(item)}
                         className="group flex w-full items-center justify-between border-b border-white/10 py-5 text-left"
                       >
-                        <span className="font-display text-3xl uppercase tracking-wide text-white transition-colors group-hover:text-[#CCFF00] md:text-5xl">
+                        <span className="font-display text-3xl uppercase tracking-wide text-white transition-colors group-hover:text-[#FF3333] md:text-5xl">
                           {item}
                         </span>
                         <span className="font-mono text-xs text-white/40">↗</span>
@@ -142,7 +142,7 @@ export function InfoDrawer({
 
               {active === "LET'S WORK" && (
                 <form className="space-y-6" onSubmit={handleSubmit}>
-                  <h2 className="font-display text-4xl uppercase text-[#CCFF00]">Let&apos;s work</h2>
+                  <h2 className="font-display text-4xl uppercase text-[#FF3333]">Let&apos;s work</h2>
                   <input
                     aria-label="Your name"
                     name="name"
@@ -182,7 +182,7 @@ export function InfoDrawer({
                   <button
                     type="submit"
                     disabled={sending}
-                    className="w-full bg-[#CCFF00] px-6 py-4 font-mono text-xs tracking-widest text-black transition-opacity hover:opacity-90 disabled:opacity-50"
+                    className="w-full bg-[#FF3333] px-6 py-4 font-mono text-xs tracking-widest text-black transition-opacity hover:opacity-90 disabled:opacity-50"
                   >
                     {sending ? "SENDING..." : "SEND BRIEF"}
                   </button>
@@ -191,7 +191,7 @@ export function InfoDrawer({
 
               {active && active !== "LET'S WORK" && (
                 <div className="space-y-4">
-                  <h2 className="font-display text-4xl uppercase text-[#CCFF00]">{active}</h2>
+                  <h2 className="font-display text-4xl uppercase text-[#FF3333]">{active}</h2>
                   <p className="max-w-md font-mono text-xs leading-relaxed text-white/50">
                     Selected {active.toLowerCase()} content is being curated. Reach out through
                     Let&apos;s Work and I&apos;ll send the full deck.
