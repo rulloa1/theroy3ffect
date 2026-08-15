@@ -6,6 +6,7 @@ import {
   Heading,
   Hr,
   Html,
+  Link,
   Preview,
   Section,
   Text,
@@ -16,9 +17,10 @@ interface Props {
   name?: string
   projectType?: string
   message?: string
+  pdfUrl?: string
 }
 
-const Email = ({ name, projectType, message }: Props) => (
+const Email = ({ name, projectType, message, pdfUrl }: Props) => (
   <Html lang="en" dir="ltr">
     <Head />
     <Preview>Brief received — Rory will be in touch shortly.</Preview>
@@ -43,6 +45,16 @@ const Email = ({ name, projectType, message }: Props) => (
             </Text>
           ) : null}
         </Section>
+        {pdfUrl ? (
+          <Section>
+            <Text style={meta}>
+              A PDF summary of your brief is attached as a secure link:{' '}
+              <Link href={pdfUrl} style={link}>
+                Download your brief (PDF)
+              </Link>
+            </Text>
+          </Section>
+        ) : null}
         <Hr style={hr} />
         <Text style={footer}>Rory Ulloa — Creative Director, theroyeffect.com</Text>
       </Container>
@@ -73,4 +85,5 @@ const heading = { fontSize: '28px', margin: '0 0 16px', color: '#111111' }
 const text = { fontSize: '15px', lineHeight: '24px', color: '#333333' }
 const meta = { fontSize: '14px', lineHeight: '22px', color: '#333333', margin: '0 0 8px' }
 const hr = { borderColor: '#e5e7eb', margin: '24px 0' }
+const link = { color: '#FF3333', textDecoration: 'underline' }
 const footer = { fontSize: '12px', color: '#6b7280' }
