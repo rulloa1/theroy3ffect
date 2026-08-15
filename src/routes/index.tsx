@@ -8,8 +8,10 @@ import { FooterMarquee } from "@/components/FooterMarquee";
 import { InfoDrawer } from "@/components/InfoDrawer";
 import { Pricing } from "@/components/Pricing";
 
-const HERO_IMAGE =
-  "https://strvid.nyc3.cdn.digitaloceanspaces.com/motionsite/hero_main_1.png.png";
+import portraitAsset from "@/assets/rory-portrait.png.asset.json";
+
+const HERO_IMAGE = portraitAsset.url;
+const HERO_IMAGE_ABSOLUTE = `https://www.theroyeffect.com${portraitAsset.url}`;
 
 export const Route = createFileRoute("/")({
   head: () => ({
