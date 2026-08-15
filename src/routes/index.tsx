@@ -8,7 +8,7 @@ import { FooterMarquee } from "@/components/FooterMarquee";
 import { InfoDrawer } from "@/components/InfoDrawer";
 import { Pricing } from "@/components/Pricing";
 
-import portraitAsset from "@/assets/rory-portrait-cutout.png.asset.json";
+import portraitAsset from "@/assets/rory-portrait-transparent.png.asset.json";
 
 const HERO_IMAGE = portraitAsset.url;
 const HERO_IMAGE_ABSOLUTE = `https://www.theroyeffect.com${portraitAsset.url}`;
