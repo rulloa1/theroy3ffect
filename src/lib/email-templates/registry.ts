@@ -3,6 +3,7 @@ import { template as briefConfirmation } from './brief-confirmation'
 import { template as briefNotification } from './brief-notification'
 import { template as orderConfirmation } from './order-confirmation'
 import { template as orderNotification } from './order-notification'
+import { template as projectBriefNotification } from './project-brief-notification'
 import { template as subscriptionNotification } from './subscription-notification'
 
 
@@ -28,6 +29,7 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'brief-notification': briefNotification,
   'order-confirmation': orderConfirmation,
   'order-notification': orderNotification,
+  'project-brief-notification': projectBriefNotification,
   'subscription-notification': subscriptionNotification,
 }
 

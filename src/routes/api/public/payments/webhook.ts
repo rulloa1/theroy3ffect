@@ -4,7 +4,7 @@ import { type StripeEnv, createStripeClient } from '@/lib/stripe.server'
 import { sendTemplateEmail } from '@/lib/email-templates/send-email'
 
 const OWNER_EMAIL = 'rory@theroyeffect.com'
-const BRIEF_URL = 'https://www.theroyeffect.com/#contact'
+const BRIEF_BASE_URL = 'https://www.theroyeffect.com/brief'
 
 const money = (amount: number | null | undefined, currency: string | null | undefined) =>
   new Intl.NumberFormat('en-US', {
@@ -86,7 +86,7 @@ async function handleCheckoutCompleted(
 
     if (customerEmail) {
       await sendTemplateEmail('order-confirmation', customerEmail, {
-        templateData: { productName, amountLabel, briefUrl: BRIEF_URL, recurring },
+        templateData: { productName, amountLabel, briefUrl: `${BRIEF_BASE_URL}?session_id=${encodeURIComponent(full.id)}`, recurring },
         idempotencyKey: `order-confirmation-${full.id}`,
         replyTo: OWNER_EMAIL,
       })
