@@ -132,18 +132,34 @@ export function Pricing({ onCommission }: { onCommission?: () => void }) {
                 </ul>
               </div>
 
-              <button
-                type="button"
-                onClick={onCommission}
-                className={`mt-8 flex w-full items-center justify-center gap-2 px-4 py-3 font-mono text-xs tracking-widest transition-all ${
-                  tier.featured
-                    ? "bg-[#FF3333] text-black hover:bg-[#FF3333]/90"
-                    : "border border-white/20 text-white hover:border-[#FF3333] hover:bg-[#FF3333] hover:text-black"
-                }`}
-              >
-                {tier.cta}
-                <ArrowRight className="size-3" />
-              </button>
+              <div className="mt-8 flex flex-col gap-2">
+                <button
+                  type="button"
+                  onClick={() =>
+                    setActiveTier({
+                      name: tier.name,
+                      priceId: tier.depositPriceId,
+                      depositLabel: tier.depositLabel,
+                    })
+                  }
+                  className={`flex w-full items-center justify-center gap-2 px-4 py-3 font-mono text-xs tracking-widest transition-all ${
+                    tier.featured
+                      ? "bg-[#FF3333] text-black hover:bg-[#FF3333]/90"
+                      : "border border-white/20 text-white hover:border-[#FF3333] hover:bg-[#FF3333] hover:text-black"
+                  }`}
+                >
+                  <Lock className="size-3" />
+                  PAY {tier.depositLabel.split(" ")[0]} DEPOSIT
+                </button>
+                <button
+                  type="button"
+                  onClick={onCommission}
+                  className="flex w-full items-center justify-center gap-2 px-4 py-2 font-mono text-[11px] tracking-widest text-white/50 transition-colors hover:text-[#FF3333]"
+                >
+                  {tier.cta}
+                  <ArrowRight className="size-3" />
+                </button>
+              </div>
             </motion.div>
           ))}
         </div>
