@@ -90,7 +90,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         content:
           "Portfolio of Rory Ulloa, a Tokyo-based product designer and no-code developer building UI/UX, brand systems and websites.",
       },
-      { property: "og:site_name", content: "Rory Ulloa" },
+      { property: "og:site_name", content: "theroyeffect.com" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "google-site-verification", content: "77GixI64Yh4THH1-qNE6EXBc87IRpeA76Jo1KHyaTCA" },

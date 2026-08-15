@@ -13,5 +13,5 @@ Allow: /
 User-agent: *
 Allow: /
 
-Sitemap: https://pixel-perfect-capture-758.lovable.app/sitemap.xml
+Sitemap: https://www.theroyeffect.com/sitemap.xml
 
