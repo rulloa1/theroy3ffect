@@ -30,7 +30,7 @@ import heroPortrait from "@/assets/hero-portrait.jpg";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Darrell Steward — Creative Designer & No-Code Developer" },
+      { title: "Rory Ulloa — Creative Designer & No-Code Developer" },
       {
         name: "description",
         content:
@@ -38,7 +38,7 @@ export const Route = createFileRoute("/")({
       },
       {
         property: "og:title",
-        content: "Darrell Steward — Creative Designer & No-Code Developer",
+        content: "Rory Ulloa — Creative Designer & No-Code Developer",
       },
       {
         property: "og:description",
@@ -95,7 +95,7 @@ const WORK = [
 const TESTIMONIALS = [
   {
     quote:
-      "Darrell rebuilt our onboarding in three weeks. Activation went up 38% and the team finally has a design system it trusts.",
+      "Rory rebuilt our onboarding in three weeks. Activation went up 38% and the team finally has a design system it trusts.",
     name: "Amara Okafor",
     role: "Head of Product, Lumen",
   },
@@ -220,7 +220,7 @@ function Portfolio() {
         <Halo className="left-1/2 top-24 size-[46rem] -translate-x-1/2 opacity-60" />
         <div className="relative mx-auto max-w-4xl">
           <p className="flex flex-wrap items-center justify-center gap-3 text-sm text-muted-foreground">
-            <span>Hey! I&apos;m Darrell Steward</span>
+            <span>Hey! I&apos;m Rory Ulloa</span>
             <span className="text-border">|</span>
             <span className="flex items-center gap-2">
               Based on
@@ -244,7 +244,7 @@ function Portfolio() {
                 src={heroPortrait}
                 width={912}
                 height={1104}
-                alt="Darrell Steward lit by a red neon halo"
+                alt="Rory Ulloa lit by a red neon halo"
                 className="w-full rounded-[1.6rem] object-cover"
               />
               <span className="absolute -left-4 bottom-24 grid size-10 place-items-center rounded-full [background:var(--gradient-neon)] shadow-[var(--shadow-glow)] animate-float">
@@ -254,7 +254,9 @@ function Portfolio() {
                 • Available as freelancer
               </span>
             </div>
-            <p className="script mt-4 text-right text-4xl text-foreground/90">Darrell Steward :)</p>
+            <p className="script mt-4 text-right text-4xl text-foreground/90">
+              Rory Ulloa&nbsp; &nbsp;-- theroyeffect
+            </p>
           </div>
         </div>
       </section>
@@ -264,7 +266,7 @@ function Portfolio() {
         <Halo className="-left-40 top-10 size-[30rem] opacity-40" />
         <div className="relative mx-auto grid max-w-5xl gap-12 md:grid-cols-2 md:items-center">
           <div>
-            <SectionLabel>I&apos;m Darrell Steward</SectionLabel>
+            <SectionLabel>I&apos;m Rory Ulloa</SectionLabel>
             <h2 className="mt-6 text-4xl font-semibold leading-tight sm:text-5xl">
               Hey, <Sparkles className="inline size-7 text-neon-soft" /> I&apos;m a
               <br />
@@ -294,7 +296,7 @@ function Portfolio() {
               width={912}
               height={1104}
               loading="lazy"
-              alt="Portrait of Darrell Steward"
+              alt="Portrait of Rory Ulloa"
               className="w-full rounded-[1.6rem] object-cover"
             />
             <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-signal/20 px-3 py-1 text-xs text-signal ring-1 ring-signal/40">
@@ -553,7 +555,7 @@ function Portfolio() {
           </div>
           <div className="text-muted-foreground">
             <p>Designed &amp; built in Tokyo</p>
-            <p className="mt-2">© {new Date().getFullYear()} Darrell Steward.</p>
+            <p className="mt-2">© {new Date().getFullYear()} Rory Ulloa.</p>
           </div>
         </div>
       </footer>
