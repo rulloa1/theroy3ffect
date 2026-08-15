@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 
-const BASE_URL = "https://pixel-perfect-capture-758.lovable.app";
+const BASE_URL = "https://www.theroyeffect.com";
 
 interface SitemapEntry {
   path: string;
