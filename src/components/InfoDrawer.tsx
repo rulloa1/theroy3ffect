@@ -2,6 +2,7 @@ import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, Menu, X } from "lucide-react";
 import { toast } from "sonner";
+import { z } from "zod";
 
 const MENU = ["PROJECTS", "BLOG", "ABOUT", "RESUME", "LET'S WORK"] as const;
 type MenuItem = (typeof MENU)[number];
@@ -9,12 +10,62 @@ type MenuItem = (typeof MENU)[number];
 const fieldClass =
   "w-full border-0 border-b border-white/30 bg-transparent px-0 py-3 text-sm text-white placeholder:text-white/40 focus:border-[#CCFF00] focus:outline-none focus:ring-0";
 
+const briefSchema = z.object({
+  name: z.string().trim().min(1, "Please add your name").max(100, "Name is too long"),
+  email: z.string().trim().email("Enter a valid email").max(255),
+  projectType: z.string().trim().max(60),
+  message: z
+    .string()
+    .trim()
+    .min(10, "Tell me a bit more about the project")
+    .max(2000, "Please keep it under 2000 characters"),
+});
+
 export function InfoDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [active, setActive] = useState<MenuItem | null>(null);
+  const [sending, setSending] = useState(false);
 
   const close = () => {
     setActive(null);
     onClose();
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const data = Object.fromEntries(new FormData(form).entries());
+    const parsed = briefSchema.safeParse({
+      name: String(data["name"] ?? ""),
+      email: String(data["email"] ?? ""),
+      projectType: String(data["projectType"] ?? ""),
+      message: String(data["message"] ?? ""),
+    });
+
+    if (!parsed.success) {
+      toast.error(parsed.error.issues[0]?.message ?? "Please check the form");
+      return;
+    }
+
+    setSending(true);
+    try {
+      const res = await fetch("/api/public/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(parsed.data),
+      });
+      const body = (await res.json().catch(() => ({}))) as { error?: string };
+      if (!res.ok) {
+        toast.error(body.error ?? "Could not send your brief. Please try again.");
+        return;
+      }
+      toast.success("Brief received — I'll be in touch shortly.");
+      form.reset();
+      close();
+    } catch {
+      toast.error("Network error — please try again.");
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -78,24 +129,26 @@ export function InfoDrawer({ open, onClose }: { open: boolean; onClose: () => vo
               )}
 
               {active === "LET'S WORK" && (
-                <form
-                  className="space-y-6"
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    toast.success("Brief received — I'll be in touch shortly.");
-                    close();
-                  }}
-                >
+                <form className="space-y-6" onSubmit={handleSubmit}>
                   <h2 className="font-display text-4xl uppercase text-[#CCFF00]">Let&apos;s work</h2>
-                  <input aria-label="Your name" className={fieldClass} placeholder="Name" required />
+                  <input
+                    aria-label="Your name"
+                    name="name"
+                    className={fieldClass}
+                    placeholder="Name"
+                    maxLength={100}
+                    required
+                  />
                   <input
                     aria-label="Your email"
+                    name="email"
                     type="email"
                     className={fieldClass}
                     placeholder="Email"
+                    maxLength={255}
                     required
                   />
-                  <select aria-label="Project type" className={fieldClass} defaultValue="">
+                  <select aria-label="Project type" name="projectType" className={fieldClass} defaultValue="">
                     <option value="" disabled className="bg-[#333333]">
                       Project type
                     </option>
@@ -106,15 +159,20 @@ export function InfoDrawer({ open, onClose }: { open: boolean; onClose: () => vo
                   </select>
                   <textarea
                     aria-label="Project details"
+                    name="message"
                     rows={4}
                     className={fieldClass}
                     placeholder="Tell me about the project"
+                    minLength={10}
+                    maxLength={2000}
+                    required
                   />
                   <button
                     type="submit"
-                    className="w-full bg-[#CCFF00] px-6 py-4 font-mono text-xs tracking-widest text-black transition-opacity hover:opacity-90"
+                    disabled={sending}
+                    className="w-full bg-[#CCFF00] px-6 py-4 font-mono text-xs tracking-widest text-black transition-opacity hover:opacity-90 disabled:opacity-50"
                   >
-                    SEND BRIEF
+                    {sending ? "SENDING..." : "SEND BRIEF"}
                   </button>
                 </form>
               )}
