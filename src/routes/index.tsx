@@ -296,7 +296,7 @@ function Portfolio() {
               width={912}
               height={1104}
               loading="lazy"
-              alt="Portrait of Darrell Steward"
+              alt="Portrait of Rory Ulloa"
               className="w-full rounded-[1.6rem] object-cover"
             />
             <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-signal/20 px-3 py-1 text-xs text-signal ring-1 ring-signal/40">
