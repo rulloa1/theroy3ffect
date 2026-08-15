@@ -63,7 +63,7 @@ function Home() {
           src={HERO_IMAGE}
           alt="Rory Ulloa"
           loading="eager"
-          className="pointer-events-auto absolute bottom-0 left-1/2 z-10 h-[88%] max-w-[92vw] -translate-x-1/2 object-contain object-bottom grayscale contrast-125 brightness-95 drop-shadow-[0_25px_50px_rgba(0,0,0,0.5)] transition-transform duration-700 ease-out hover:scale-[1.03]"
+          className="pointer-events-auto absolute left-1/2 top-[24vh] z-10 h-[120vh] w-auto -translate-x-1/2 object-contain object-top grayscale contrast-125 brightness-95 drop-shadow-[0_25px_50px_rgba(0,0,0,0.5)] transition-transform duration-700 ease-out hover:scale-[1.03]"
         />
 
         <FooterMarquee />
