@@ -46,10 +46,47 @@ export const Route = createFileRoute("/")({
           "Portfolio of a Tokyo-based product designer building thoughtful digital products, brand identities and no-code websites.",
       },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://pixel-perfect-capture-758.lovable.app/" },
       { name: "twitter:card", content: "summary_large_image" },
+    ],
+    links: [{ rel: "canonical", href: "https://pixel-perfect-capture-758.lovable.app/" }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "Person",
+              name: "Rory Ulloa",
+              jobTitle: "Product Designer & No-Code Developer",
+              url: "https://pixel-perfect-capture-758.lovable.app/",
+              email: "mailto:rory@theroyeffect.com",
+              telephone: "+1-281-323-0450",
+              address: { "@type": "PostalAddress", addressLocality: "Tokyo", addressCountry: "JP" },
+              knowsAbout: [
+                "UI/UX Design",
+                "Brand Identity",
+                "No-Code Development",
+                "Design Systems",
+              ],
+            },
+            {
+              "@type": "LocalBusiness",
+              name: "The Roy Effect — Rory Ulloa",
+              url: "https://pixel-perfect-capture-758.lovable.app/",
+              telephone: "+1-281-323-0450",
+              email: "mailto:rory@theroyeffect.com",
+              address: { "@type": "PostalAddress", addressLocality: "Tokyo", addressCountry: "JP" },
+              priceRange: "$$",
+            },
+          ],
+        }),
+      },
     ],
   }),
   component: Portfolio,
+
 });
 
 const NAV = [
@@ -485,14 +522,22 @@ function Portfolio() {
             <Input
               type="email"
               required
+              aria-label="Email address for newsletter"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
               className="h-11 rounded-full bg-surface-2 px-5"
             />
-            <Button type="submit" variant="neon" size="icon" className="size-11 shrink-0">
+            <Button
+              type="submit"
+              variant="neon"
+              size="icon"
+              aria-label="Subscribe to the newsletter"
+              className="size-11 shrink-0"
+            >
               <ArrowUpRight />
             </Button>
+
           </form>
           <p className="relative mt-3 text-xs text-muted-foreground">
             One email a month. No spam, ever.
@@ -515,19 +560,27 @@ function Portfolio() {
               (e.currentTarget as HTMLFormElement).reset();
             }}
           >
-            <Input required placeholder="Full name" className="h-12 rounded-2xl bg-surface-2 px-5" />
+            <Input
+              required
+              aria-label="Full name"
+              placeholder="Full name"
+              className="h-12 rounded-2xl bg-surface-2 px-5"
+            />
             <Input
               required
               type="email"
+              aria-label="Email address"
               placeholder="Enter your email"
               className="h-12 rounded-2xl bg-surface-2 px-5"
             />
             <Textarea
               required
               rows={4}
+              aria-label="Your message"
               placeholder="Write a message here..."
               className="rounded-2xl bg-surface-2 px-5 py-4"
             />
+
             <Button type="submit" variant="neon" size="lg" className="w-full">
               Send message
             </Button>
