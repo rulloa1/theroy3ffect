@@ -138,9 +138,9 @@ export function ParticleBackground() {
       };
       window.addEventListener("resize", onResize);
 
-      const posAttr = geometry.getAttribute("position") as THREE.BufferAttribute;
-      const colAttr = geometry.getAttribute("color") as THREE.BufferAttribute;
-      const linesAttr = lineGeo.getAttribute("position") as THREE.BufferAttribute;
+      const posAttr = geometry.getAttribute("position");
+      const colAttr = geometry.getAttribute("color");
+      const linesAttr = lineGeo.getAttribute("position");
 
       let raf = 0;
       const animate = () => {
@@ -148,52 +148,65 @@ export function ParticleBackground() {
 
         for (let i = 0; i < COUNT; i++) {
           const i3 = i * 3;
-          tmp.set(positions[i3], positions[i3 + 1], positions[i3 + 2]);
+          const px = positions[i3]!;
+          const py = positions[i3 + 1]!;
+          const pz = positions[i3 + 2]!;
+          tmp.set(px, py, pz);
           const dx = tmp.x - hit.x;
           const dy = tmp.y - hit.y;
           const dz = tmp.z - hit.z;
           const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
 
           let mix = 0;
+          let vx = velocities[i3]!;
+          let vy = velocities[i3 + 1]!;
+          let vz = velocities[i3 + 2]!;
+
           if (dist < 20) {
             const force = (1 - dist / 20) * 0.04;
-            velocities[i3] += dx * force;
-            velocities[i3 + 1] += dy * force;
-            velocities[i3 + 2] += dz * force;
+            vx += dx * force;
+            vy += dy * force;
+            vz += dz * force;
             mix = (1 - dist / 20) * 0.4;
           }
 
           // spring back home
-          velocities[i3] += (basePositions[i3] - positions[i3]) * 0.01;
-          velocities[i3 + 1] += (basePositions[i3 + 1] - positions[i3 + 1]) * 0.01;
-          velocities[i3 + 2] += (basePositions[i3 + 2] - positions[i3 + 2]) * 0.01;
+          vx = (vx + (basePositions[i3]! - px) * 0.01) * 0.9;
+          vy = (vy + (basePositions[i3 + 1]! - py) * 0.01) * 0.9;
+          vz = (vz + (basePositions[i3 + 2]! - pz) * 0.01) * 0.9;
 
-          velocities[i3] *= 0.9;
-          velocities[i3 + 1] *= 0.9;
-          velocities[i3 + 2] *= 0.9;
+          velocities[i3] = vx;
+          velocities[i3 + 1] = vy;
+          velocities[i3 + 2] = vz;
 
-          positions[i3] += velocities[i3];
-          positions[i3 + 1] += velocities[i3 + 1];
-          positions[i3 + 2] += velocities[i3 + 2];
+          positions[i3] = px + vx;
+          positions[i3 + 1] = py + vy;
+          positions[i3 + 2] = pz + vz;
 
-          colors[i3] += (base.r + (acid.r - base.r) * mix - colors[i3]) * 0.15;
-          colors[i3 + 1] += (base.g + (acid.g - base.g) * mix - colors[i3 + 1]) * 0.15;
-          colors[i3 + 2] += (base.b + (acid.b - base.b) * mix - colors[i3 + 2]) * 0.15;
+          const cr = colors[i3]!;
+          const cg = colors[i3 + 1]!;
+          const cb = colors[i3 + 2]!;
+          colors[i3] = cr + (base.r + (acid.r - base.r) * mix - cr) * 0.15;
+          colors[i3 + 1] = cg + (base.g + (acid.g - base.g) * mix - cg) * 0.15;
+          colors[i3 + 2] = cb + (base.b + (acid.b - base.b) * mix - cb) * 0.15;
         }
         posAttr.needsUpdate = true;
         colAttr.needsUpdate = true;
 
         for (let i = 0; i < LINES; i++) {
           const i6 = i * 6;
-          linePos[i6 + 2] += speeds[i];
-          linePos[i6 + 5] += speeds[i];
-          if (linePos[i6 + 2] > 80) {
-            const shift = 480;
-            linePos[i6 + 2] -= shift;
-            linePos[i6 + 5] -= shift;
+          const s = speeds[i]!;
+          let z1 = linePos[i6 + 2]! + s;
+          let z2 = linePos[i6 + 5]! + s;
+          if (z1 > 80) {
+            z1 -= 480;
+            z2 -= 480;
           }
+          linePos[i6 + 2] = z1;
+          linePos[i6 + 5] = z2;
         }
         linesAttr.needsUpdate = true;
+
 
         points.rotation.y += 0.0004;
         composer.render();
