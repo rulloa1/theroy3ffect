@@ -522,14 +522,22 @@ function Portfolio() {
             <Input
               type="email"
               required
+              aria-label="Email address for newsletter"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
               className="h-11 rounded-full bg-surface-2 px-5"
             />
-            <Button type="submit" variant="neon" size="icon" className="size-11 shrink-0">
+            <Button
+              type="submit"
+              variant="neon"
+              size="icon"
+              aria-label="Subscribe to the newsletter"
+              className="size-11 shrink-0"
+            >
               <ArrowUpRight />
             </Button>
+
           </form>
           <p className="relative mt-3 text-xs text-muted-foreground">
             One email a month. No spam, ever.
