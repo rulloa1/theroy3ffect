@@ -8,8 +8,10 @@ import { FooterMarquee } from "@/components/FooterMarquee";
 import { InfoDrawer } from "@/components/InfoDrawer";
 import { Pricing } from "@/components/Pricing";
 
-const HERO_IMAGE =
-  "https://strvid.nyc3.cdn.digitaloceanspaces.com/motionsite/hero_main_1.png.png";
+import portraitAsset from "@/assets/rory-portrait.png.asset.json";
+
+const HERO_IMAGE = portraitAsset.url;
+const HERO_IMAGE_ABSOLUTE = `https://www.theroyeffect.com${portraitAsset.url}`;
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -27,9 +29,9 @@ export const Route = createFileRoute("/")({
           "Bold, high-contrast digital experiences: UI/UX design, brand systems and no-code builds by Rory Ulloa.",
       },
       { property: "og:type", content: "website" },
-      { property: "og:image", content: HERO_IMAGE },
+      { property: "og:image", content: HERO_IMAGE_ABSOLUTE },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:image", content: HERO_IMAGE },
+      { name: "twitter:image", content: HERO_IMAGE_ABSOLUTE },
     ],
     links: [{ rel: "canonical", href: "https://www.theroyeffect.com/" }],
   }),
