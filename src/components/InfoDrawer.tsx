@@ -2,6 +2,7 @@ import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, Menu, X } from "lucide-react";
 import { toast } from "sonner";
+import { z } from "zod";
 
 const MENU = ["PROJECTS", "BLOG", "ABOUT", "RESUME", "LET'S WORK"] as const;
 type MenuItem = (typeof MENU)[number];
