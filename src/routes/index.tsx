@@ -6,6 +6,7 @@ import { SiteHeader, type NavTarget } from "@/components/SiteHeader";
 import { HeroContent } from "@/components/HeroContent";
 import { FooterMarquee } from "@/components/FooterMarquee";
 import { InfoDrawer } from "@/components/InfoDrawer";
+import { Pricing } from "@/components/Pricing";
 
 const HERO_IMAGE =
   "https://strvid.nyc3.cdn.digitaloceanspaces.com/motionsite/hero_main_1.png.png";
