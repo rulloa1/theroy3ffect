@@ -21,7 +21,7 @@ export function HeroContent() {
   }, []);
 
   return (
-    <div className="pointer-events-none relative z-10 flex w-full flex-1 flex-col items-center justify-end px-5 pb-[28vh] text-center">
+    <div className="pointer-events-none relative z-20 flex w-full flex-1 flex-col items-center justify-end px-5 pb-[28vh] text-center">
       <h1 className="flex w-full flex-col items-center leading-[0.82]">
         <span className="text-stroke-thin font-display text-[6.5vw] uppercase tracking-[0.22em] md:[-webkit-text-stroke:2px_white]">
           DESIGN WITH
