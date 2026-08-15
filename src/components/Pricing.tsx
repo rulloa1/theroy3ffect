@@ -172,9 +172,19 @@ export function Pricing({ onCommission }: { onCommission?: () => void }) {
 
         <p className="mt-10 max-w-2xl font-mono text-[11px] leading-relaxed text-white/40">
           All projects begin with a free 15-minute discovery call. Not sure which tier fits? Pick a
-          starting point and I’ll tailor the scope to your budget and timeline.
+          starting point and I’ll tailor the scope to your budget and timeline. Deposits are 50% of
+          the tier’s starting price (retainers bill the first month), credited against your final
+          invoice and fully refundable before kickoff.
         </p>
       </div>
+
+      <DepositCheckoutModal
+        open={activeTier !== null}
+        onClose={() => setActiveTier(null)}
+        tierName={activeTier?.name ?? ""}
+        depositLabel={activeTier?.depositLabel ?? ""}
+        priceId={activeTier?.priceId ?? ""}
+      />
     </section>
   );
 }
