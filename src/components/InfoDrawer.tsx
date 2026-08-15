@@ -9,12 +9,62 @@ type MenuItem = (typeof MENU)[number];
 const fieldClass =
   "w-full border-0 border-b border-white/30 bg-transparent px-0 py-3 text-sm text-white placeholder:text-white/40 focus:border-[#CCFF00] focus:outline-none focus:ring-0";
 
+const briefSchema = z.object({
+  name: z.string().trim().min(1, "Please add your name").max(100, "Name is too long"),
+  email: z.string().trim().email("Enter a valid email").max(255),
+  projectType: z.string().trim().max(60),
+  message: z
+    .string()
+    .trim()
+    .min(10, "Tell me a bit more about the project")
+    .max(2000, "Please keep it under 2000 characters"),
+});
+
 export function InfoDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [active, setActive] = useState<MenuItem | null>(null);
+  const [sending, setSending] = useState(false);
 
   const close = () => {
     setActive(null);
     onClose();
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const data = Object.fromEntries(new FormData(form).entries());
+    const parsed = briefSchema.safeParse({
+      name: String(data["name"] ?? ""),
+      email: String(data["email"] ?? ""),
+      projectType: String(data["projectType"] ?? ""),
+      message: String(data["message"] ?? ""),
+    });
+
+    if (!parsed.success) {
+      toast.error(parsed.error.issues[0]?.message ?? "Please check the form");
+      return;
+    }
+
+    setSending(true);
+    try {
+      const res = await fetch("/api/public/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(parsed.data),
+      });
+      const body = (await res.json().catch(() => ({}))) as { error?: string };
+      if (!res.ok) {
+        toast.error(body.error ?? "Could not send your brief. Please try again.");
+        return;
+      }
+      toast.success("Brief received — I'll be in touch shortly.");
+      form.reset();
+      close();
+    } catch {
+      toast.error("Network error — please try again.");
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
