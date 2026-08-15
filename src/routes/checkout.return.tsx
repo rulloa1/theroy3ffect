@@ -41,7 +41,7 @@ function CheckoutReturn() {
         </h1>
         <p className="mt-4 font-mono text-xs leading-relaxed text-white/60">
           {sessionId
-            ? "Your commission is reserved. I'll reach out within one business day with the kickoff schedule and scope document. A receipt is on its way to your inbox."
+            ? "Your commission is reserved. I'll reach out within one business day with the kickoff schedule and scope document. A receipt is on its way to your inbox — take two minutes to fill in the project brief below so I can lock scope and a start date."
             : "We couldn't find a checkout session. If you just paid, check your email for a receipt — otherwise start again from the pricing section."}
         </p>
         {sessionId && (
@@ -49,12 +49,23 @@ function CheckoutReturn() {
             Reference: {sessionId}
           </p>
         )}
-        <Link
-          to="/"
-          className="mt-8 inline-flex items-center gap-2 bg-[#FF3333] px-5 py-3 font-mono text-xs tracking-widest text-black transition-opacity hover:opacity-90"
-        >
-          BACK TO SITE
-        </Link>
+        <div className="mt-8 flex flex-wrap gap-3">
+          {sessionId && (
+            <Link
+              to="/brief"
+              search={{ session_id: sessionId }}
+              className="inline-flex items-center gap-2 bg-[#FF3333] px-5 py-3 font-mono text-xs tracking-widest text-black transition-opacity hover:opacity-90"
+            >
+              START YOUR PROJECT BRIEF
+            </Link>
+          )}
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 border border-white/15 px-5 py-3 font-mono text-xs tracking-widest text-white transition-colors hover:border-[#FF3333] hover:text-[#FF3333]"
+          >
+            BACK TO SITE
+          </Link>
+        </div>
       </div>
     </main>
   );
