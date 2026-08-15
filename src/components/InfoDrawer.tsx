@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, Menu, X } from "lucide-react";
 import { toast } from "sonner";
@@ -21,9 +21,21 @@ const briefSchema = z.object({
     .max(2000, "Please keep it under 2000 characters"),
 });
 
-export function InfoDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {
+export function InfoDrawer({
+  open,
+  onClose,
+  section = null,
+}: {
+  open: boolean;
+  onClose: () => void;
+  section?: MenuItem | null;
+}) {
   const [active, setActive] = useState<MenuItem | null>(null);
   const [sending, setSending] = useState(false);
+
+  useEffect(() => {
+    if (open) setActive(section);
+  }, [open, section]);
 
   const close = () => {
     setActive(null);
