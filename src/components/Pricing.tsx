@@ -1,82 +1,20 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, Check, Sparkles, Lock } from "lucide-react";
+import { ArrowRight, Check, Sparkles, Lock, Plus } from "lucide-react";
 import { DepositCheckoutModal } from "@/components/DepositCheckoutModal";
+import { PRICING_TIERS, ADD_ONS } from "@/lib/commerce-catalog";
 
-export const PRICING_TIERS = [
-  {
-    name: "BRAND SPRINT",
-    price: "$2,500",
-    note: "from",
-    description: "A focused brand identity package for early-stage teams and personal brands.",
-    features: [
-      "Brand strategy workshop",
-      "Logo system + variations",
-      "Color palette & typography",
-      "Basic brand guidelines",
-      "2 revision rounds",
-    ],
-    cta: "START A BRAND SPRINT",
-    depositPriceId: "deposit_brand_sprint_onetime",
-    depositLabel: "$1,250 deposit (50%)",
-  },
-  {
-    name: "WEBSITE / UI-UX",
-    price: "$5,000",
-    note: "from",
-    description: "Full visual design and prototype for websites, apps, or digital products.",
-    features: [
-      "UX audit & wireframes",
-      "High-fidelity UI designs",
-      "Responsive screens",
-      "Clickable prototype",
-      "3 revision rounds",
-    ],
-    cta: "DESIGN MY PRODUCT",
-    depositPriceId: "deposit_website_uiux_onetime",
-    depositLabel: "$2,500 deposit (50%)",
-    featured: true,
-  },
-  {
-    name: "DESIGN + BUILD",
-    price: "$8,000",
-    note: "from",
-    description: "End-to-end design paired with a no-code build on Webflow, Framer, or TanStack.",
-    features: [
-      "Everything in Website/UI-UX",
-      "No-code development",
-      "CMS & dynamic content setup",
-      "Performance & SEO basics",
-      "Post-launch support (14 days)",
-    ],
-    cta: "BUILD THE FULL THING",
-    depositPriceId: "deposit_design_build_onetime",
-    depositLabel: "$4,000 deposit (50%)",
-  },
-  {
-    name: "RETAINER",
-    price: "$3,000",
-    note: "/mo",
-    description: "Ongoing design partnership for teams that need consistent creative output.",
-    features: [
-      "Monthly design capacity",
-      "Priority turnaround",
-      "Brand stewardship",
-      "Weekly async sync",
-      "Pause or cancel anytime",
-    ],
-    cta: "SET UP A RETAINER",
-    depositPriceId: "deposit_retainer_onetime",
-    depositLabel: "$3,000 first month",
-  },
-];
+export { PRICING_TIERS };
+
+interface ActivePurchase {
+  name: string;
+  priceId: string;
+  label: string;
+  kicker: string;
+}
 
 export function Pricing({ onCommission }: { onCommission?: () => void }) {
-  const [activeTier, setActiveTier] = useState<{
-    name: string;
-    priceId: string;
-    depositLabel: string;
-  } | null>(null);
+  const [active, setActive] = useState<ActivePurchase | null>(null);
 
   return (
     <section id="pricing" className="relative z-20 w-full bg-[#030014] px-5 py-20 md:px-10 md:py-32">
@@ -89,8 +27,8 @@ export function Pricing({ onCommission }: { onCommission?: () => void }) {
             </h2>
           </div>
           <p className="max-w-md font-mono text-xs leading-relaxed text-white/50">
-            Transparent starting points. Every project gets a custom scope and quote before any
-            work begins.
+            Transparent starting points. Pay a 50% deposit or the full amount upfront — every
+            project still gets a custom scope before work begins.
           </p>
         </div>
 
@@ -142,10 +80,11 @@ export function Pricing({ onCommission }: { onCommission?: () => void }) {
                 <button
                   type="button"
                   onClick={() =>
-                    setActiveTier({
+                    setActive({
                       name: tier.name,
-                      priceId: tier.depositPriceId,
-                      depositLabel: tier.depositLabel,
+                      priceId: tier.deposit.priceId,
+                      label: `${tier.deposit.amountLabel} — ${tier.deposit.label}`,
+                      kicker: "SECURE DEPOSIT",
                     })
                   }
                   className={`flex w-full items-center justify-center gap-2 px-4 py-3 font-mono text-xs tracking-widest transition-all ${
@@ -155,7 +94,23 @@ export function Pricing({ onCommission }: { onCommission?: () => void }) {
                   }`}
                 >
                   <Lock className="size-3" />
-                  PAY {tier.depositLabel.split(" ")[0]} DEPOSIT
+                  PAY {tier.deposit.amountLabel} {tier.name === "RETAINER" ? "FIRST MONTH" : "DEPOSIT"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setActive({
+                      name: tier.name,
+                      priceId: tier.full.priceId,
+                      label: `${tier.full.amountLabel} — ${tier.full.label}`,
+                      kicker: tier.full.recurring ? "MONTHLY RETAINER" : "PAY IN FULL",
+                    })
+                  }
+                  className="flex w-full items-center justify-center gap-2 border border-white/10 px-4 py-2.5 font-mono text-[11px] tracking-widest text-white/70 transition-colors hover:border-[#FF3333] hover:text-[#FF3333]"
+                >
+                  {tier.full.recurring
+                    ? `SUBSCRIBE ${tier.full.amountLabel}`
+                    : `PAY IN FULL ${tier.full.amountLabel}`}
                 </button>
                 <button
                   type="button"
@@ -170,20 +125,55 @@ export function Pricing({ onCommission }: { onCommission?: () => void }) {
           ))}
         </div>
 
+        <div className="mt-16">
+          <span className="font-mono text-xs tracking-widest text-[#FF3333]">ADD-ONS</span>
+          <div className="mt-5 grid gap-4 sm:grid-cols-3">
+            {ADD_ONS.map((addOn) => (
+              <div
+                key={addOn.priceId}
+                className="flex flex-col justify-between border border-white/10 bg-white/[0.02] p-5 transition-colors hover:border-[#FF3333]/50"
+              >
+                <div>
+                  <h3 className="font-display text-lg uppercase text-white">{addOn.name}</h3>
+                  <p className="mt-2 font-mono text-xs leading-relaxed text-white/50">
+                    {addOn.description}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setActive({
+                      name: addOn.name,
+                      priceId: addOn.priceId,
+                      label: `${addOn.amountLabel} one-time`,
+                      kicker: "ADD-ON",
+                    })
+                  }
+                  className="mt-6 flex w-full items-center justify-center gap-2 border border-white/20 px-4 py-2.5 font-mono text-[11px] tracking-widest text-white transition-colors hover:border-[#FF3333] hover:bg-[#FF3333] hover:text-black"
+                >
+                  <Plus className="size-3" />
+                  ADD {addOn.amountLabel}
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+
         <p className="mt-10 max-w-2xl font-mono text-[11px] leading-relaxed text-white/40">
-          All projects begin with a free 15-minute discovery call. Not sure which tier fits? Pick a
-          starting point and I’ll tailor the scope to your budget and timeline. Deposits are 50% of
-          the tier’s starting price (retainers bill the first month), credited against your final
-          invoice and fully refundable before kickoff.
+          All projects begin with a free 15-minute discovery call. Deposits are 50% of the tier’s
+          starting price, credited against your final invoice and fully refundable before kickoff.
+          Retainers bill monthly and can be paused or cancelled anytime. No account needed — you’ll
+          get a receipt and a brief link by email right after checkout.
         </p>
       </div>
 
       <DepositCheckoutModal
-        open={activeTier !== null}
-        onClose={() => setActiveTier(null)}
-        tierName={activeTier?.name ?? ""}
-        depositLabel={activeTier?.depositLabel ?? ""}
-        priceId={activeTier?.priceId ?? ""}
+        open={active !== null}
+        onClose={() => setActive(null)}
+        tierName={active?.name ?? ""}
+        depositLabel={active?.label ?? ""}
+        priceId={active?.priceId ?? ""}
+        kicker={active?.kicker ?? "SECURE CHECKOUT"}
       />
     </section>
   );
