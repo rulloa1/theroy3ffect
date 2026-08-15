@@ -560,19 +560,27 @@ function Portfolio() {
               (e.currentTarget as HTMLFormElement).reset();
             }}
           >
-            <Input required placeholder="Full name" className="h-12 rounded-2xl bg-surface-2 px-5" />
+            <Input
+              required
+              aria-label="Full name"
+              placeholder="Full name"
+              className="h-12 rounded-2xl bg-surface-2 px-5"
+            />
             <Input
               required
               type="email"
+              aria-label="Email address"
               placeholder="Enter your email"
               className="h-12 rounded-2xl bg-surface-2 px-5"
             />
             <Textarea
               required
               rows={4}
+              aria-label="Your message"
               placeholder="Write a message here..."
               className="rounded-2xl bg-surface-2 px-5 py-4"
             />
+
             <Button type="submit" variant="neon" size="lg" className="w-full">
               Send message
             </Button>
