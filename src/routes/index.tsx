@@ -26,6 +26,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 import heroPortrait from "@/assets/hero-portrait.jpg";
+import { AnimatedBackground } from "@/components/AnimatedBackground";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -223,6 +224,7 @@ function Portfolio() {
 
   return (
     <div className="relative min-h-screen overflow-x-clip bg-background">
+      <AnimatedBackground />
       <Toaster />
 
       {/* Nav */}
@@ -275,25 +277,40 @@ function Portfolio() {
             I build designs that solve problems, inspire action, and drive success.
           </p>
 
-          <div className="relative mx-auto mt-14 w-full max-w-md">
-            <div className="relative rounded-[2rem] border border-border/80 p-2 shadow-[var(--shadow-glow)]">
+          <div className="relative mx-auto mt-16 w-full max-w-sm">
+            {/* rotating conic ring */}
+            <div
+              aria-hidden
+              className="absolute -inset-6 rounded-full ring-conic animate-spin-slow opacity-70 blur-2xl"
+            />
+            {/* arched portrait frame */}
+            <div className="relative overflow-hidden rounded-t-full rounded-b-[2.5rem] border border-neon/30 bg-surface p-1.5 shadow-[var(--shadow-glow)]">
               <img
                 src={heroPortrait}
                 width={912}
                 height={1104}
                 alt="Rory Ulloa lit by a red neon halo"
-                className="w-full rounded-[1.6rem] object-cover"
+                className="w-full rounded-t-full rounded-b-[2rem] object-cover"
               />
-              <span className="absolute -left-4 bottom-24 grid size-10 place-items-center rounded-full [background:var(--gradient-neon)] shadow-[var(--shadow-glow)] animate-float">
-                <Asterisk className="size-5 text-primary-foreground" />
-              </span>
-              <span className="absolute -right-3 bottom-10 -rotate-6 rounded-full bg-signal/20 px-3 py-1 text-xs font-medium text-signal ring-1 ring-signal/40 backdrop-blur">
-                • Available as freelancer
-              </span>
+              {/* sheen sweep */}
+              <span
+                aria-hidden
+                className="pointer-events-none absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-transparent via-foreground/10 to-transparent animate-sheen"
+              />
+              {/* bottom fade + caption */}
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 rounded-b-[2rem] bg-gradient-to-t from-background via-background/70 to-transparent" />
+              <p className="script absolute inset-x-0 bottom-4 text-center text-3xl text-foreground/90">
+                Rory Ulloa&nbsp; &nbsp;-- theroyeffect
+              </p>
             </div>
-            <p className="script mt-4 text-right text-4xl text-foreground/90">
-              Rory Ulloa&nbsp; &nbsp;-- theroyeffect
-            </p>
+
+            {/* orbiting accents */}
+            <span className="absolute -left-5 top-1/3 grid size-11 place-items-center rounded-2xl [background:var(--gradient-neon)] shadow-[var(--shadow-glow)] animate-float">
+              <Asterisk className="size-5 text-primary-foreground" />
+            </span>
+            <span className="absolute -right-4 bottom-28 -rotate-6 rounded-full bg-signal/15 px-3 py-1 text-xs font-medium text-signal ring-1 ring-signal/40 backdrop-blur animate-float [animation-delay:-3s]">
+              • Available as freelancer
+            </span>
           </div>
         </div>
       </section>

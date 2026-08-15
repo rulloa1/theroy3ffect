@@ -161,3 +161,62 @@
 @utility animate-halo {
   animation: pulse-glow 6s ease-in-out infinite;
 }
+
+/* ---------- Animated background ---------- */
+@keyframes drift-a {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  33% { transform: translate3d(6vw, -4vh, 0) scale(1.15); }
+  66% { transform: translate3d(-5vw, 5vh, 0) scale(0.92); }
+}
+@keyframes drift-b {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1.05); }
+  50% { transform: translate3d(-8vw, -6vh, 0) scale(0.9); }
+}
+@keyframes grid-pan {
+  0% { background-position: 0 0; }
+  100% { background-position: 0 -60px; }
+}
+@keyframes spin-slow {
+  to { transform: rotate(360deg); }
+}
+@keyframes sheen {
+  0% { transform: translateX(-120%) skewX(-12deg); }
+  100% { transform: translateX(220%) skewX(-12deg); }
+}
+
+@utility animate-drift-a { animation: drift-a 26s ease-in-out infinite; }
+@utility animate-drift-b { animation: drift-b 34s ease-in-out infinite; }
+@utility animate-grid { animation: grid-pan 14s linear infinite; }
+@utility animate-spin-slow { animation: spin-slow 18s linear infinite; }
+@utility animate-sheen { animation: sheen 5.5s ease-in-out infinite; }
+
+@utility bg-grid {
+  background-image:
+    linear-gradient(to right, oklch(0.62 0.26 22 / 0.07) 1px, transparent 1px),
+    linear-gradient(to bottom, oklch(0.62 0.26 22 / 0.07) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+@utility ring-conic {
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    oklch(0.62 0.26 22 / 0.9) 60deg,
+    oklch(0.55 0.26 350 / 0.7) 140deg,
+    transparent 220deg,
+    oklch(0.62 0.26 22 / 0.6) 320deg,
+    transparent 360deg
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-drift-a,
+  .animate-drift-b,
+  .animate-grid,
+  .animate-spin-slow,
+  .animate-sheen,
+  .animate-float,
+  .animate-halo {
+    animation: none !important;
+  }
+}
