@@ -74,6 +74,57 @@ export type Database = {
         }
         Relationships: []
       }
+      project_briefs: {
+        Row: {
+          audience: string | null
+          budget: string | null
+          company: string | null
+          created_at: string
+          deliverables: string | null
+          email: string
+          extra: string | null
+          goals: string
+          id: string
+          name: string
+          project_type: string
+          references_links: string | null
+          stripe_session_id: string | null
+          timeline: string | null
+        }
+        Insert: {
+          audience?: string | null
+          budget?: string | null
+          company?: string | null
+          created_at?: string
+          deliverables?: string | null
+          email: string
+          extra?: string | null
+          goals: string
+          id?: string
+          name: string
+          project_type: string
+          references_links?: string | null
+          stripe_session_id?: string | null
+          timeline?: string | null
+        }
+        Update: {
+          audience?: string | null
+          budget?: string | null
+          company?: string | null
+          created_at?: string
+          deliverables?: string | null
+          email?: string
+          extra?: string | null
+          goals?: string
+          id?: string
+          name?: string
+          project_type?: string
+          references_links?: string | null
+          stripe_session_id?: string | null
+          timeline?: string | null
+        }
+        Relationships: []
+      }
       retainer_subscriptions: {
         Row: {
           cancel_at_period_end: boolean
