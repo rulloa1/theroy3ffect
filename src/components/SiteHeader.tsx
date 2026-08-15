@@ -9,7 +9,7 @@ export function SiteHeader({ onNavigate }: { onNavigate: (target: NavTarget) => 
     <header className="relative z-30 flex items-center justify-between px-5 py-5 md:px-10">
       <Link to="/" className="group flex items-center gap-3" aria-label="theroyeffect home">
         <span className="font-display text-xl uppercase tracking-widest md:text-2xl">ROY</span>
-        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#CCFF00] text-black transition-transform duration-500 group-hover:rotate-180">
+        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#FF3333] text-black transition-transform duration-500 group-hover:rotate-180">
           ✦
         </span>
       </Link>
@@ -20,7 +20,7 @@ export function SiteHeader({ onNavigate }: { onNavigate: (target: NavTarget) => 
             key={l}
             type="button"
             onClick={() => onNavigate(l)}
-            className="font-mono text-xs tracking-widest text-white/50 transition-colors hover:text-[#CCFF00]"
+            className="font-mono text-xs tracking-widest text-white/50 transition-colors hover:text-[#FF3333]"
           >
             {l}
           </button>
@@ -31,7 +31,7 @@ export function SiteHeader({ onNavigate }: { onNavigate: (target: NavTarget) => 
         type="button"
         aria-label="Open menu"
         onClick={() => onNavigate("MENU")}
-        className="rounded-full border border-white/20 px-4 py-2 font-mono text-xs tracking-widest text-white transition-colors hover:border-[#CCFF00] md:hidden"
+        className="rounded-full border border-white/20 px-4 py-2 font-mono text-xs tracking-widest text-white transition-colors hover:border-[#FF3333] md:hidden"
       >
         MENU
       </button>
@@ -39,7 +39,7 @@ export function SiteHeader({ onNavigate }: { onNavigate: (target: NavTarget) => 
       <button
         type="button"
         onClick={() => onNavigate("LET'S WORK")}
-        className="rounded-full border border-white/20 px-5 py-2 font-mono text-xs tracking-widest text-white transition-colors hover:border-[#CCFF00] hover:bg-[#CCFF00] hover:text-black"
+        className="rounded-full border border-white/20 px-5 py-2 font-mono text-xs tracking-widest text-white transition-colors hover:border-[#FF3333] hover:bg-[#FF3333] hover:text-black"
       >
         COMMISSION
       </button>
