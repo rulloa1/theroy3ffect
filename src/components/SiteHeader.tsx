@@ -29,6 +29,15 @@ export function SiteHeader({ onNavigate }: { onNavigate: (target: NavTarget) => 
 
       <button
         type="button"
+        aria-label="Open menu"
+        onClick={() => onNavigate("MENU")}
+        className="rounded-full border border-white/20 px-4 py-2 font-mono text-xs tracking-widest text-white transition-colors hover:border-[#CCFF00] md:hidden"
+      >
+        MENU
+      </button>
+
+      <button
+        type="button"
         onClick={() => onNavigate("LET'S WORK")}
         className="rounded-full border border-white/20 px-5 py-2 font-mono text-xs tracking-widest text-white transition-colors hover:border-[#CCFF00] hover:bg-[#CCFF00] hover:text-black"
       >
