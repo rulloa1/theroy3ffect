@@ -84,8 +84,9 @@ export const Route = createFileRoute("/")({
         }),
       },
     ],
-
+  }),
   component: Portfolio,
+
 });
 
 const NAV = [
