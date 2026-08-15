@@ -266,7 +266,7 @@ function Portfolio() {
         <Halo className="-left-40 top-10 size-[30rem] opacity-40" />
         <div className="relative mx-auto grid max-w-5xl gap-12 md:grid-cols-2 md:items-center">
           <div>
-            <SectionLabel>I&apos;m Darrell Steward</SectionLabel>
+            <SectionLabel>I&apos;m Rory Ulloa</SectionLabel>
             <h2 className="mt-6 text-4xl font-semibold leading-tight sm:text-5xl">
               Hey, <Sparkles className="inline size-7 text-neon-soft" /> I&apos;m a
               <br />
