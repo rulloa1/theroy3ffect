@@ -78,24 +78,26 @@ export function InfoDrawer({ open, onClose }: { open: boolean; onClose: () => vo
               )}
 
               {active === "LET'S WORK" && (
-                <form
-                  className="space-y-6"
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    toast.success("Brief received — I'll be in touch shortly.");
-                    close();
-                  }}
-                >
+                <form className="space-y-6" onSubmit={handleSubmit}>
                   <h2 className="font-display text-4xl uppercase text-[#CCFF00]">Let&apos;s work</h2>
-                  <input aria-label="Your name" className={fieldClass} placeholder="Name" required />
+                  <input
+                    aria-label="Your name"
+                    name="name"
+                    className={fieldClass}
+                    placeholder="Name"
+                    maxLength={100}
+                    required
+                  />
                   <input
                     aria-label="Your email"
+                    name="email"
                     type="email"
                     className={fieldClass}
                     placeholder="Email"
+                    maxLength={255}
                     required
                   />
-                  <select aria-label="Project type" className={fieldClass} defaultValue="">
+                  <select aria-label="Project type" name="projectType" className={fieldClass} defaultValue="">
                     <option value="" disabled className="bg-[#333333]">
                       Project type
                     </option>
@@ -106,15 +108,20 @@ export function InfoDrawer({ open, onClose }: { open: boolean; onClose: () => vo
                   </select>
                   <textarea
                     aria-label="Project details"
+                    name="message"
                     rows={4}
                     className={fieldClass}
                     placeholder="Tell me about the project"
+                    minLength={10}
+                    maxLength={2000}
+                    required
                   />
                   <button
                     type="submit"
-                    className="w-full bg-[#CCFF00] px-6 py-4 font-mono text-xs tracking-widest text-black transition-opacity hover:opacity-90"
+                    disabled={sending}
+                    className="w-full bg-[#CCFF00] px-6 py-4 font-mono text-xs tracking-widest text-black transition-opacity hover:opacity-90 disabled:opacity-50"
                   >
-                    SEND BRIEF
+                    {sending ? "SENDING..." : "SEND BRIEF"}
                   </button>
                 </form>
               )}
