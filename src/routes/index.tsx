@@ -541,16 +541,16 @@ function Portfolio() {
           <div>
             <p className="text-muted-foreground">Say hello!</p>
             <a
-              href="tel:+15108797930"
+              href="tel:+12813230450"
               className="mt-3 flex items-center gap-2 transition-colors hover:text-neon"
             >
-              <Phone className="size-4 text-neon" /> (510) 879-7930
+              <Phone className="size-4 text-neon" /> (281) 323-0450
             </a>
             <a
-              href="mailto:hello@darrellsteward.studio"
+              href="mailto:rory@theroyeffect.com"
               className="mt-2 flex items-center gap-2 transition-colors hover:text-neon"
             >
-              <Mail className="size-4 text-neon" /> hello@darrellsteward.studio
+              <Mail className="size-4 text-neon" /> rory@theroyeffect.com
             </a>
           </div>
           <div className="text-muted-foreground">
