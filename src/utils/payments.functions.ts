@@ -11,7 +11,7 @@ export const createDepositCheckoutSession = createServerFn({ method: "POST" })
   .inputValidator(
     (data: {
       priceId: string;
-      customerEmail?: string;
+      customerEmail?: string | undefined;
       returnUrl: string;
       environment: StripeEnv;
     }) => {
