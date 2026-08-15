@@ -30,7 +30,7 @@ import heroPortrait from "@/assets/hero-portrait.jpg";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Darrell Steward — Creative Designer & No-Code Developer" },
+      { title: "Rory Ulloa — Creative Designer & No-Code Developer" },
       {
         name: "description",
         content:
@@ -38,7 +38,7 @@ export const Route = createFileRoute("/")({
       },
       {
         property: "og:title",
-        content: "Darrell Steward — Creative Designer & No-Code Developer",
+        content: "Rory Ulloa — Creative Designer & No-Code Developer",
       },
       {
         property: "og:description",
