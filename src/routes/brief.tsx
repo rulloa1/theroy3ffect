@@ -27,7 +27,7 @@ export const Route = createFileRoute("/brief")({
       { name: "robots", content: "noindex" },
     ],
   }),
-  component: BriefPage;
+  component: BriefPage,
 });
 
 const PROJECT_TYPES = [
