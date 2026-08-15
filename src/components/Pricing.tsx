@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, Check, Sparkles } from "lucide-react";
+import { ArrowRight, Check, Sparkles, Lock } from "lucide-react";
+import { DepositCheckoutModal } from "@/components/DepositCheckoutModal";
 
 export const PRICING_TIERS = [
   {
@@ -15,6 +17,8 @@ export const PRICING_TIERS = [
       "2 revision rounds",
     ],
     cta: "START A BRAND SPRINT",
+    depositPriceId: "deposit_brand_sprint_onetime",
+    depositLabel: "$1,250 deposit (50%)",
   },
   {
     name: "WEBSITE / UI-UX",
@@ -29,6 +33,8 @@ export const PRICING_TIERS = [
       "3 revision rounds",
     ],
     cta: "DESIGN MY PRODUCT",
+    depositPriceId: "deposit_website_uiux_onetime",
+    depositLabel: "$2,500 deposit (50%)",
     featured: true,
   },
   {
@@ -44,6 +50,8 @@ export const PRICING_TIERS = [
       "Post-launch support (14 days)",
     ],
     cta: "BUILD THE FULL THING",
+    depositPriceId: "deposit_design_build_onetime",
+    depositLabel: "$4,000 deposit (50%)",
   },
   {
     name: "RETAINER",
@@ -58,10 +66,18 @@ export const PRICING_TIERS = [
       "Pause or cancel anytime",
     ],
     cta: "SET UP A RETAINER",
+    depositPriceId: "deposit_retainer_onetime",
+    depositLabel: "$3,000 first month",
   },
 ];
 
 export function Pricing({ onCommission }: { onCommission?: () => void }) {
+  const [activeTier, setActiveTier] = useState<{
+    name: string;
+    priceId: string;
+    depositLabel: string;
+  } | null>(null);
+
   return (
     <section id="pricing" className="relative z-20 w-full bg-[#030014] px-5 py-20 md:px-10 md:py-32">
       <div className="mx-auto max-w-7xl">
@@ -122,27 +138,53 @@ export function Pricing({ onCommission }: { onCommission?: () => void }) {
                 </ul>
               </div>
 
-              <button
-                type="button"
-                onClick={onCommission}
-                className={`mt-8 flex w-full items-center justify-center gap-2 px-4 py-3 font-mono text-xs tracking-widest transition-all ${
-                  tier.featured
-                    ? "bg-[#FF3333] text-black hover:bg-[#FF3333]/90"
-                    : "border border-white/20 text-white hover:border-[#FF3333] hover:bg-[#FF3333] hover:text-black"
-                }`}
-              >
-                {tier.cta}
-                <ArrowRight className="size-3" />
-              </button>
+              <div className="mt-8 flex flex-col gap-2">
+                <button
+                  type="button"
+                  onClick={() =>
+                    setActiveTier({
+                      name: tier.name,
+                      priceId: tier.depositPriceId,
+                      depositLabel: tier.depositLabel,
+                    })
+                  }
+                  className={`flex w-full items-center justify-center gap-2 px-4 py-3 font-mono text-xs tracking-widest transition-all ${
+                    tier.featured
+                      ? "bg-[#FF3333] text-black hover:bg-[#FF3333]/90"
+                      : "border border-white/20 text-white hover:border-[#FF3333] hover:bg-[#FF3333] hover:text-black"
+                  }`}
+                >
+                  <Lock className="size-3" />
+                  PAY {tier.depositLabel.split(" ")[0]} DEPOSIT
+                </button>
+                <button
+                  type="button"
+                  onClick={onCommission}
+                  className="flex w-full items-center justify-center gap-2 px-4 py-2 font-mono text-[11px] tracking-widest text-white/50 transition-colors hover:text-[#FF3333]"
+                >
+                  {tier.cta}
+                  <ArrowRight className="size-3" />
+                </button>
+              </div>
             </motion.div>
           ))}
         </div>
 
         <p className="mt-10 max-w-2xl font-mono text-[11px] leading-relaxed text-white/40">
           All projects begin with a free 15-minute discovery call. Not sure which tier fits? Pick a
-          starting point and I’ll tailor the scope to your budget and timeline.
+          starting point and I’ll tailor the scope to your budget and timeline. Deposits are 50% of
+          the tier’s starting price (retainers bill the first month), credited against your final
+          invoice and fully refundable before kickoff.
         </p>
       </div>
+
+      <DepositCheckoutModal
+        open={activeTier !== null}
+        onClose={() => setActiveTier(null)}
+        tierName={activeTier?.name ?? ""}
+        depositLabel={activeTier?.depositLabel ?? ""}
+        priceId={activeTier?.priceId ?? ""}
+      />
     </section>
   );
 }
