@@ -46,9 +46,45 @@ export const Route = createFileRoute("/")({
           "Portfolio of a Tokyo-based product designer building thoughtful digital products, brand identities and no-code websites.",
       },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://pixel-perfect-capture-758.lovable.app/" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
-  }),
+    links: [{ rel: "canonical", href: "https://pixel-perfect-capture-758.lovable.app/" }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "Person",
+              name: "Rory Ulloa",
+              jobTitle: "Product Designer & No-Code Developer",
+              url: "https://pixel-perfect-capture-758.lovable.app/",
+              email: "mailto:rory@theroyeffect.com",
+              telephone: "+1-281-323-0450",
+              address: { "@type": "PostalAddress", addressLocality: "Tokyo", addressCountry: "JP" },
+              knowsAbout: [
+                "UI/UX Design",
+                "Brand Identity",
+                "No-Code Development",
+                "Design Systems",
+              ],
+            },
+            {
+              "@type": "LocalBusiness",
+              name: "The Roy Effect — Rory Ulloa",
+              url: "https://pixel-perfect-capture-758.lovable.app/",
+              telephone: "+1-281-323-0450",
+              email: "mailto:rory@theroyeffect.com",
+              address: { "@type": "PostalAddress", addressLocality: "Tokyo", addressCountry: "JP" },
+              priceRange: "$$",
+            },
+          ],
+        }),
+      },
+    ],
+
   component: Portfolio,
 });
 
