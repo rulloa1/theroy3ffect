@@ -197,14 +197,30 @@
   background-size: 60px 60px;
 }
 
-@utility ring-conic {
+@utility ring-tech {
   background: conic-gradient(
     from 0deg,
     transparent 0deg,
-    oklch(0.62 0.26 22 / 0.9) 60deg,
-    oklch(0.55 0.26 350 / 0.7) 140deg,
-    transparent 220deg,
-    oklch(0.62 0.26 22 / 0.6) 320deg,
+    oklch(0.62 0.26 22 / 0.85) 12deg,
+    transparent 24deg,
+    transparent 54deg,
+    oklch(0.55 0.26 350 / 0.6) 66deg,
+    transparent 78deg,
+    transparent 108deg,
+    oklch(0.62 0.26 22 / 0.55) 120deg,
+    transparent 132deg,
+    transparent 162deg,
+    oklch(0.55 0.26 350 / 0.45) 174deg,
+    transparent 186deg,
+    transparent 216deg,
+    oklch(0.62 0.26 22 / 0.65) 228deg,
+    transparent 240deg,
+    transparent 270deg,
+    oklch(0.55 0.26 350 / 0.55) 282deg,
+    transparent 294deg,
+    transparent 324deg,
+    oklch(0.62 0.26 22 / 0.7) 336deg,
+    transparent 348deg,
     transparent 360deg
   );
 }

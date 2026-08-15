@@ -278,10 +278,10 @@ function Portfolio() {
           </p>
 
           <div className="relative mx-auto mt-16 w-full max-w-sm">
-            {/* rotating conic ring */}
+            {/* tech HUD ring */}
             <div
               aria-hidden
-              className="absolute -inset-6 rounded-full ring-conic animate-spin-slow opacity-70 blur-2xl"
+              className="absolute -inset-6 rounded-full ring-tech animate-spin-slow opacity-70 blur-2xl"
             />
             {/* arched portrait frame */}
             <div className="relative overflow-hidden rounded-t-full rounded-b-[2.5rem] border border-neon/30 bg-surface p-1.5 shadow-[var(--shadow-glow)]">
@@ -289,7 +289,7 @@ function Portfolio() {
                 src={heroPortrait}
                 width={1024}
                 height={1280}
-                alt="Rory Ulloa lit by a red neon halo"
+                alt="Rory Ulloa with a red digital tech glow"
                 className="w-full rounded-t-full rounded-b-[2rem] object-cover"
               />
               {/* sheen sweep */}
