@@ -555,7 +555,7 @@ function Portfolio() {
           </div>
           <div className="text-muted-foreground">
             <p>Designed &amp; built in Tokyo</p>
-            <p className="mt-2">© {new Date().getFullYear()} Darrell Steward.</p>
+            <p className="mt-2">© {new Date().getFullYear()} Rory Ulloa.</p>
           </div>
         </div>
       </footer>
