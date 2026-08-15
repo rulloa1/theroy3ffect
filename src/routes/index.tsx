@@ -95,7 +95,7 @@ const WORK = [
 const TESTIMONIALS = [
   {
     quote:
-      "Darrell rebuilt our onboarding in three weeks. Activation went up 38% and the team finally has a design system it trusts.",
+      "Rory rebuilt our onboarding in three weeks. Activation went up 38% and the team finally has a design system it trusts.",
     name: "Amara Okafor",
     role: "Head of Product, Lumen",
   },
