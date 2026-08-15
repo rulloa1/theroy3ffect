@@ -244,7 +244,7 @@ function Portfolio() {
                 src={heroPortrait}
                 width={912}
                 height={1104}
-                alt="Darrell Steward lit by a red neon halo"
+                alt="Rory Ulloa lit by a red neon halo"
                 className="w-full rounded-[1.6rem] object-cover"
               />
               <span className="absolute -left-4 bottom-24 grid size-10 place-items-center rounded-full [background:var(--gradient-neon)] shadow-[var(--shadow-glow)] animate-float">
