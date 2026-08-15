@@ -1,22 +1,28 @@
 import { EmbeddedCheckoutProvider, EmbeddedCheckout } from "@stripe/react-stripe-js";
 import { getStripe, getStripeEnvironment } from "@/lib/stripe";
-import { createDepositCheckoutSession } from "@/utils/payments.functions";
+import { createCommissionCheckoutSession } from "@/utils/payments.functions";
 
 interface StripeEmbeddedCheckoutProps {
   priceId: string;
+  quantity?: number;
+  tierLabel?: string;
   customerEmail?: string;
   returnUrl?: string;
 }
 
 export function StripeEmbeddedCheckout({
   priceId,
+  quantity,
+  tierLabel,
   customerEmail,
   returnUrl,
 }: StripeEmbeddedCheckoutProps) {
   const fetchClientSecret = async (): Promise<string> => {
-    const result = await createDepositCheckoutSession({
+    const result = await createCommissionCheckoutSession({
       data: {
         priceId,
+        quantity,
+        tierLabel,
         customerEmail,
         returnUrl:
           returnUrl ||

@@ -14,7 +14,111 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      orders: {
+        Row: {
+          amount_total: number
+          created_at: string
+          currency: string
+          customer_email: string | null
+          customer_name: string | null
+          emails_sent: boolean
+          environment: string
+          id: string
+          payment_status: string
+          price_id: string | null
+          product_name: string | null
+          purchase_kind: string
+          stripe_customer_id: string | null
+          stripe_payment_intent_id: string | null
+          stripe_session_id: string
+          tier_label: string | null
+          updated_at: string
+        }
+        Insert: {
+          amount_total?: number
+          created_at?: string
+          currency?: string
+          customer_email?: string | null
+          customer_name?: string | null
+          emails_sent?: boolean
+          environment?: string
+          id?: string
+          payment_status?: string
+          price_id?: string | null
+          product_name?: string | null
+          purchase_kind?: string
+          stripe_customer_id?: string | null
+          stripe_payment_intent_id?: string | null
+          stripe_session_id: string
+          tier_label?: string | null
+          updated_at?: string
+        }
+        Update: {
+          amount_total?: number
+          created_at?: string
+          currency?: string
+          customer_email?: string | null
+          customer_name?: string | null
+          emails_sent?: boolean
+          environment?: string
+          id?: string
+          payment_status?: string
+          price_id?: string | null
+          product_name?: string | null
+          purchase_kind?: string
+          stripe_customer_id?: string | null
+          stripe_payment_intent_id?: string | null
+          stripe_session_id?: string
+          tier_label?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      retainer_subscriptions: {
+        Row: {
+          cancel_at_period_end: boolean
+          created_at: string
+          current_period_end: string | null
+          customer_email: string | null
+          environment: string
+          id: string
+          price_id: string | null
+          product_name: string | null
+          status: string
+          stripe_customer_id: string | null
+          stripe_subscription_id: string
+          updated_at: string
+        }
+        Insert: {
+          cancel_at_period_end?: boolean
+          created_at?: string
+          current_period_end?: string | null
+          customer_email?: string | null
+          environment?: string
+          id?: string
+          price_id?: string | null
+          product_name?: string | null
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id: string
+          updated_at?: string
+        }
+        Update: {
+          cancel_at_period_end?: boolean
+          created_at?: string
+          current_period_end?: string | null
+          customer_email?: string | null
+          environment?: string
+          id?: string
+          price_id?: string | null
+          product_name?: string | null
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

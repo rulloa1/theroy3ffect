@@ -9,6 +9,7 @@ interface DepositCheckoutModalProps {
   tierName: string;
   depositLabel: string;
   priceId: string;
+  kicker?: string;
 }
 
 export function DepositCheckoutModal({
@@ -17,6 +18,7 @@ export function DepositCheckoutModal({
   tierName,
   depositLabel,
   priceId,
+  kicker = "SECURE CHECKOUT",
 }: DepositCheckoutModalProps) {
   useEffect(() => {
     if (!open) return;
@@ -40,7 +42,7 @@ export function DepositCheckoutModal({
         <div className="flex items-start justify-between gap-4 border-b border-white/10 p-5">
           <div>
             <span className="font-mono text-[10px] tracking-widest text-[#FF3333]">
-              SECURE DEPOSIT
+              {kicker}
             </span>
             <h2 className="mt-2 font-display text-2xl uppercase text-white">{tierName}</h2>
             <p className="mt-1 font-mono text-xs text-white/50">{depositLabel}</p>
@@ -55,7 +57,7 @@ export function DepositCheckoutModal({
           </button>
         </div>
         <div className="p-4">
-          <StripeEmbeddedCheckout priceId={priceId} />
+          <StripeEmbeddedCheckout priceId={priceId} tierLabel={tierName} />
         </div>
       </div>
     </div>
