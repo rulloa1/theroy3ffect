@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowLeft, Menu, X } from "lucide-react";
+import { ArrowLeft, Check, Menu, Sparkles, X } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
+import { PRICING_TIERS } from "./Pricing";
 
-const MENU = ["PROJECTS", "BLOG", "ABOUT", "RESUME", "LET'S WORK"] as const;
+const MENU = ["PROJECTS", "BLOG", "ABOUT", "RESUME", "PRICING", "LET'S WORK"] as const;
 type MenuItem = (typeof MENU)[number];
 
 const fieldClass =
@@ -140,6 +141,56 @@ export function InfoDrawer({
                 </ul>
               )}
 
+              {active === "PRICING" && (
+                <div className="space-y-6">
+                  <div>
+                    <span className="font-mono text-xs tracking-widest text-[#FF3333]">PRICING</span>
+                    <h2 className="mt-2 font-display text-4xl uppercase text-white">Investment</h2>
+                  </div>
+                  <div className="space-y-4">
+                    {PRICING_TIERS.map((tier) => (
+                      <div
+                        key={tier.name}
+                        className={`border p-4 transition-colors hover:border-[#FF3333]/50 ${
+                          tier.featured ? "border-[#FF3333] bg-[#FF3333]/5" : "border-white/10 bg-white/[0.02]"
+                        }`}
+                      >
+                        <div className="flex items-start justify-between gap-4">
+                          <div>
+                            <h3 className="font-display text-lg uppercase tracking-wide text-white">
+                              {tier.name}
+                            </h3>
+                            <p className="mt-1 max-w-sm font-mono text-xs leading-relaxed text-white/50">
+                              {tier.description}
+                            </p>
+                          </div>
+                          <div className="text-right">
+                            {tier.featured && (
+                              <span className="mb-1 flex items-center justify-end gap-1 font-mono text-[10px] text-[#FF3333]">
+                                <Sparkles className="size-3" /> POPULAR
+                              </span>
+                            )}
+                            <span className="font-mono text-xs text-white/40">{tier.note}</span>
+                            <span className="block font-display text-3xl text-[#FF3333]">{tier.price}</span>
+                          </div>
+                        </div>
+                        <ul className="mt-4 grid gap-2 sm:grid-cols-2">
+                          {tier.features.map((feature) => (
+                            <li key={feature} className="flex items-start gap-2 font-mono text-xs text-white/70">
+                              <Check className="mt-0.5 size-3 shrink-0 text-[#FF3333]" />
+                              {feature}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="font-mono text-[11px] leading-relaxed text-white/40">
+                    All projects start with a free 15-minute discovery call. Scope and final quotes are always tailored to your specific needs.
+                  </p>
+                </div>
+              )}
+
               {active === "LET'S WORK" && (
                 <form className="space-y-6" onSubmit={handleSubmit}>
                   <h2 className="font-display text-4xl uppercase text-[#FF3333]">Let&apos;s work</h2>
@@ -189,7 +240,7 @@ export function InfoDrawer({
                 </form>
               )}
 
-              {active && active !== "LET'S WORK" && (
+              {active && active !== "LET'S WORK" && active !== "PRICING" && (
                 <div className="space-y-4">
                   <h2 className="font-display text-4xl uppercase text-[#FF3333]">{active}</h2>
                   <p className="max-w-md font-mono text-xs leading-relaxed text-white/50">
@@ -198,6 +249,7 @@ export function InfoDrawer({
                   </p>
                 </div>
               )}
+
             </div>
           </motion.aside>
         </>
