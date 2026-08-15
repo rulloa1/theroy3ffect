@@ -44,10 +44,40 @@ export const Route = createFileRoute('/api/public/brief-intake')({
         const d = parsed.data
         const briefId = crypto.randomUUID()
 
+        // Build the PDF summary and store it privately.
+        let pdfUrl = ''
+        let pdfPath: string | null = null
+        try {
+          const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+          const { buildBriefPdf } = await import('@/lib/brief-pdf.server')
+          const pdfBytes = await buildBriefPdf({
+            ...d,
+            submittedAt: new Date().toISOString().slice(0, 10),
+          })
+          const safeName = d.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 40) || 'client'
+          pdfPath = `${new Date().getUTCFullYear()}/${briefId}-${safeName}.pdf`
+          const { error: uploadError } = await supabaseAdmin.storage
+            .from('brief-pdfs')
+            .upload(pdfPath, pdfBytes, { contentType: 'application/pdf', upsert: true })
+          if (uploadError) {
+            console.error('Brief PDF upload failed:', uploadError.message)
+            pdfPath = null
+          } else {
+            const { data: signed, error: signError } = await supabaseAdmin.storage
+              .from('brief-pdfs')
+              .createSignedUrl(pdfPath, 60 * 60 * 24 * 365)
+            if (signError) console.error('Brief PDF sign failed:', signError.message)
+            pdfUrl = signed?.signedUrl ?? ''
+          }
+        } catch (pdfError) {
+          console.error('Brief PDF generation failed:', pdfError)
+        }
+
         try {
           const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
           const { error } = await supabaseAdmin.from('project_briefs').insert({
             id: briefId,
+            pdf_path: pdfPath,
             stripe_session_id: d.sessionId || null,
             name: d.name,
             email: d.email,
@@ -68,7 +98,7 @@ export const Route = createFileRoute('/api/public/brief-intake')({
 
         try {
           await sendTemplateEmail('project-brief-notification', OWNER_EMAIL, {
-            templateData: { ...d, sessionId: d.sessionId },
+            templateData: { ...d, sessionId: d.sessionId, pdfUrl },
             idempotencyKey: `project-brief-notification-${briefId}`,
             replyTo: d.email,
           })
@@ -78,6 +108,7 @@ export const Route = createFileRoute('/api/public/brief-intake')({
               name: d.name,
               projectType: d.projectType,
               message: d.goals,
+              pdfUrl,
             },
             idempotencyKey: `project-brief-confirmation-${briefId}`,
             replyTo: OWNER_EMAIL,

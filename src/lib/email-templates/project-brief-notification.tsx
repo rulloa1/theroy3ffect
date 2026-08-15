@@ -6,6 +6,7 @@ import {
   Heading,
   Hr,
   Html,
+  Link,
   Preview,
   Text,
 } from '@react-email/components'
@@ -24,6 +25,7 @@ interface Props {
   timeline?: string
   extra?: string
   sessionId?: string
+  pdfUrl?: string
 }
 
 const Row = ({ label, value }: { label: string; value?: string | undefined }) => (
@@ -54,6 +56,17 @@ const Email = (props: Props) => (
         <Row label="Timeline" value={props.timeline} />
         <Row label="Anything else" value={props.extra} />
         <Row label="Checkout reference" value={props.sessionId} />
+        {props.pdfUrl ? (
+          <>
+            <Hr style={hr} />
+            <Text style={row}>
+              <Link href={props.pdfUrl} style={link}>
+                Download the PDF summary
+              </Link>{' '}
+              (link valid for 12 months)
+            </Text>
+          </>
+        ) : null}
       </Container>
     </Body>
   </Html>
@@ -77,6 +90,7 @@ export const template = {
     timeline: '4–6 weeks',
     extra: 'Copy is mostly written.',
     sessionId: 'cs_test_123',
+    pdfUrl: 'https://example.com/brief.pdf',
   },
 } satisfies TemplateEntry
 
@@ -85,4 +99,5 @@ const container = { padding: '32px 28px', maxWidth: '600px' }
 const kicker = { fontSize: '11px', letterSpacing: '2px', color: '#FF3333', margin: '0 0 8px' }
 const heading = { fontSize: '24px', margin: '0 0 16px', color: '#111111' }
 const row = { fontSize: '14px', lineHeight: '22px', color: '#333333', margin: '0 0 6px' }
+const link = { color: '#FF3333', textDecoration: 'underline' }
 const hr = { borderColor: '#e5e7eb', margin: '18px 0' }
