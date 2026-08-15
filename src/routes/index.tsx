@@ -287,8 +287,8 @@ function Portfolio() {
             <div className="relative overflow-hidden rounded-t-full rounded-b-[2.5rem] border border-neon/30 bg-surface p-1.5 shadow-[var(--shadow-glow)]">
               <img
                 src={heroPortrait}
-                width={912}
-                height={1104}
+                width={1024}
+                height={1280}
                 alt="Rory Ulloa lit by a red neon halo"
                 className="w-full rounded-t-full rounded-b-[2rem] object-cover"
               />
@@ -347,8 +347,8 @@ function Portfolio() {
           <div className="relative mx-auto w-full max-w-xs rounded-[2rem] border border-border p-2 panel">
             <img
               src={heroPortrait}
-              width={912}
-              height={1104}
+              width={1024}
+              height={1280}
               loading="lazy"
               alt="Portrait of Rory Ulloa"
               className="w-full rounded-[1.6rem] object-cover"
