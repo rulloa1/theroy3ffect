@@ -223,6 +223,7 @@ function Portfolio() {
 
   return (
     <div className="relative min-h-screen overflow-x-clip bg-background">
+      <AnimatedBackground />
       <Toaster />
 
       {/* Nav */}
