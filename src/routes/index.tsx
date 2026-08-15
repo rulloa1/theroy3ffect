@@ -220,7 +220,7 @@ function Portfolio() {
         <Halo className="left-1/2 top-24 size-[46rem] -translate-x-1/2 opacity-60" />
         <div className="relative mx-auto max-w-4xl">
           <p className="flex flex-wrap items-center justify-center gap-3 text-sm text-muted-foreground">
-            <span>Hey! I&apos;m Darrell Steward</span>
+            <span>Hey! I&apos;m Rory Ulloa</span>
             <span className="text-border">|</span>
             <span className="flex items-center gap-2">
               Based on
