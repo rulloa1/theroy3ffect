@@ -26,7 +26,7 @@ interface Props {
   sessionId?: string
 }
 
-const Row = ({ label, value }: { label: string; value?: string }) => (
+const Row = ({ label, value }: { label: string; value?: string | undefined }) => (
   <Text style={row}>
     <strong>{label}:</strong> {value && value.trim() ? value : '—'}
   </Text>
