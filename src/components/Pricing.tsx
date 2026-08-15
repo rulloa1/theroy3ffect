@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, Check, Sparkles } from "lucide-react";
+import { ArrowRight, Check, Sparkles, Lock } from "lucide-react";
+import { DepositCheckoutModal } from "@/components/DepositCheckoutModal";
 
 export const PRICING_TIERS = [
   {
@@ -15,6 +17,8 @@ export const PRICING_TIERS = [
       "2 revision rounds",
     ],
     cta: "START A BRAND SPRINT",
+    depositPriceId: "deposit_brand_sprint_onetime",
+    depositLabel: "$1,250 deposit (50%)",
   },
   {
     name: "WEBSITE / UI-UX",
@@ -29,6 +33,8 @@ export const PRICING_TIERS = [
       "3 revision rounds",
     ],
     cta: "DESIGN MY PRODUCT",
+    depositPriceId: "deposit_website_uiux_onetime",
+    depositLabel: "$2,500 deposit (50%)",
     featured: true,
   },
   {
@@ -44,6 +50,8 @@ export const PRICING_TIERS = [
       "Post-launch support (14 days)",
     ],
     cta: "BUILD THE FULL THING",
+    depositPriceId: "deposit_design_build_onetime",
+    depositLabel: "$4,000 deposit (50%)",
   },
   {
     name: "RETAINER",
@@ -58,6 +66,8 @@ export const PRICING_TIERS = [
       "Pause or cancel anytime",
     ],
     cta: "SET UP A RETAINER",
+    depositPriceId: "deposit_retainer_onetime",
+    depositLabel: "$3,000 first month",
   },
 ];
 
