@@ -86,6 +86,7 @@ export type Database = {
           goals: string
           id: string
           name: string
+          pdf_path: string | null
           project_type: string
           references_links: string | null
           stripe_session_id: string | null
@@ -102,6 +103,7 @@ export type Database = {
           goals: string
           id?: string
           name: string
+          pdf_path?: string | null
           project_type: string
           references_links?: string | null
           stripe_session_id?: string | null
@@ -118,6 +120,7 @@ export type Database = {
           goals?: string
           id?: string
           name?: string
+          pdf_path?: string | null
           project_type?: string
           references_links?: string | null
           stripe_session_id?: string | null

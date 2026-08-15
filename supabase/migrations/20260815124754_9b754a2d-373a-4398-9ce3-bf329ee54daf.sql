@@ -1,0 +1,1 @@
+ALTER TABLE public.project_briefs ADD COLUMN IF NOT EXISTS pdf_path TEXT;
