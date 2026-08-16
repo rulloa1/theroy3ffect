@@ -1,9 +1,10 @@
 import { Link } from "@tanstack/react-router";
 import { useAuth } from "@/hooks/useAuth";
 
-export type NavTarget = "PROJECTS" | "BLOG" | "ABOUT" | "RESUME" | "PRICING" | "LET'S WORK" | "MENU";
+export type NavTarget = "PROJECTS" | "PROCESS" | "ABOUT" | "RESUME" | "PRICING" | "LET'S WORK" | "MENU";
 
-const LINKS: Exclude<NavTarget, "MENU">[] = ["PROJECTS", "ABOUT", "BLOG", "PRICING"];
+const LINKS: Exclude<NavTarget, "MENU">[] = ["PROJECTS", "ABOUT", "PROCESS", "PRICING"];
+
 
 export function SiteHeader({ onNavigate }: { onNavigate: (target: NavTarget) => void }) {
   const { user } = useAuth();
