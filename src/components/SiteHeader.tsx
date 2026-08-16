@@ -1,10 +1,13 @@
 import { Link } from "@tanstack/react-router";
+import { useAuth } from "@/hooks/useAuth";
 
 export type NavTarget = "PROJECTS" | "BLOG" | "ABOUT" | "RESUME" | "PRICING" | "LET'S WORK" | "MENU";
 
 const LINKS: Exclude<NavTarget, "MENU">[] = ["PROJECTS", "ABOUT", "BLOG", "PRICING"];
 
 export function SiteHeader({ onNavigate }: { onNavigate: (target: NavTarget) => void }) {
+  const { user } = useAuth();
+
   return (
     <header className="fixed inset-x-0 top-0 z-30 flex items-center justify-between px-5 py-5 md:px-10">
       <Link to="/" className="group flex items-center gap-3" aria-label="theroyeffect home">
