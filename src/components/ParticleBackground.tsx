@@ -11,6 +11,11 @@ export function ParticleBackground() {
     let disposed = false;
     let cleanup: (() => void) | undefined;
 
+    // Honor reduced motion preference
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      return;
+    }
+
     (async () => {
       const THREE = await import("three");
       const { EffectComposer } = await import("three/examples/jsm/postprocessing/EffectComposer.js");
@@ -25,18 +30,24 @@ export function ParticleBackground() {
       const width = window.innerWidth;
       const height = window.innerHeight;
 
+      // Adaptive density for mobile / tablet / desktop
+      const isMobile = width < 768;
+      const isTablet = width < 1200;
+      const COUNT = isMobile ? 3500 : isTablet ? 7500 : 15000;
+      const LINES = isMobile ? 140 : isTablet ? 280 : 530;
+      const maxDpr = isMobile ? 1 : 1.5;
+
       const scene = new THREE.Scene();
       const camera = new THREE.PerspectiveCamera(70, width / height, 0.1, 1000);
       camera.position.z = 60;
 
-      const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      const renderer = new THREE.WebGLRenderer({ antialias: !isMobile, alpha: true, powerPreference: "high-performance" });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, maxDpr));
       renderer.setSize(width, height);
       renderer.setClearColor(0x000000, 0);
       mount.appendChild(renderer.domElement);
 
       /* ---------------- particles ---------------- */
-      const COUNT = 15000;
       const positions = new Float32Array(COUNT * 3);
       const basePositions = new Float32Array(COUNT * 3);
       const velocities = new Float32Array(COUNT * 3);
@@ -62,10 +73,10 @@ export function ParticleBackground() {
       geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
 
       const material = new THREE.PointsMaterial({
-        size: 0.5,
+        size: isMobile ? 0.6 : 0.5,
         vertexColors: true,
         transparent: true,
-        opacity: 0.2,
+        opacity: 0.22,
         blending: THREE.AdditiveBlending,
         depthWrite: false,
       });
@@ -73,7 +84,6 @@ export function ParticleBackground() {
       scene.add(points);
 
       /* ---------------- energy lines ---------------- */
-      const LINES = 530;
       const lineGeo = new THREE.BufferGeometry();
       const linePos = new Float32Array(LINES * 6);
       const speeds = new Float32Array(LINES);
@@ -107,10 +117,15 @@ export function ParticleBackground() {
 
       /* ---------------- post processing ---------------- */
       const composer = new EffectComposer(renderer);
-      composer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      composer.setPixelRatio(Math.min(window.devicePixelRatio, maxDpr));
       composer.setSize(width, height);
       composer.addPass(new RenderPass(scene, camera));
-      const bloom = new UnrealBloomPass(new THREE.Vector2(width, height), 0.8, 0.1, 1.0);
+      const bloom = new UnrealBloomPass(
+        new THREE.Vector2(width, height),
+        isMobile ? 0.5 : 0.8,
+        0.1,
+        1.0
+      );
       composer.addPass(bloom);
 
       /* ---------------- pointer interaction ---------------- */
@@ -143,7 +158,10 @@ export function ParticleBackground() {
       const linesAttr = lineGeo.getAttribute("position");
 
       let raf = 0;
+      let isRunning = true;
+
       const animate = () => {
+        if (!isRunning) return;
         raf = requestAnimationFrame(animate);
 
         for (let i = 0; i < COUNT; i++) {
@@ -207,14 +225,28 @@ export function ParticleBackground() {
         }
         linesAttr.needsUpdate = true;
 
-
         points.rotation.y += 0.0004;
         composer.render();
       };
+
       animate();
 
+      // Pause rendering when tab is hidden to conserve battery/GPU
+      const onVisibilityChange = () => {
+        if (document.hidden) {
+          isRunning = false;
+          cancelAnimationFrame(raf);
+        } else if (!isRunning) {
+          isRunning = true;
+          animate();
+        }
+      };
+      document.addEventListener("visibilitychange", onVisibilityChange);
+
       cleanup = () => {
+        isRunning = false;
         cancelAnimationFrame(raf);
+        document.removeEventListener("visibilitychange", onVisibilityChange);
         window.removeEventListener("pointermove", onMove);
         window.removeEventListener("resize", onResize);
         geometry.dispose();

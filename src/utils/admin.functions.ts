@@ -19,6 +19,28 @@ async function assertAdmin(context: {
   if (data !== true) throw new Error("Forbidden");
 }
 
+export interface AdminBrief {
+  id: string;
+  name: string;
+  email: string;
+  company: string | null;
+  project_type: string;
+  goals: string;
+  audience: string | null;
+  deliverables: string | null;
+  references_links: string | null;
+  budget: string | null;
+  timeline: string | null;
+  extra: string | null;
+  pdf_path: string | null;
+  pdf_url?: string | null;
+  project_status?: string | null;
+  project_notes?: string | null;
+  project_links?: string | null;
+  stripe_session_id: string | null;
+  created_at: string;
+}
+
 export interface AdminOrder {
   id: string;
   stripe_session_id: string;
@@ -35,23 +57,197 @@ export interface AdminOrder {
   balance_invoice_url: string | null;
   amount_refunded: number;
   created_at: string;
+  brief?: AdminBrief | null;
+}
+
+export interface AdminInquiry {
+  id: string;
+  name: string;
+  email: string;
+  project_type: string | null;
+  message: string;
+  status: "unread" | "replied" | "archived";
+  created_at: string;
 }
 
 export const adminListOrders = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: { environment: StripeEnv }) => ({ environment: env(data.environment) }))
-  .handler(async ({ data, context }): Promise<{ orders: AdminOrder[] }> => {
+  .handler(async ({ data, context }): Promise<{ orders: AdminOrder[]; briefs: AdminBrief[] }> => {
     await assertAdmin(context as never);
-    const { data: orders } = await context.supabase
-      .from("orders")
-      .select(
-        "id, stripe_session_id, customer_email, customer_name, product_name, amount_total, currency, payment_status, purchase_kind, is_deposit, balance_due_cents, balance_status, balance_invoice_url, amount_refunded, created_at",
-      )
-      .eq("environment", data.environment)
-      .order("created_at", { ascending: false })
-      .limit(100);
-    return { orders: (orders ?? []) as AdminOrder[] };
+    
+    const [ordersResult, briefsResult] = await Promise.all([
+      context.supabase
+        .from("orders")
+        .select(
+          "id, stripe_session_id, customer_email, customer_name, product_name, amount_total, currency, payment_status, purchase_kind, is_deposit, balance_due_cents, balance_status, balance_invoice_url, amount_refunded, created_at",
+        )
+        .eq("environment", data.environment)
+        .order("created_at", { ascending: false })
+        .limit(100),
+      context.supabase
+        .from("project_briefs")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(100),
+    ]);
+
+    const briefs = (briefsResult.data ?? []) as AdminBrief[];
+    const briefMap = new Map<string, AdminBrief>();
+    for (const b of briefs) {
+      if (b.stripe_session_id) briefMap.set(b.stripe_session_id, b);
+      if (b.email) briefMap.set(b.email.toLowerCase(), b);
+    }
+
+    const orders: AdminOrder[] = ((ordersResult.data ?? []) as any[]).map((order) => ({
+      ...order,
+      brief:
+        briefMap.get(order.stripe_session_id) ||
+        (order.customer_email ? briefMap.get(order.customer_email.toLowerCase()) : null) ||
+        null,
+    }));
+
+    return { orders, briefs };
   });
+
+export const adminGetBriefDetails = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: { briefId: string }) => ({ briefId: data.briefId }))
+  .handler(async ({ data, context }): Promise<{ brief: AdminBrief | null; pdfUrl: string | null }> => {
+    await assertAdmin(context as never);
+    const { data: brief } = await context.supabase
+      .from("project_briefs")
+      .select("*")
+      .eq("id", data.briefId)
+      .maybeSingle();
+
+    if (!brief) return { brief: null, pdfUrl: null };
+
+    let pdfUrl: string | null = null;
+    if (brief.pdf_path) {
+      try {
+        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+        const { data: signed } = await supabaseAdmin.storage
+          .from("brief-pdfs")
+          .createSignedUrl(brief.pdf_path, 3600);
+        pdfUrl = signed?.signedUrl ?? null;
+      } catch {}
+    }
+
+    return { brief: brief as AdminBrief, pdfUrl };
+  });
+
+export const adminUpdateProjectMilestone = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: { briefId: string; projectStatus: string; projectNotes?: string; projectLinks?: string }) => data)
+  .handler(async ({ data, context }): Promise<{ success: boolean; error?: string }> => {
+    await assertAdmin(context as never);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin
+      .from("project_briefs")
+      .update({
+        project_status: data.projectStatus,
+        ...(data.projectNotes !== undefined ? { project_notes: data.projectNotes } : {}),
+        ...(data.projectLinks !== undefined ? { project_links: data.projectLinks } : {}),
+      })
+      .eq("id", data.briefId);
+
+    if (error) return { success: false, error: error.message };
+    return { success: true };
+  });
+
+export const adminListInquiries = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<{ inquiries: AdminInquiry[] }> => {
+    await assertAdmin(context as never);
+    try {
+      const { data, error } = await context.supabase
+        .from("contact_inquiries" as any)
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(100);
+
+      if (error || !data) return { inquiries: [] };
+      return { inquiries: data as AdminInquiry[] };
+    } catch {
+      return { inquiries: [] };
+    }
+  });
+
+export const adminUpdateInquiryStatus = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: { inquiryId: string; status: "unread" | "replied" | "archived" }) => data)
+  .handler(async ({ data, context }): Promise<{ success: boolean }> => {
+    await assertAdmin(context as never);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    await supabaseAdmin
+      .from("contact_inquiries" as any)
+      .update({ status: data.status })
+      .eq("id", data.inquiryId);
+    return { success: true };
+  });
+
+export const adminListPortfolioProjects = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context as never);
+    const { getPublicShowcaseProjects } = await import("./projects.functions");
+    const projects = await getPublicShowcaseProjects();
+    return { projects };
+  });
+
+export const adminUpsertPortfolioProject = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: {
+    id?: string;
+    title: string;
+    tagline: string;
+    description: string;
+    url: string;
+    category: "Brand Identity" | "UI/UX" | "No-Code";
+    metric?: string;
+    tags: string[];
+    sortOrder?: number;
+    isPublished?: boolean;
+  }) => data)
+  .handler(async ({ data, context }): Promise<{ success: boolean; error?: string }> => {
+    await assertAdmin(context as never);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    
+    const projectId = data.id && !data.id.startsWith("default-") ? data.id : crypto.randomUUID();
+    const { error } = await supabaseAdmin
+      .from("showcase_projects" as any)
+      .upsert({
+        id: projectId,
+        title: data.title,
+        tagline: data.tagline,
+        description: data.description,
+        url: data.url,
+        category: data.category,
+        metric: data.metric || null,
+        tags: data.tags,
+        sort_order: data.sortOrder ?? 0,
+        is_published: data.isPublished ?? true,
+        updated_at: new Date().toISOString(),
+      });
+
+    if (error) return { success: false, error: error.message };
+    return { success: true };
+  });
+
+export const adminDeletePortfolioProject = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: { projectId: string }) => data)
+  .handler(async ({ data, context }): Promise<{ success: boolean }> => {
+    await assertAdmin(context as never);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    await supabaseAdmin
+      .from("showcase_projects" as any)
+      .delete()
+      .eq("id", data.projectId);
+    return { success: true };
+  });
+
 
 /**
  * Invoices the remaining balance on a deposit order. Creates (or reuses) the

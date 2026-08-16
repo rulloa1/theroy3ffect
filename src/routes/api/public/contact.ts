@@ -39,6 +39,21 @@ export const Route = createFileRoute('/api/public/contact')({
         const { name, email, projectType, message } = parsed.data
         const submissionId = crypto.randomUUID()
 
+        // Persist to database so inquiries are visible in Studio Admin dashboard
+        try {
+          const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+          await supabaseAdmin.from('contact_inquiries').insert({
+            id: submissionId,
+            name,
+            email,
+            project_type: projectType || null,
+            message,
+            status: 'unread',
+          })
+        } catch (dbError) {
+          console.error('Contact inquiry DB insert error (non-fatal):', dbError)
+        }
+
         try {
           await sendTemplateEmail('brief-notification', OWNER_EMAIL, {
             templateData: { name, email, projectType, message },

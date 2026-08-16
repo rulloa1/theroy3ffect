@@ -5,6 +5,7 @@ import { createCommissionCheckoutSession } from "@/utils/payments.functions";
 
 interface StripeEmbeddedCheckoutProps {
   priceId: string;
+  addOnPriceIds?: string[];
   quantity?: number;
   tierLabel?: string;
   customerEmail?: string;
@@ -13,6 +14,7 @@ interface StripeEmbeddedCheckoutProps {
 
 export function StripeEmbeddedCheckout({
   priceId,
+  addOnPriceIds,
   quantity,
   tierLabel,
   customerEmail,
@@ -24,6 +26,7 @@ export function StripeEmbeddedCheckout({
     const result = await createCommissionCheckoutSession({
       data: {
         priceId,
+        addOnPriceIds,
         quantity,
         tierLabel,
         customerEmail: customerEmail || user?.email || undefined,

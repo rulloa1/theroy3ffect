@@ -153,6 +153,12 @@ export const ADD_ONS: CatalogAddOn[] = [
   },
 ];
 
+export const ADD_ON_CENTS: Record<string, number> = {
+  addon_revision_round_onetime: 35000,
+  addon_rush_delivery_onetime: 75000,
+  addon_extra_page_onetime: 90000,
+};
+
 /**
  * Deposit price -> remaining balance in cents, invoiced at project completion.
  * The retainer "first month" is not a deposit, so it carries no balance.
@@ -162,3 +168,8 @@ export const DEPOSIT_BALANCE_CENTS: Record<string, number> = {
   deposit_website_uiux_onetime: 250000,
   deposit_design_build_onetime: 400000,
 };
+
+export function getAddOnByPriceId(priceId: string): CatalogAddOn | undefined {
+  return ADD_ONS.find((a) => a.priceId === priceId);
+}
+

@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import { useAuth } from "@/hooks/useAuth";
+import { Logo } from "@/components/Logo";
 
 export const Route = createFileRoute("/auth")({
   validateSearch: (search: Record<string, unknown>): { next?: string } =>
@@ -102,6 +103,7 @@ function AuthPage() {
     <main className="flex min-h-screen items-center justify-center bg-[#030014] px-5 py-24">
       <Toaster />
       <div className="w-full max-w-md border border-white/10 bg-white/[0.02] p-8">
+        <Logo variant="full" size="sm" href="/" className="mb-6" />
         <span className="font-mono text-[10px] tracking-widest text-[#FF3333]">CLIENT ACCESS</span>
         <h1 className="mt-3 font-display text-4xl uppercase leading-[0.9] text-white">
           {mode === "signin" ? "SIGN IN" : "CREATE ACCOUNT"}

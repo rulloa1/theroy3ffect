@@ -61,9 +61,13 @@ function Home() {
 
         <img
           src={HERO_IMAGE}
-          alt="Rory Ulloa"
+          alt="Rory Ulloa — Creative Director & UI/UX Designer"
           loading="eager"
-          className="pointer-events-auto absolute left-1/2 top-[24vh] z-10 h-[120vh] w-auto -translate-x-1/2 object-contain object-top grayscale contrast-125 brightness-95 drop-shadow-[0_25px_50px_rgba(0,0,0,0.5)] transition-transform duration-700 ease-out hover:scale-[1.03]"
+          decoding="async"
+          fetchPriority="high"
+          width={1200}
+          height={1600}
+          className="pointer-events-auto absolute left-1/2 top-[24vh] z-10 h-[120vh] w-auto max-w-none -translate-x-1/2 object-contain object-top grayscale contrast-125 brightness-95 drop-shadow-[0_25px_50px_rgba(0,0,0,0.5)] transition-transform duration-700 ease-out hover:scale-[1.03]"
         />
 
         <FooterMarquee />

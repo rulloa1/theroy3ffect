@@ -2,6 +2,7 @@ import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { z } from "zod";
+import { Logo } from "@/components/Logo";
 
 export const Route = createFileRoute("/brief")({
   validateSearch: (search: Record<string, unknown>): { session_id?: string } =>
@@ -87,6 +88,39 @@ function BriefPage() {
   const [form, setForm] = useState<Form>(EMPTY);
   const [sending, setSending] = useState(false);
   const [done, setDone] = useState(false);
+  const [lastSaved, setLastSaved] = useState<string | null>(null);
+
+  const STORAGE_KEY = `theroy_brief_draft_${sessionId || "general"}`;
+
+  // Restore draft from localStorage on mount
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed && typeof parsed === "object") {
+          setForm((prev) => ({ ...prev, ...parsed }));
+          setLastSaved("Draft restored");
+        }
+      }
+    } catch {}
+  }, [STORAGE_KEY]);
+
+  // Debounced auto-save to localStorage
+  useEffect(() => {
+    if (done) return;
+    const isDirty = Object.values(form).some((v) => v !== "");
+    if (!isDirty) return;
+
+    const timer = setTimeout(() => {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(form));
+        setLastSaved(new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }));
+      } catch {}
+    }, 400);
+
+    return () => clearTimeout(timer);
+  }, [form, done, STORAGE_KEY]);
 
   const set = (key: keyof Form) => (value: string) =>
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -127,6 +161,9 @@ function BriefPage() {
       if (!response.ok || !data.ok) {
         throw new Error(data.error ?? "Something went wrong");
       }
+      try {
+        localStorage.removeItem(STORAGE_KEY);
+      } catch {}
       setDone(true);
       toast.success("Brief received — I'll reply within one business day.");
     } catch (error) {
@@ -167,16 +204,24 @@ function BriefPage() {
 
   return (
     <main className="min-h-screen bg-[#030014] px-5 py-20">
-      <div className="mx-auto w-full max-w-2xl">
-        <span className="font-mono text-[10px] tracking-widest text-[#FF3333]">
-          {sessionId ? "POST-PURCHASE INTAKE" : "PROJECT INTAKE"}
-        </span>
+      <div className="mx-auto max-w-2xl">
+        <Logo variant="compact" size="md" href="/" className="mb-8" />
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <span className="font-mono text-[10px] tracking-widest text-[#FF3333]">
+            {sessionId ? "POST-PURCHASE INTAKE" : "PROJECT INTAKE"}
+          </span>
+          {lastSaved && (
+            <span className="font-mono text-[10px] text-white/40">
+              ● {lastSaved.startsWith("Draft") ? lastSaved : `Auto-saved at ${lastSaved}`}
+            </span>
+          )}
+        </div>
         <h1 className="mt-3 font-display text-5xl uppercase leading-[0.9] text-white md:text-6xl">
           PROJECT BRIEF
         </h1>
         <p className="mt-4 max-w-lg font-mono text-xs leading-relaxed text-white/50">
-          Four short steps. The more detail you give, the faster we lock scope and a start
-          date.
+          Four short steps. Your progress is saved automatically. The more detail you share, the
+          faster we lock scope and kick off your build.
         </p>
 
         <div className="mt-8 flex gap-2">
@@ -261,9 +306,14 @@ function BriefPage() {
                 </select>
               </div>
               <div>
-                <label className={labelClass} htmlFor="brief-goals">
-                  WHAT ARE WE TRYING TO ACHIEVE?
-                </label>
+                <div className="flex items-center justify-between">
+                  <label className={labelClass} htmlFor="brief-goals">
+                    WHAT ARE WE TRYING TO ACHIEVE?
+                  </label>
+                  <span className="font-mono text-[10px] text-white/30">
+                    {form.goals.length}/2000
+                  </span>
+                </div>
                 <textarea
                   id="brief-goals"
                   rows={4}
@@ -309,7 +359,7 @@ function BriefPage() {
               </div>
               <div>
                 <label className={labelClass} htmlFor="brief-references">
-                  REFERENCES & LINKS (OPTIONAL)
+                  REFERENCES, FIGMA OR ASSET LINKS (OPTIONAL)
                 </label>
                 <textarea
                   id="brief-references"
@@ -317,7 +367,7 @@ function BriefPage() {
                   className={`${inputClass} resize-none`}
                   value={form.referencesLinks}
                   onChange={(e) => set("referencesLinks")(e.target.value)}
-                  placeholder="Current site, brand files, inspiration links"
+                  placeholder="Figma links, Google Drive / Dropbox assets, inspiration URLs, current website..."
                   maxLength={1000}
                 />
               </div>

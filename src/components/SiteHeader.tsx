@@ -1,22 +1,20 @@
 import { Link } from "@tanstack/react-router";
 import { useAuth } from "@/hooks/useAuth";
+import { Logo } from "@/components/Logo";
 
 export type NavTarget = "PROJECTS" | "PROCESS" | "ABOUT" | "RESUME" | "PRICING" | "LET'S WORK" | "MENU";
 
 const LINKS: Exclude<NavTarget, "MENU">[] = ["PROJECTS", "ABOUT", "PROCESS", "PRICING"];
-
 
 export function SiteHeader({ onNavigate }: { onNavigate: (target: NavTarget) => void }) {
   const { user } = useAuth();
 
   return (
     <header className="fixed inset-x-0 top-0 z-30 flex items-center justify-between px-5 py-5 md:px-10">
-      <Link to="/" className="group flex items-center gap-3" aria-label="theroyeffect home">
-        <span className="font-display text-xl uppercase tracking-widest md:text-2xl">ROY</span>
-        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#FF3333] text-black transition-transform duration-500 group-hover:rotate-180">
-          ✦
-        </span>
-      </Link>
+      <div className="flex items-center">
+        <Logo variant="full" size="md" href="/" className="hidden sm:inline-flex" />
+        <Logo variant="compact" size="md" href="/" className="inline-flex sm:hidden" />
+      </div>
 
       <nav aria-label="Primary" className="hidden items-center gap-8 lg:flex">
         {LINKS.map((l) => (

@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { getStripeEnvironment } from "@/lib/stripe";
+import { Logo } from "@/components/Logo";
 import {
   claimCheckoutSession,
   createPortalSession,
@@ -87,6 +88,7 @@ function AccountPage() {
     <main className="min-h-screen bg-[#030014] px-5 py-16 md:px-10">
       <Toaster />
       <div className="mx-auto max-w-5xl">
+        <Logo variant="compact" size="md" href="/" className="mb-6" />
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <span className="font-mono text-[10px] tracking-widest text-[#FF3333]">CLIENT ACCOUNT</span>
@@ -139,6 +141,163 @@ function AccountPage() {
 
         {data && (
           <div className="mt-12 space-y-12">
+            {/* Active Project Milestone Tracker */}
+            {(data.orders.length > 0 || data.briefs.length > 0) && (() => {
+              const latestBrief = data.briefs[0];
+              const stageMap: Record<string, number> = {
+                brief_received: 2,
+                direction_locked: 3,
+                design_build: 4,
+                in_review: 4,
+                completed: 5,
+              };
+              const activeStage = latestBrief?.project_status
+                ? stageMap[latestBrief.project_status] ?? 2
+                : data.orders.length > 0
+                  ? 1
+                  : 0;
+              const isFullyDone = latestBrief?.project_status === "completed";
+
+              const steps = [
+                { label: "1. Deposit Reserved" },
+                { label: "2. Brief Submitted" },
+                { label: "3. Scope & Direction" },
+                { label: "4. Design & Build" },
+                { label: "5. Final & Launch" },
+              ];
+
+              return (
+                <section className="border border-white/10 bg-white/[0.02] p-6">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <span className="font-mono text-xs tracking-widest text-[#FF3333]">
+                      PROJECT WORKFLOW STATUS
+                    </span>
+                    <span className="font-mono text-[11px] text-white/40">
+                      {isFullyDone
+                        ? "Project Complete & Delivered"
+                        : latestBrief
+                          ? `Stage ${activeStage} of 5 in Progress`
+                          : "Awaiting Project Brief"}
+                    </span>
+                  </div>
+                  <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-5">
+                    {steps.map((step, idx) => {
+                      const stepNumber = idx + 1;
+                      const isDone = isFullyDone || stepNumber < activeStage || (stepNumber === 1 && data.orders.length > 0 && activeStage > 1);
+                      const isCurrent = !isFullyDone && stepNumber === activeStage;
+
+                      return (
+                        <div
+                          key={step.label}
+                          className={`flex flex-col border p-3 ${
+                            isDone
+                              ? "border-[#FF3333] bg-[#FF3333]/10 text-white"
+                              : isCurrent
+                                ? "border-white/40 bg-white/[0.04] text-white"
+                                : "border-white/10 text-white/30"
+                          }`}
+                        >
+                          <span className="font-mono text-[10px] tracking-widest text-[#FF3333]">
+                            {isDone ? "✓ COMPLETE" : isCurrent ? "▶ ACTIVE" : "QUEUED"}
+                          </span>
+                          <span className="mt-1 font-display text-xs uppercase">{step.label}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {(latestBrief?.project_links || latestBrief?.project_notes) && (
+                    <div className="mt-6 border-t border-white/10 pt-4 space-y-3">
+                      {latestBrief.project_notes && (
+                        <div>
+                          <span className="font-mono text-[10px] uppercase tracking-widest text-[#FF3333]">
+                            STUDIO DIRECTION NOTE
+                          </span>
+                          <p className="mt-1 font-mono text-xs text-white/80 whitespace-pre-wrap leading-relaxed">
+                            {latestBrief.project_notes}
+                          </p>
+                        </div>
+                      )}
+                      {latestBrief.project_links && (
+                        <div>
+                          <span className="font-mono text-[10px] uppercase tracking-widest text-[#FF3333]">
+                            PROTOTYPE &amp; STAGING LINKS
+                          </span>
+                          <div className="mt-1 flex flex-wrap gap-2">
+                            {latestBrief.project_links.split("\n").filter(Boolean).map((linkStr, i) => {
+                              const trimmed = linkStr.trim();
+                              const isUrl = /^https?:\/\//i.test(trimmed);
+                              return isUrl ? (
+                                <a
+                                  key={i}
+                                  href={trimmed}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="inline-flex items-center gap-1.5 border border-[#FF3333]/40 bg-[#FF3333]/10 px-3 py-1.5 font-mono text-xs text-[#FF3333] transition-colors hover:bg-[#FF3333] hover:text-black"
+                                >
+                                  {trimmed} ↗
+                                </a>
+                              ) : (
+                                <span key={i} className="font-mono text-xs text-white/70">
+                                  {trimmed}
+                                </span>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </section>
+              );
+            })()}
+
+            <Section title="PROJECT BRIEFS">
+              {data.briefs.length === 0 ? (
+                <div className="border border-white/10 bg-white/[0.02] p-6 text-center">
+                  <p className="font-mono text-xs text-white/50">
+                    No project brief submitted for your commission yet.
+                  </p>
+                  <Link
+                    to="/brief"
+                    className="mt-4 inline-flex items-center gap-2 bg-[#FF3333] px-5 py-2.5 font-mono text-xs tracking-widest text-black transition-opacity hover:opacity-90"
+                  >
+                    START YOUR PROJECT BRIEF →
+                  </Link>
+                </div>
+              ) : (
+                data.briefs.map((brief) => (
+                  <Row key={brief.id}>
+                    <div>
+                      <p className="font-display text-lg uppercase text-white">{brief.project_type}</p>
+                      {brief.goals && (
+                        <p className="mt-1 max-w-md font-mono text-xs text-white/50 line-clamp-1">
+                          {brief.goals}
+                        </p>
+                      )}
+                      <span className="mt-2 block font-mono text-[11px] text-white/40">
+                        Submitted {date(brief.created_at)}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      {brief.pdf_url ? (
+                        <a
+                          href={brief.pdf_url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="border border-[#FF3333]/40 bg-[#FF3333]/10 px-4 py-2 font-mono text-[11px] tracking-widest text-[#FF3333] transition-colors hover:bg-[#FF3333] hover:text-black"
+                        >
+                          DOWNLOAD BRIEF PDF ↓
+                        </a>
+                      ) : (
+                        <Badge tone="good">SUBMITTED</Badge>
+                      )}
+                    </div>
+                  </Row>
+                ))
+              )}
+            </Section>
+
             <Section title="RETAINERS">
               {data.subscriptions.length === 0 ? (
                 <Empty>No active retainer. Start one from the pricing section.</Empty>
@@ -240,27 +399,6 @@ function AccountPage() {
                         </a>
                       )}
                     </div>
-                  </Row>
-                ))
-              )}
-            </Section>
-
-            <Section title="PROJECT BRIEFS">
-              {data.briefs.length === 0 ? (
-                <Empty>
-                  No brief submitted yet.{" "}
-                  <Link to="/brief" className="text-[#FF3333] underline">
-                    Fill one in
-                  </Link>
-                  .
-                </Empty>
-              ) : (
-                data.briefs.map((brief) => (
-                  <Row key={brief.id}>
-                    <p className="font-mono text-sm text-white">{brief.project_type}</p>
-                    <span className="font-mono text-[11px] text-white/40">
-                      {date(brief.created_at)}
-                    </span>
                   </Row>
                 ))
               )}

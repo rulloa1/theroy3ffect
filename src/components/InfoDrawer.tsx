@@ -8,24 +8,13 @@ import { PRICING_TIERS } from "./Pricing";
 const MENU = ["PROJECTS", "PROCESS", "ABOUT", "RESUME", "PRICING", "LET'S WORK"] as const;
 type MenuItem = (typeof MENU)[number];
 
-interface Project {
-  title: string;
-  tagline: string;
-  description: string;
-  url: string;
-  tags: string[];
-}
+import { DEFAULT_SHOWCASE_PROJECTS, getPublicShowcaseProjects, type PortfolioProject } from "@/utils/projects.functions";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { Logo } from "@/components/Logo";
 
-const PROJECTS: Project[] = [
-  {
-    title: "Zest Depot",
-    tagline: "Brand & digital experience",
-    description:
-      "A modern, high-energy storefront and brand system built for a fast-moving retail concept. Focus on conversion, clarity, and bold visual identity.",
-    url: "https://zest-depot-dev.lovable.app",
-    tags: ["UI/UX", "Brand Identity", "No-Code Build"],
-  },
-];
+
+
 
 
 const fieldClass =
@@ -52,7 +41,10 @@ export function InfoDrawer({
   section?: MenuItem | null;
 }) {
   const [active, setActive] = useState<MenuItem | null>(null);
+  const [projectFilter, setProjectFilter] = useState<string>("ALL");
+  const [selectedCaseStudy, setSelectedCaseStudy] = useState<PortfolioProject | null>(null);
   const [sending, setSending] = useState(false);
+
 
   useEffect(() => {
     if (open) setActive(section);
@@ -101,6 +93,22 @@ export function InfoDrawer({
     }
   };
 
+  const fetchProjects = useServerFn(getPublicShowcaseProjects);
+  const { data: projectsData } = useQuery({
+    queryKey: ["public-showcase-projects"],
+    queryFn: () => fetchProjects(),
+    initialData: DEFAULT_SHOWCASE_PROJECTS,
+  });
+
+  const allProjects = projectsData || DEFAULT_SHOWCASE_PROJECTS;
+
+  const filteredProjects =
+    projectFilter === "ALL"
+      ? allProjects
+      : allProjects.filter((p) => p.category === projectFilter);
+
+
+
   return (
     <AnimatePresence>
       {open && (
@@ -143,7 +151,11 @@ export function InfoDrawer({
 
             <div className="px-6 pb-16 pt-6">
               {!active && (
-                <ul className="space-y-2">
+                <>
+                  <div className="mb-8 border-b border-white/10 pb-6">
+                    <Logo variant="full" size="md" href="/" />
+                  </div>
+                  <ul className="space-y-2">
                   {MENU.map((item) => (
                     <li key={item}>
                       <button
@@ -158,7 +170,8 @@ export function InfoDrawer({
                       </button>
                     </li>
                   ))}
-                </ul>
+                  </ul>
+                </>
               )}
 
               {active === "PRICING" && (
@@ -266,27 +279,54 @@ export function InfoDrawer({
                     <span className="font-mono text-xs tracking-widest text-[#FF3333]">SELECTED WORK</span>
                     <h2 className="mt-2 font-display text-4xl uppercase text-white">Projects</h2>
                   </div>
+
+                  {/* Category Filter Pills */}
+                  <div className="flex flex-wrap gap-2">
+                    {(["ALL", "Brand Identity", "UI/UX", "No-Code"] as const).map((cat) => (
+                      <button
+                        key={cat}
+                        type="button"
+                        onClick={() => setProjectFilter(cat)}
+                        className={`px-3 py-1.5 font-mono text-[11px] tracking-wider uppercase transition-colors ${
+                          projectFilter === cat
+                            ? "bg-[#FF3333] text-black font-semibold"
+                            : "border border-white/15 text-white/60 hover:border-white/30 hover:text-white"
+                        }`}
+                      >
+                        {cat === "ALL" ? "All Projects" : cat}
+                      </button>
+                    ))}
+                  </div>
+
                   <div className="grid gap-4">
-                    {PROJECTS.map((project) => (
-                      <a
-                        key={project.title}
-                        href={project.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="group block border border-white/10 bg-white/[0.02] p-5 transition-colors hover:border-[#FF3333]/50"
+                    {filteredProjects.map((project) => (
+                      <div
+                        key={project.id || project.title}
+                        className="group block border border-white/10 bg-white/[0.02] p-5 transition-all hover:border-[#DFBA73]/50"
                       >
                         <div className="flex items-start justify-between gap-4">
                           <div>
-                            <h3 className="font-display text-xl uppercase tracking-wide text-white transition-colors group-hover:text-[#FF3333]">
-                              {project.title}
-                            </h3>
+                            <div className="flex items-center gap-2">
+                              <h3 className="font-display text-xl uppercase tracking-wide text-white transition-colors group-hover:text-[#F5DC9E]">
+                                {project.title}
+                              </h3>
+                              {project.metric && (
+                                <span className="bg-[#DFBA73]/15 border border-[#DFBA73]/30 px-2 py-0.5 font-mono text-[10px] font-medium text-[#F5DC9E]">
+                                  {project.metric}
+                                </span>
+                              )}
+                            </div>
                             <p className="mt-1 font-mono text-xs text-white/40">{project.tagline}</p>
                           </div>
-                          <ArrowUpRight className="size-5 shrink-0 text-white/40 transition-colors group-hover:text-[#FF3333]" />
+                          <span className="border border-white/10 px-2 py-0.5 font-mono text-[9px] uppercase tracking-wider text-white/50">
+                            {project.category}
+                          </span>
                         </div>
-                        <p className="mt-3 max-w-md font-mono text-xs leading-relaxed text-white/50">
+
+                        <p className="mt-3 max-w-md font-mono text-xs leading-relaxed text-white/60">
                           {project.description}
                         </p>
+
                         <div className="mt-4 flex flex-wrap gap-2">
                           {project.tags.map((tag) => (
                             <span
@@ -297,13 +337,127 @@ export function InfoDrawer({
                             </span>
                           ))}
                         </div>
-                      </a>
+
+                        <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-4">
+                          <button
+                            type="button"
+                            onClick={() => setSelectedCaseStudy(project)}
+                            className="inline-flex items-center gap-1 font-mono text-xs text-[#F5DC9E] hover:underline"
+                          >
+                            CASE STUDY BREAKDOWN →
+                          </button>
+
+                          <div className="flex items-center gap-3">
+                            <a
+                              href={project.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 font-mono text-[11px] text-white/50 transition-colors hover:text-white"
+                            >
+                              LIVE DEMO <ArrowUpRight className="size-3.5" />
+                            </a>
+                            <button
+                              type="button"
+                              onClick={() => setActive("LET'S WORK")}
+                              className="bg-[#E51924] px-3 py-1.5 font-mono text-[10px] font-bold tracking-widest text-white hover:bg-[#FF3333]"
+                            >
+                              COMMISSION
+                            </button>
+                          </div>
+                        </div>
+                      </div>
                     ))}
                   </div>
+
                   <p className="font-mono text-[11px] leading-relaxed text-white/40">
-                    More case studies and process decks are available on request. Reach out through
-                    Let&apos;s Work to discuss a similar project.
+                    More case studies, Figma walkthroughs, and design systems are available on request.
+                    Reach out through Let&apos;s Work to discuss your project.
                   </p>
+                </div>
+              )}
+
+              {/* Case Study Deep Dive Modal */}
+              {selectedCaseStudy && (
+                <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/85 p-4 backdrop-blur-md">
+                  <div className="relative max-h-[85vh] w-full max-w-xl overflow-y-auto border border-white/15 bg-[#030014] p-6 shadow-2xl">
+                    <div className="flex items-start justify-between border-b border-white/10 pb-4">
+                      <div>
+                        <span className="font-mono text-[10px] uppercase tracking-widest text-[#DFBA73]">
+                          FEATURED CASE STUDY &bull; {selectedCaseStudy.category}
+                        </span>
+                        <h2 className="mt-1 font-display text-3xl uppercase text-white">
+                          {selectedCaseStudy.title}
+                        </h2>
+                        <p className="mt-1 font-mono text-xs text-white/50">{selectedCaseStudy.tagline}</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setSelectedCaseStudy(null)}
+                        className="border border-white/20 p-1.5 text-white/60 hover:border-white hover:text-white"
+                      >
+                        <X className="size-4" />
+                      </button>
+                    </div>
+
+                    <div className="mt-6 space-y-5 font-mono text-xs">
+                      {selectedCaseStudy.metric && (
+                        <div className="border border-[#DFBA73]/30 bg-[#DFBA73]/10 p-3">
+                          <span className="text-[10px] uppercase tracking-widest text-[#DFBA73]">
+                            Key Outcome &amp; Impact
+                          </span>
+                          <p className="mt-0.5 font-display text-xl uppercase text-white">
+                            {selectedCaseStudy.metric}
+                          </p>
+                        </div>
+                      )}
+
+                      <div>
+                        <span className="text-[10px] uppercase tracking-widest text-white/40">
+                          Overview &amp; Scope
+                        </span>
+                        <p className="mt-1.5 leading-relaxed text-white/80 whitespace-pre-wrap">
+                          {selectedCaseStudy.description}
+                        </p>
+                      </div>
+
+                      <div>
+                        <span className="text-[10px] uppercase tracking-widest text-white/40">
+                          Technical &amp; Design Stack
+                        </span>
+                        <div className="mt-2 flex flex-wrap gap-2">
+                          {selectedCaseStudy.tags.map((t) => (
+                            <span key={t} className="border border-white/15 bg-white/[0.03] px-2.5 py-1 text-[11px] text-white/70">
+                              {t}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-5">
+                      <a
+                        href={selectedCaseStudy.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-1.5 border border-white/20 px-4 py-2 font-mono text-xs text-white hover:border-[#DFBA73] hover:text-[#DFBA73]"
+                      >
+                        OPEN LIVE DEMO <ArrowUpRight className="size-3.5" />
+                      </a>
+
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedCaseStudy(null);
+                            setActive("LET'S WORK");
+                          }}
+                          className="bg-[#E51924] px-5 py-2 font-mono text-xs font-bold tracking-widest text-white transition-opacity hover:opacity-90"
+                        >
+                          COMMISSION THIS SCOPE →
+                        </button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )}
 

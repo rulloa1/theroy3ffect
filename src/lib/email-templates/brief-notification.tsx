@@ -53,8 +53,9 @@ export const template = {
   },
 } satisfies TemplateEntry
 
-const main = { backgroundColor: '#ffffff', fontFamily: 'Helvetica, Arial, sans-serif' }
-const container = { padding: '32px 28px', maxWidth: '560px' }
-const heading = { fontSize: '24px', margin: '0 0 16px', color: '#111111' }
-const row = { fontSize: '15px', lineHeight: '24px', color: '#333333', margin: '0 0 6px' }
-const hr = { borderColor: '#e5e7eb', margin: '20px 0' }
+const main = { backgroundColor: '#05050a', fontFamily: 'Helvetica, Arial, sans-serif' }
+const container = { backgroundColor: '#0a0a12', margin: '0 auto', padding: '36px 32px', maxWidth: '560px', border: '1px solid rgba(255, 255, 255, 0.1)' }
+const heading = { fontSize: '26px', margin: '0 0 16px', color: '#ffffff', fontWeight: 'bold' }
+const row = { fontSize: '14px', lineHeight: '22px', color: '#e5e7eb', margin: '0 0 8px' }
+const hr = { borderColor: 'rgba(255, 255, 255, 0.1)', margin: '20px 0' }
+

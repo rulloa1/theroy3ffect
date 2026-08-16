@@ -73,31 +73,110 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   );
 }
 
+const STRUCTURED_DATA = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Person",
+      "@id": "https://www.theroyeffect.com/#person",
+      "name": "Rory Ulloa",
+      "url": "https://www.theroyeffect.com",
+      "jobTitle": "Creative Director & UI/UX Designer",
+      "email": "rory@theroyeffect.com",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Houston",
+        "addressRegion": "TX",
+        "addressCountry": "US",
+      },
+      "knowsAbout": [
+        "User Interface Design",
+        "User Experience Design",
+        "Brand Identity Systems",
+        "Design Systems",
+        "No-Code Development",
+      ],
+    },
+    {
+      "@type": "ProfessionalService",
+      "@id": "https://www.theroyeffect.com/#service",
+      "name": "The Roy Effect",
+      "url": "https://www.theroyeffect.com",
+      "founder": { "@id": "https://www.theroyeffect.com/#person" },
+      "priceRange": "$$$$",
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Design & Build Services",
+        "itemListElement": [
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Brand Sprint",
+              "description": "Brand strategy, logo system, and visual guidelines.",
+            },
+            "price": "2500",
+            "priceCurrency": "USD",
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Website / UI-UX",
+              "description": "Full visual design and clickable prototype for digital products.",
+            },
+            "price": "5000",
+            "priceCurrency": "USD",
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Design + Build",
+              "description": "End-to-end design paired with a production no-code build.",
+            },
+            "price": "8000",
+            "priceCurrency": "USD",
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Design Retainer",
+              "description": "Ongoing monthly creative direction and UI/UX partnership.",
+            },
+            "price": "3000",
+            "priceCurrency": "USD",
+          },
+        ],
+      },
+    },
+  ],
+};
+
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Rory Ulloa — Creative Designer & No-Code Developer" },
+      { title: "Rory Ulloa — Creative Director & UI/UX Designer" },
       {
         name: "description",
         content:
-          "Portfolio of Rory Ulloa, a Tokyo-based product designer and no-code developer building UI/UX, brand systems and websites.",
+          "Portfolio & studio of Rory Ulloa, an independent Creative Director and UI/UX designer crafting bold brand systems, high-contrast digital experiences and no-code builds.",
       },
       { name: "author", content: "Rory Ulloa" },
-      { property: "og:title", content: "Rory Ulloa — Creative Designer & No-Code Developer" },
+      { property: "og:title", content: "Rory Ulloa — Creative Director & UI/UX Designer" },
       {
         property: "og:description",
         content:
-          "Portfolio of Rory Ulloa, a Tokyo-based product designer and no-code developer building UI/UX, brand systems and websites.",
+          "Bold brand systems, high-contrast digital experiences and production-ready builds by Rory Ulloa.",
       },
       { property: "og:site_name", content: "theroyeffect.com" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "google-site-verification", content: "77GixI64Yh4THH1-qNE6EXBc87IRpeA76Jo1KHyaTCA" },
       { name: "google-site-verification", content: "abyZ_limkEmpSFo8qAaXN9SRvACJ8wTWriZNi-XPtAI" },
-
-
     ],
     links: [
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -110,9 +189,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: appCss,
       },
+      { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
     ],
-
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify(STRUCTURED_DATA),
+      },
+    ],
   }),
   shellComponent: RootShell,
   component: RootComponent,

@@ -63,19 +63,22 @@ export const template = {
   },
 }
 
-const main = { backgroundColor: '#f5f5f5', fontFamily: 'Helvetica, Arial, sans-serif' }
-const container = { backgroundColor: '#ffffff', margin: '0 auto', padding: '32px', maxWidth: '560px' }
-const kicker = { fontSize: '11px', letterSpacing: '2px', color: '#FF3333', margin: '0 0 8px' }
-const heading = { fontSize: '26px', margin: '0 0 16px', color: '#111111' }
-const text = { fontSize: '14px', lineHeight: '22px', color: '#333333' }
-const meta = { fontSize: '12px', lineHeight: '20px', color: '#666666' }
-const hr = { borderColor: '#eeeeee', margin: '24px 0' }
+const main = { backgroundColor: '#05050a', fontFamily: 'Helvetica, Arial, sans-serif' }
+const container = { backgroundColor: '#0a0a12', margin: '0 auto', padding: '36px 32px', maxWidth: '560px', border: '1px solid rgba(255, 255, 255, 0.1)' }
+const kicker = { fontSize: '11px', letterSpacing: '3px', color: '#DFBA73', margin: '0 0 8px', fontWeight: 'bold' }
+const heading = { fontSize: '28px', margin: '0 0 16px', color: '#ffffff', fontWeight: 'bold' }
+const text = { fontSize: '14px', lineHeight: '22px', color: '#e5e7eb' }
+const meta = { fontSize: '12px', lineHeight: '20px', color: '#9ca3af' }
+const hr = { borderColor: 'rgba(255, 255, 255, 0.1)', margin: '24px 0' }
 const button = {
-  backgroundColor: '#FF3333',
+  backgroundColor: '#E51924',
   color: '#ffffff',
-  fontSize: '13px',
-  letterSpacing: '1px',
-  padding: '12px 20px',
+  fontSize: '12px',
+  letterSpacing: '2px',
+  padding: '14px 24px',
   textDecoration: 'none',
+  fontWeight: 'bold',
+  display: 'inline-block',
 }
-const footer = { fontSize: '11px', color: '#999999', marginTop: '16px' }
+const footer = { fontSize: '11px', color: '#9ca3af', marginTop: '16px' }
+
