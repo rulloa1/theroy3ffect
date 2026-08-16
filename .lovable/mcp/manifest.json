@@ -1,0 +1,104 @@
+{
+  "version": 1,
+  "sdk_version": "0.26.2",
+  "path": "/mcp",
+  "auth": {
+    "type": "none"
+  },
+  "mcp": {
+    "server": {
+      "name": "pixel-perfect-capture",
+      "version": "0.1.0",
+      "title": "Pixel Perfect Capture"
+    },
+    "tools": [
+      {
+        "name": "list_services",
+        "title": "List services and pricing",
+        "description": "List every service tier Rory Ulloa offers (name, price, what's included) plus the available add-ons.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_service",
+        "title": "Get service details",
+        "description": "Get the full details of one service tier by name (e.g. 'Brand Sprint', 'Website / UI-UX', 'Design + Build', 'Retainer').",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Service tier name or a fragment of it."
+            }
+          },
+          "required": [
+            "name"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "send_inquiry",
+        "title": "Send a project inquiry",
+        "description": "Send a new project inquiry to Rory Ulloa. Emails the details to Rory and a confirmation to the sender.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "openWorldHint": true
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "description": "Sender's full name."
+            },
+            "email": {
+              "type": "string",
+              "maxLength": 255,
+              "format": "email",
+              "pattern": "^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$",
+              "description": "Sender's email address."
+            },
+            "projectType": {
+              "description": "Short label for the kind of project, e.g. 'Brand Sprint'.",
+              "type": "string",
+              "maxLength": 60
+            },
+            "message": {
+              "type": "string",
+              "minLength": 10,
+              "maxLength": 2000,
+              "description": "What the project is about, scope, timeline and budget."
+            }
+          },
+          "required": [
+            "name",
+            "email",
+            "message"
+          ]
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
