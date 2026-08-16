@@ -24,6 +24,22 @@ function webhookSecret(env: StripeEnv): string {
   return value
 }
 
+/** Resolve an app user id from checkout metadata, falling back to email match. */
+async function resolveUserId(
+  supabaseAdmin: { from: (t: string) => any },
+  metadataUserId: string | null | undefined,
+  email: string | null | undefined,
+): Promise<string | null> {
+  if (metadataUserId) return metadataUserId
+  if (!email) return null
+  const { data } = await supabaseAdmin
+    .from('profiles')
+    .select('id')
+    .eq('email', email.toLowerCase())
+    .maybeSingle()
+  return data?.id ?? null
+}
+
 async function handleCheckoutCompleted(
   stripe: Stripe,
   session: Stripe.Checkout.Session,
@@ -46,6 +62,23 @@ async function handleCheckoutCompleted(
     full.customer_details?.email ?? full.customer_email ?? undefined
   const amountLabel = money(full.amount_total, full.currency)
 
+  const isDeposit = full.metadata?.['is_deposit'] === 'true'
+  const balanceDue = Number(full.metadata?.['balance_due_cents'] ?? 0)
+  const userId = await resolveUserId(
+    supabaseAdmin as never,
+    full.metadata?.['user_id'],
+    customerEmail,
+  )
+
+  // Was this session already fulfilled? Stripe retries webhooks, and both
+  // checkout.session.completed and async_payment_succeeded can arrive.
+  const { data: existing } = await supabaseAdmin
+    .from('orders')
+    .select('emails_sent')
+    .eq('stripe_session_id', full.id)
+    .maybeSingle()
+  const alreadyEmailed = existing?.emails_sent === true
+
   // Record the order (idempotent on the session id).
   const { error } = await supabaseAdmin.from('orders').upsert(
     {
@@ -53,6 +86,9 @@ async function handleCheckoutCompleted(
       stripe_payment_intent_id:
         typeof full.payment_intent === 'string' ? full.payment_intent : null,
       stripe_customer_id: typeof full.customer === 'string' ? full.customer : null,
+      stripe_subscription_id:
+        typeof full.subscription === 'string' ? full.subscription : null,
+      user_id: userId,
       customer_email: customerEmail ?? null,
       customer_name: full.customer_details?.name ?? null,
       price_id: full.metadata?.['price_lookup_key'] ?? price?.lookup_key ?? null,
@@ -62,12 +98,18 @@ async function handleCheckoutCompleted(
       amount_total: full.amount_total ?? 0,
       currency: full.currency ?? 'usd',
       payment_status: full.payment_status ?? 'unpaid',
+      session_status: full.status ?? 'complete',
+      is_deposit: isDeposit,
+      balance_due_cents: balanceDue,
+      balance_status: isDeposit ? 'pending' : 'none',
       environment: env,
-      emails_sent: false,
+      emails_sent: alreadyEmailed,
     },
     { onConflict: 'stripe_session_id' },
   )
   if (error) console.error('Order insert failed:', error.message)
+
+  if (alreadyEmailed) return
 
   // Notify Rory, and send the client a receipt plus the brief link.
   try {
@@ -100,6 +142,112 @@ async function handleCheckoutCompleted(
     console.error('Order emails failed:', mailError)
   }
 }
+
+/** Records renewals, first invoices and deposit-balance invoices. */
+async function handleInvoice(invoice: Stripe.Invoice, env: StripeEnv) {
+  const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+
+  const subscriptionId =
+    typeof (invoice as unknown as { subscription?: unknown }).subscription === 'string'
+      ? ((invoice as unknown as { subscription: string }).subscription)
+      : null
+  const customerId = typeof invoice.customer === 'string' ? invoice.customer : null
+  const email = invoice.customer_email ?? null
+  const userId = await resolveUserId(supabaseAdmin as never, null, email)
+
+  if (subscriptionId) {
+    await supabaseAdmin.from('subscription_invoices').upsert(
+      {
+        stripe_invoice_id: invoice.id,
+        stripe_subscription_id: subscriptionId,
+        stripe_customer_id: customerId,
+        user_id: userId,
+        customer_email: email,
+        description: invoice.lines?.data?.[0]?.description ?? 'Retainer invoice',
+        amount_due: invoice.amount_due ?? 0,
+        amount_paid: invoice.amount_paid ?? 0,
+        currency: invoice.currency ?? 'usd',
+        status: invoice.status ?? 'open',
+        hosted_invoice_url: invoice.hosted_invoice_url ?? null,
+        invoice_pdf: invoice.invoice_pdf ?? null,
+        period_start: invoice.period_start
+          ? new Date(invoice.period_start * 1000).toISOString()
+          : null,
+        period_end: invoice.period_end
+          ? new Date(invoice.period_end * 1000).toISOString()
+          : null,
+        billing_reason: invoice.billing_reason ?? null,
+        environment: env,
+      },
+      { onConflict: 'stripe_invoice_id' },
+    )
+
+    await supabaseAdmin
+      .from('retainer_subscriptions')
+      .update({ latest_invoice_status: invoice.status ?? 'open' })
+      .eq('stripe_subscription_id', subscriptionId)
+      .eq('environment', env)
+  }
+
+  // Deposit balance invoices carry the order id in metadata.
+  const orderId = invoice.metadata?.['order_id']
+  if (orderId && invoice.status === 'paid') {
+    await supabaseAdmin
+      .from('orders')
+      .update({ balance_status: 'paid' })
+      .eq('id', orderId)
+  }
+
+  if (invoice.status !== 'paid' && email) {
+    try {
+      await sendTemplateEmail('subscription-notification', OWNER_EMAIL, {
+        templateData: {
+          event: 'payment failed',
+          productName: invoice.lines?.data?.[0]?.description ?? 'Retainer',
+          customerEmail: email,
+          status: invoice.status ?? 'open',
+          periodEnd: '',
+          cancelAtPeriodEnd: false,
+        },
+        idempotencyKey: `invoice-failed-${invoice.id}-${invoice.attempt_count ?? 0}`,
+        replyTo: email,
+      })
+    } catch (mailError) {
+      console.error('Invoice failure email failed:', mailError)
+    }
+  }
+}
+
+/** Keeps orders in sync with refunds, disputes and abandoned checkouts. */
+async function handleChargeChange(charge: Stripe.Charge, env: StripeEnv, disputed: boolean) {
+  const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+  const paymentIntentId =
+    typeof charge.payment_intent === 'string' ? charge.payment_intent : null
+  if (!paymentIntentId) return
+
+  await supabaseAdmin
+    .from('orders')
+    .update({
+      amount_refunded: charge.amount_refunded ?? 0,
+      payment_status: disputed
+        ? 'disputed'
+        : (charge.amount_refunded ?? 0) >= (charge.amount ?? 0)
+          ? 'refunded'
+          : 'partially_refunded',
+    })
+    .eq('stripe_payment_intent_id', paymentIntentId)
+    .eq('environment', env)
+}
+
+async function handleSessionExpired(session: Stripe.Checkout.Session, env: StripeEnv) {
+  const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+  await supabaseAdmin
+    .from('orders')
+    .update({ session_status: 'expired' })
+    .eq('stripe_session_id', session.id)
+    .eq('environment', env)
+}
+
 
 async function handleSubscriptionEvent(
   stripe: Stripe,
