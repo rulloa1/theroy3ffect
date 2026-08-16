@@ -42,7 +42,17 @@ export function SiteHeader({ onNavigate }: { onNavigate: (target: NavTarget) => 
 
         <button
           type="button"
+        <Link
+          to={user ? "/account" : "/auth"}
+          className="hidden rounded-full border border-white/20 px-4 py-2 font-mono text-xs tracking-widest text-white transition-colors hover:border-[#FF3333] sm:inline-block"
+        >
+          {user ? "ACCOUNT" : "SIGN IN"}
+        </Link>
+
+        <button
+          type="button"
           onClick={() => onNavigate("LET'S WORK")}
+
           className="rounded-full border border-white/20 px-5 py-2 font-mono text-xs tracking-widest text-white transition-colors hover:border-[#FF3333] hover:bg-[#FF3333] hover:text-black"
         >
           COMMISSION
