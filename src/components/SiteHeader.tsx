@@ -10,10 +10,10 @@ export function SiteHeader({ onNavigate }: { onNavigate: (target: NavTarget) => 
   const { user } = useAuth();
 
   return (
-    <header className="fixed inset-x-0 top-0 z-30 flex items-center justify-between px-5 py-5 md:px-10">
+    <header className="fixed inset-x-0 top-0 z-30 flex items-center justify-between border-b border-white/5 bg-[#030014]/75 px-4 py-3.5 backdrop-blur-md transition-all sm:px-6 md:px-10 md:py-4">
       <div className="flex items-center">
-        <Logo variant="full" size="md" href="/" className="hidden sm:inline-flex" />
-        <Logo variant="compact" size="md" href="/" className="inline-flex sm:hidden" />
+        <Logo variant="full" size="md" href="/" className="hidden md:inline-flex" />
+        <Logo variant="compact" size="sm" href="/" className="inline-flex md:hidden" />
       </div>
 
       <nav aria-label="Primary" className="hidden items-center gap-8 lg:flex">
@@ -29,19 +29,19 @@ export function SiteHeader({ onNavigate }: { onNavigate: (target: NavTarget) => 
         ))}
       </nav>
 
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2 sm:gap-3">
         <button
           type="button"
           aria-label="Open menu"
           onClick={() => onNavigate("MENU")}
-          className="rounded-full border border-white/20 px-4 py-2 font-mono text-xs tracking-widest text-white transition-colors hover:border-[#FF3333] lg:hidden"
+          className="rounded-full border border-white/20 px-3 py-1.5 font-mono text-[10px] tracking-widest text-white transition-colors hover:border-[#FF3333] sm:px-4 sm:py-2 sm:text-xs lg:hidden"
         >
           MENU
         </button>
 
         <Link
           to={user ? "/account" : "/auth"}
-          className="hidden rounded-full border border-white/20 px-4 py-2 font-mono text-xs tracking-widest text-white transition-colors hover:border-[#FF3333] sm:inline-block"
+          className="hidden rounded-full border border-white/20 px-3 py-1.5 font-mono text-[10px] tracking-widest text-white transition-colors hover:border-[#FF3333] sm:inline-block sm:px-4 sm:py-2 sm:text-xs"
         >
           {user ? "ACCOUNT" : "SIGN IN"}
         </Link>
@@ -49,9 +49,7 @@ export function SiteHeader({ onNavigate }: { onNavigate: (target: NavTarget) => 
         <button
           type="button"
           onClick={() => onNavigate("LET'S WORK")}
-
-
-          className="rounded-full border border-white/20 px-5 py-2 font-mono text-xs tracking-widest text-white transition-colors hover:border-[#FF3333] hover:bg-[#FF3333] hover:text-black"
+          className="rounded-full border border-white/20 px-3.5 py-1.5 font-mono text-[10px] tracking-widest text-white transition-colors hover:border-[#FF3333] hover:bg-[#FF3333] hover:text-black sm:px-5 sm:py-2 sm:text-xs"
         >
           COMMISSION
         </button>

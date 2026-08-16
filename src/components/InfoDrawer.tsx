@@ -127,9 +127,9 @@ export function InfoDrawer({
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", stiffness: 260, damping: 32 }}
-            className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto border-l border-white/5 bg-[#333333] sm:max-w-xl md:max-w-2xl"
+            className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto border-l border-white/10 bg-[#0a0a14] sm:max-w-xl md:max-w-2xl"
           >
-            <div className="sticky top-0 z-10 flex items-center justify-between bg-[#333333]/90 px-6 py-5 backdrop-blur">
+            <div className="sticky top-0 z-10 flex items-center justify-between border-b border-white/5 bg-[#0a0a14]/95 px-6 py-5 backdrop-blur">
               <button
                 type="button"
                 aria-label={active ? "Back to menu" : "Menu"}

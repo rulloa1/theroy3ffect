@@ -92,7 +92,7 @@ function AccountPage() {
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <span className="font-mono text-[10px] tracking-widest text-[#FF3333]">CLIENT ACCOUNT</span>
-            <h1 className="mt-3 font-display text-5xl uppercase leading-[0.9] text-white md:text-6xl">
+            <h1 className="mt-3 font-display text-3xl uppercase leading-[0.9] text-white sm:text-5xl md:text-6xl">
               {data?.fullName ? data.fullName.split(" ")[0] : "YOUR"} DASHBOARD
             </h1>
             <p className="mt-2 font-mono text-xs text-white/40">{data?.email ?? user?.email}</p>

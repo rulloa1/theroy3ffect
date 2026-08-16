@@ -216,7 +216,7 @@ function BriefPage() {
             </span>
           )}
         </div>
-        <h1 className="mt-3 font-display text-5xl uppercase leading-[0.9] text-white md:text-6xl">
+        <h1 className="mt-3 font-display text-4xl uppercase leading-[0.9] text-white sm:text-5xl md:text-6xl">
           PROJECT BRIEF
         </h1>
         <p className="mt-4 max-w-lg font-mono text-xs leading-relaxed text-white/50">
