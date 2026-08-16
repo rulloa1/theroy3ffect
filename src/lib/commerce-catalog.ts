@@ -152,3 +152,13 @@ export const ADD_ONS: CatalogAddOn[] = [
     description: "One additional designed (and optionally built) page.",
   },
 ];
+
+/**
+ * Deposit price -> remaining balance in cents, invoiced at project completion.
+ * The retainer "first month" is not a deposit, so it carries no balance.
+ */
+export const DEPOSIT_BALANCE_CENTS: Record<string, number> = {
+  deposit_brand_sprint_onetime: 125000,
+  deposit_website_uiux_onetime: 250000,
+  deposit_design_build_onetime: 400000,
+};

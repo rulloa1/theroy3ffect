@@ -44,6 +44,31 @@ export const Route = createFileRoute('/api/public/brief-intake')({
         const d = parsed.data
         const briefId = crypto.randomUUID()
 
+        // Only trust a session id Stripe confirms as a completed checkout.
+        let verifiedSessionId: string | null = null
+        let sessionUserId: string | null = null
+        if (d.sessionId && /^cs_[a-zA-Z0-9_]+$/.test(d.sessionId)) {
+          const { createStripeClient } = await import('@/lib/stripe.server')
+          const envs: Array<'sandbox' | 'live'> = process.env['STRIPE_LIVE_API_KEY']
+            ? ['live', 'sandbox']
+            : ['sandbox']
+          for (const env of envs) {
+            try {
+              const stripe = createStripeClient(env)
+              const session = await stripe.checkout.sessions.retrieve(d.sessionId)
+              if (session.status === 'complete' && session.payment_status !== 'unpaid') {
+                verifiedSessionId = session.id
+                sessionUserId = session.metadata?.['user_id'] ?? null
+              }
+              break
+            } catch {
+              // Session belongs to the other environment (or doesn't exist).
+            }
+          }
+        }
+
+
+
         // Build the PDF summary and store it privately.
         let pdfUrl = ''
         let pdfPath: string | null = null
@@ -75,10 +100,21 @@ export const Route = createFileRoute('/api/public/brief-intake')({
 
         try {
           const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+          let userId: string | null = sessionUserId
+          if (!userId) {
+            const { data: profile } = await supabaseAdmin
+              .from('profiles')
+              .select('id')
+              .eq('email', d.email.toLowerCase())
+              .maybeSingle()
+            userId = profile?.id ?? null
+          }
           const { error } = await supabaseAdmin.from('project_briefs').insert({
             id: briefId,
             pdf_path: pdfPath,
-            stripe_session_id: d.sessionId || null,
+            user_id: userId,
+            stripe_session_id: verifiedSessionId,
+
             name: d.name,
             email: d.email,
             company: d.company || null,
