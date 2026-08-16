@@ -1,12 +1,32 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowLeft, Check, Menu, Sparkles, X } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, Check, Menu, Sparkles, X } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { PRICING_TIERS } from "./Pricing";
 
 const MENU = ["PROJECTS", "BLOG", "ABOUT", "RESUME", "PRICING", "LET'S WORK"] as const;
 type MenuItem = (typeof MENU)[number];
+
+interface Project {
+  title: string;
+  tagline: string;
+  description: string;
+  url: string;
+  tags: string[];
+}
+
+const PROJECTS: Project[] = [
+  {
+    title: "Zest Depot",
+    tagline: "Brand & digital experience",
+    description:
+      "A modern, high-energy storefront and brand system built for a fast-moving retail concept. Focus on conversion, clarity, and bold visual identity.",
+    url: "https://zest-depot-dev.lovable.app",
+    tags: ["UI/UX", "Brand Identity", "No-Code Build"],
+  },
+];
+
 
 const fieldClass =
   "w-full border-0 border-b border-white/30 bg-transparent px-0 py-3 text-sm text-white placeholder:text-white/40 focus:border-[#FF3333] focus:outline-none focus:ring-0";
