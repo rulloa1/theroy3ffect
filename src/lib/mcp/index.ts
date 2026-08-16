@@ -1,7 +1,8 @@
-import { defineMcp } from "@lovable.dev/mcp-js";
+import { defineMcp, type AnyToolDefinition } from "@lovable.dev/mcp-js";
 import listServicesTool from "./tools/list-services";
 import getServiceTool from "./tools/get-service";
 import sendInquiryTool from "./tools/send-inquiry";
+
 
 export default defineMcp({
   name: "pixel-perfect-capture",
