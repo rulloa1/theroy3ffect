@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { PRICING_TIERS } from "./Pricing";
 
-const MENU = ["PROJECTS", "BLOG", "ABOUT", "RESUME", "PRICING", "LET'S WORK"] as const;
+const MENU = ["PROJECTS", "PROCESS", "ABOUT", "RESUME", "PRICING", "LET'S WORK"] as const;
 type MenuItem = (typeof MENU)[number];
 
 interface Project {
@@ -307,15 +307,156 @@ export function InfoDrawer({
                 </div>
               )}
 
-              {active && active !== "LET'S WORK" && active !== "PRICING" && active !== "PROJECTS" && (
-                <div className="space-y-4">
-                  <h2 className="font-display text-4xl uppercase text-[#FF3333]">{active}</h2>
-                  <p className="max-w-md font-mono text-xs leading-relaxed text-white/50">
-                    Selected {active.toLowerCase()} content is being curated. Reach out through
-                    Let&apos;s Work and I&apos;ll send the full deck.
+              {active === "ABOUT" && (
+                <div className="space-y-6">
+                  <div>
+                    <span className="font-mono text-xs tracking-widest text-[#FF3333]">ABOUT</span>
+                    <h2 className="mt-2 font-display text-4xl uppercase text-white">Rory Ulloa</h2>
+                  </div>
+                  <div className="max-w-lg space-y-4 font-mono text-xs leading-relaxed text-white/60">
+                    <p>
+                      I&apos;m a freelance UI/UX designer and no-code developer working with founders and
+                      small teams across the US, based in the Houston, Texas area and available remotely.
+                    </p>
+                    <p>
+                      My work sits between brand and build: identity systems, high-contrast interface
+                      design, and shipped, production-ready websites and web apps. I design in Figma and
+                      build with modern no-code and AI-assisted stacks, so the thing you approve is the
+                      thing that goes live — no handoff gap, no rebuild.
+                    </p>
+                    <p>
+                      Typical engagements run from a one-week brand sprint to a full design-and-build
+                      project, with an ongoing retainer for teams that ship continuously. Every project
+                      starts with a written brief and a fixed scope so you know the cost before we begin.
+                    </p>
+                  </div>
+                  <ul className="grid gap-2 sm:grid-cols-2">
+                    {[
+                      "Brand identity & visual systems",
+                      "UI/UX design for web & product",
+                      "No-code / AI-assisted development",
+                      "Landing pages & conversion design",
+                      "Design systems & component libraries",
+                      "Ongoing design retainers",
+                    ].map((item) => (
+                      <li key={item} className="flex items-start gap-2 font-mono text-xs text-white/70">
+                        <Check className="mt-0.5 size-3 shrink-0 text-[#FF3333]" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="font-mono text-[11px] text-white/40">
+                    rory@theroyeffect.com · (281) 323-0450
                   </p>
                 </div>
               )}
+
+              {active === "PROCESS" && (
+                <div className="space-y-6">
+                  <div>
+                    <span className="font-mono text-xs tracking-widest text-[#FF3333]">HOW I WORK</span>
+                    <h2 className="mt-2 font-display text-4xl uppercase text-white">Process</h2>
+                  </div>
+                  <ol className="space-y-5">
+                    {[
+                      {
+                        step: "01",
+                        title: "Brief & scope",
+                        body: "You send a short brief — goals, audience, timeline, budget. I come back with a fixed scope, a price, and a start date. Nothing begins until both are agreed in writing.",
+                      },
+                      {
+                        step: "02",
+                        title: "Direction",
+                        body: "One focused round of visual direction: type, colour, layout language and the tone of the interface. We lock a single direction before any production work starts.",
+                      },
+                      {
+                        step: "03",
+                        title: "Design",
+                        body: "Full screens designed responsively, mobile through desktop, with real content instead of placeholder text. Two revision rounds are included in every project tier.",
+                      },
+                      {
+                        step: "04",
+                        title: "Build & launch",
+                        body: "I build the approved design as a live, responsive site — forms, payments, analytics and SEO basics wired up — then hand over access and a short walkthrough.",
+                      },
+                      {
+                        step: "05",
+                        title: "After launch",
+                        body: "Post-launch support is included for the first two weeks. Teams that keep shipping move onto a monthly retainer for continuous design and build work.",
+                      },
+                    ].map((item) => (
+                      <li key={item.step} className="border-l border-white/10 pl-4">
+                        <span className="font-mono text-[10px] tracking-widest text-[#FF3333]">
+                          {item.step}
+                        </span>
+                        <h3 className="font-display text-xl uppercase tracking-wide text-white">
+                          {item.title}
+                        </h3>
+                        <p className="mt-1 max-w-lg font-mono text-xs leading-relaxed text-white/50">
+                          {item.body}
+                        </p>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              )}
+
+              {active === "RESUME" && (
+                <div className="space-y-6">
+                  <div>
+                    <span className="font-mono text-xs tracking-widest text-[#FF3333]">CAPABILITIES</span>
+                    <h2 className="mt-2 font-display text-4xl uppercase text-white">Resume</h2>
+                  </div>
+                  <div className="space-y-6">
+                    {[
+                      {
+                        heading: "Practice",
+                        rows: [
+                          "The Roy Effect — Independent design & no-code studio, Houston TX. Brand systems, UI/UX and shipped web builds for founders and small teams.",
+                        ],
+                      },
+                      {
+                        heading: "Services",
+                        rows: [
+                          "Brand Sprint — identity, type and colour system, brand guide.",
+                          "Website / UI-UX — responsive marketing sites and product interfaces.",
+                          "Design + Build — end-to-end design through live launch.",
+                          "Retainer — ongoing monthly design and build capacity.",
+                        ],
+                      },
+                      {
+                        heading: "Tools & stack",
+                        rows: [
+                          "Design — Figma, prototyping, design systems, motion.",
+                          "Build — React, Tailwind CSS, no-code and AI-assisted platforms.",
+                          "Commerce & data — Stripe payments, hosted databases, auth, transactional email.",
+                        ],
+                      },
+                    ].map((block) => (
+                      <div key={block.heading}>
+                        <h3 className="font-mono text-xs uppercase tracking-widest text-[#FF3333]">
+                          {block.heading}
+                        </h3>
+                        <ul className="mt-2 space-y-2">
+                          {block.rows.map((row) => (
+                            <li
+                              key={row}
+                              className="max-w-lg font-mono text-xs leading-relaxed text-white/60"
+                            >
+                              {row}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="font-mono text-[11px] text-white/40">
+                    A detailed PDF resume and references are available on request — email
+                    rory@theroyeffect.com.
+                  </p>
+                </div>
+              )}
+
 
             </div>
           </motion.aside>
