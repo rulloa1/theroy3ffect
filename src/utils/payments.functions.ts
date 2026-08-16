@@ -1,4 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
+import { DEPOSIT_BALANCE_CENTS } from "@/lib/commerce-catalog";
+
 import {
   type StripeEnv,
   createStripeClient,
