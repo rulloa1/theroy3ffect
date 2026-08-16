@@ -260,7 +260,54 @@ export function InfoDrawer({
                 </form>
               )}
 
-              {active && active !== "LET'S WORK" && active !== "PRICING" && (
+              {active === "PROJECTS" && (
+                <div className="space-y-6">
+                  <div>
+                    <span className="font-mono text-xs tracking-widest text-[#FF3333]">SELECTED WORK</span>
+                    <h2 className="mt-2 font-display text-4xl uppercase text-white">Projects</h2>
+                  </div>
+                  <div className="grid gap-4">
+                    {PROJECTS.map((project) => (
+                      <a
+                        key={project.title}
+                        href={project.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group block border border-white/10 bg-white/[0.02] p-5 transition-colors hover:border-[#FF3333]/50"
+                      >
+                        <div className="flex items-start justify-between gap-4">
+                          <div>
+                            <h3 className="font-display text-xl uppercase tracking-wide text-white transition-colors group-hover:text-[#FF3333]">
+                              {project.title}
+                            </h3>
+                            <p className="mt-1 font-mono text-xs text-white/40">{project.tagline}</p>
+                          </div>
+                          <ArrowUpRight className="size-5 shrink-0 text-white/40 transition-colors group-hover:text-[#FF3333]" />
+                        </div>
+                        <p className="mt-3 max-w-md font-mono text-xs leading-relaxed text-white/50">
+                          {project.description}
+                        </p>
+                        <div className="mt-4 flex flex-wrap gap-2">
+                          {project.tags.map((tag) => (
+                            <span
+                              key={tag}
+                              className="border border-white/10 px-2 py-1 font-mono text-[10px] uppercase tracking-wider text-white/60"
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      </a>
+                    ))}
+                  </div>
+                  <p className="font-mono text-[11px] leading-relaxed text-white/40">
+                    More case studies and process decks are available on request. Reach out through
+                    Let&apos;s Work to discuss a similar project.
+                  </p>
+                </div>
+              )}
+
+              {active && active !== "LET'S WORK" && active !== "PRICING" && active !== "PROJECTS" && (
                 <div className="space-y-4">
                   <h2 className="font-display text-4xl uppercase text-[#FF3333]">{active}</h2>
                   <p className="max-w-md font-mono text-xs leading-relaxed text-white/50">
