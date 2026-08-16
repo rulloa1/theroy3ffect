@@ -44,6 +44,27 @@ export const Route = createFileRoute('/api/public/brief-intake')({
         const d = parsed.data
         const briefId = crypto.randomUUID()
 
+        // Only trust a session id Stripe confirms as a completed checkout.
+        let verifiedSessionId: string | null = null
+        let sessionUserId: string | null = null
+        if (d.sessionId && /^cs_[a-zA-Z0-9_]+$/.test(d.sessionId)) {
+          try {
+            const { createStripeClient } = await import('@/lib/stripe.server')
+            const env = new URL(request.url).hostname.includes('theroyeffect.com')
+              ? ('live' as const)
+              : ('sandbox' as const)
+            const stripe = createStripeClient(env)
+            const session = await stripe.checkout.sessions.retrieve(d.sessionId)
+            if (session.status === 'complete' && session.payment_status !== 'unpaid') {
+              verifiedSessionId = session.id
+              sessionUserId = session.metadata?.['user_id'] ?? null
+            }
+          } catch (verifyError) {
+            console.error('Brief session verification failed:', verifyError)
+          }
+        }
+
+
         // Build the PDF summary and store it privately.
         let pdfUrl = ''
         let pdfPath: string | null = null
