@@ -395,8 +395,28 @@ export const Route = createFileRoute('/api/public/payments/webhook')({
                 env,
               )
               break
+            case 'invoice.paid':
+            case 'invoice.payment_failed':
+            case 'invoice.finalized':
+              await handleInvoice(event.data.object as Stripe.Invoice, env)
+              break
+            case 'charge.refunded':
+              await handleChargeChange(event.data.object as Stripe.Charge, env, false)
+              break
+            case 'charge.dispute.created': {
+              const dispute = event.data.object as Stripe.Dispute
+              if (typeof dispute.charge === 'string') {
+                const charge = await stripe.charges.retrieve(dispute.charge)
+                await handleChargeChange(charge, env, true)
+              }
+              break
+            }
+            case 'checkout.session.expired':
+              await handleSessionExpired(event.data.object as Stripe.Checkout.Session, env)
+              break
             default:
               break
+
           }
         } catch (error) {
           console.error(`Webhook handling failed for ${event.type}:`, error)
