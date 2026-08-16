@@ -23,6 +23,9 @@ export function HeroContent() {
   return (
     <div className="pointer-events-none relative z-20 flex w-full flex-1 flex-col items-center justify-end px-5 pb-[28vh] text-center">
       <h1 className="flex w-full flex-col items-center leading-[0.82]">
+        <span className="mb-3 font-mono text-[10px] uppercase tracking-[0.35em] text-white/60 sm:text-xs">
+          Rory Ulloa — Freelance UI/UX Designer &amp; No-Code Developer
+        </span>
         <span className="text-stroke-thin font-display text-[6.5vw] uppercase tracking-[0.22em] md:[-webkit-text-stroke:2px_white]">
           DESIGN WITH
         </span>
@@ -31,6 +34,7 @@ export function HeroContent() {
           className="font-display text-[14vw] uppercase leading-[0.78] tracking-tight text-[#FF3333]"
         />
       </h1>
+
 
       <motion.p
         key={bioKey}

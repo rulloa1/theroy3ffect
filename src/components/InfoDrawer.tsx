@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { PRICING_TIERS } from "./Pricing";
 
-const MENU = ["PROJECTS", "BLOG", "ABOUT", "RESUME", "PRICING", "LET'S WORK"] as const;
+const MENU = ["PROJECTS", "PROCESS", "ABOUT", "RESUME", "PRICING", "LET'S WORK"] as const;
 type MenuItem = (typeof MENU)[number];
 
 interface Project {
