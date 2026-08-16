@@ -280,23 +280,37 @@ async function handleSubscriptionEvent(
     }
   }
 
-  const periodEndUnix = (item as unknown as { current_period_end?: number } | undefined)
-    ?.current_period_end
+  const periodEndUnix =
+    (item as unknown as { current_period_end?: number } | undefined)?.current_period_end ??
+    (subscription as unknown as { current_period_end?: number }).current_period_end
   const periodEnd = periodEndUnix ? new Date(periodEndUnix * 1000) : null
+  const periodStartUnix =
+    (item as unknown as { current_period_start?: number } | undefined)?.current_period_start ??
+    (subscription as unknown as { current_period_start?: number }).current_period_start
+  const periodStart = periodStartUnix ? new Date(periodStartUnix * 1000) : null
+
+  const userId = await resolveUserId(
+    supabaseAdmin as never,
+    subscription.metadata?.['user_id'],
+    customerEmail,
+  )
 
   const { error } = await supabaseAdmin.from('retainer_subscriptions').upsert(
     {
       stripe_subscription_id: subscription.id,
       stripe_customer_id:
         typeof subscription.customer === 'string' ? subscription.customer : null,
+      user_id: userId,
       customer_email: customerEmail,
       price_id: priceId,
       product_name: productName,
       status: subscription.status,
       cancel_at_period_end: subscription.cancel_at_period_end ?? false,
+      current_period_start: periodStart ? periodStart.toISOString() : null,
       current_period_end: periodEnd ? periodEnd.toISOString() : null,
       environment: env,
     },
+
     { onConflict: 'stripe_subscription_id' },
   )
   if (error) console.error('Subscription upsert failed:', error.message)
