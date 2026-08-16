@@ -100,10 +100,21 @@ export const Route = createFileRoute('/api/public/brief-intake')({
 
         try {
           const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+          let userId: string | null = sessionUserId
+          if (!userId) {
+            const { data: profile } = await supabaseAdmin
+              .from('profiles')
+              .select('id')
+              .eq('email', d.email.toLowerCase())
+              .maybeSingle()
+            userId = profile?.id ?? null
+          }
           const { error } = await supabaseAdmin.from('project_briefs').insert({
             id: briefId,
             pdf_path: pdfPath,
-            stripe_session_id: d.sessionId || null,
+            user_id: userId,
+            stripe_session_id: verifiedSessionId,
+
             name: d.name,
             email: d.email,
             company: d.company || null,
