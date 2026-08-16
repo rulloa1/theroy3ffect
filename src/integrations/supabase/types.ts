@@ -16,7 +16,12 @@ export type Database = {
     Tables: {
       orders: {
         Row: {
+          amount_refunded: number
           amount_total: number
+          balance_due_cents: number
+          balance_invoice_id: string | null
+          balance_invoice_url: string | null
+          balance_status: string
           created_at: string
           currency: string
           customer_email: string | null
@@ -24,18 +29,27 @@ export type Database = {
           emails_sent: boolean
           environment: string
           id: string
+          is_deposit: boolean
           payment_status: string
           price_id: string | null
           product_name: string | null
           purchase_kind: string
+          session_status: string | null
           stripe_customer_id: string | null
           stripe_payment_intent_id: string | null
           stripe_session_id: string
+          stripe_subscription_id: string | null
           tier_label: string | null
           updated_at: string
+          user_id: string | null
         }
         Insert: {
+          amount_refunded?: number
           amount_total?: number
+          balance_due_cents?: number
+          balance_invoice_id?: string | null
+          balance_invoice_url?: string | null
+          balance_status?: string
           created_at?: string
           currency?: string
           customer_email?: string | null
@@ -43,18 +57,27 @@ export type Database = {
           emails_sent?: boolean
           environment?: string
           id?: string
+          is_deposit?: boolean
           payment_status?: string
           price_id?: string | null
           product_name?: string | null
           purchase_kind?: string
+          session_status?: string | null
           stripe_customer_id?: string | null
           stripe_payment_intent_id?: string | null
           stripe_session_id: string
+          stripe_subscription_id?: string | null
           tier_label?: string | null
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
+          amount_refunded?: number
           amount_total?: number
+          balance_due_cents?: number
+          balance_invoice_id?: string | null
+          balance_invoice_url?: string | null
+          balance_status?: string
           created_at?: string
           currency?: string
           customer_email?: string | null
@@ -62,14 +85,48 @@ export type Database = {
           emails_sent?: boolean
           environment?: string
           id?: string
+          is_deposit?: boolean
           payment_status?: string
           price_id?: string | null
           product_name?: string | null
           purchase_kind?: string
+          session_status?: string | null
           stripe_customer_id?: string | null
           stripe_payment_intent_id?: string | null
           stripe_session_id?: string
+          stripe_subscription_id?: string | null
           tier_label?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          company: string | null
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          stripe_customer_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          company?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id: string
+          stripe_customer_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          company?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          stripe_customer_id?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -91,6 +148,7 @@ export type Database = {
           references_links: string | null
           stripe_session_id: string | null
           timeline: string | null
+          user_id: string | null
         }
         Insert: {
           audience?: string | null
@@ -108,6 +166,7 @@ export type Database = {
           references_links?: string | null
           stripe_session_id?: string | null
           timeline?: string | null
+          user_id?: string | null
         }
         Update: {
           audience?: string | null
@@ -125,6 +184,7 @@ export type Database = {
           references_links?: string | null
           stripe_session_id?: string | null
           timeline?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -133,43 +193,139 @@ export type Database = {
           cancel_at_period_end: boolean
           created_at: string
           current_period_end: string | null
+          current_period_start: string | null
           customer_email: string | null
           environment: string
           id: string
+          latest_invoice_status: string | null
           price_id: string | null
           product_name: string | null
           status: string
           stripe_customer_id: string | null
           stripe_subscription_id: string
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           cancel_at_period_end?: boolean
           created_at?: string
           current_period_end?: string | null
+          current_period_start?: string | null
           customer_email?: string | null
           environment?: string
           id?: string
+          latest_invoice_status?: string | null
           price_id?: string | null
           product_name?: string | null
           status?: string
           stripe_customer_id?: string | null
           stripe_subscription_id: string
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           cancel_at_period_end?: boolean
           created_at?: string
           current_period_end?: string | null
+          current_period_start?: string | null
           customer_email?: string | null
           environment?: string
           id?: string
+          latest_invoice_status?: string | null
           price_id?: string | null
           product_name?: string | null
           status?: string
           stripe_customer_id?: string | null
           stripe_subscription_id?: string
           updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      subscription_invoices: {
+        Row: {
+          amount_due: number
+          amount_paid: number
+          billing_reason: string | null
+          created_at: string
+          currency: string
+          customer_email: string | null
+          description: string | null
+          environment: string
+          hosted_invoice_url: string | null
+          id: string
+          invoice_pdf: string | null
+          period_end: string | null
+          period_start: string | null
+          status: string
+          stripe_customer_id: string | null
+          stripe_invoice_id: string
+          stripe_subscription_id: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          amount_due?: number
+          amount_paid?: number
+          billing_reason?: string | null
+          created_at?: string
+          currency?: string
+          customer_email?: string | null
+          description?: string | null
+          environment?: string
+          hosted_invoice_url?: string | null
+          id?: string
+          invoice_pdf?: string | null
+          period_end?: string | null
+          period_start?: string | null
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_invoice_id: string
+          stripe_subscription_id?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          amount_due?: number
+          amount_paid?: number
+          billing_reason?: string | null
+          created_at?: string
+          currency?: string
+          customer_email?: string | null
+          description?: string | null
+          environment?: string
+          hosted_invoice_url?: string | null
+          id?: string
+          invoice_pdf?: string | null
+          period_end?: string | null
+          period_start?: string | null
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_invoice_id?: string
+          stripe_subscription_id?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
         }
         Relationships: []
       }
@@ -178,10 +334,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "client"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -308,6 +470,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "client"],
+    },
   },
 } as const
