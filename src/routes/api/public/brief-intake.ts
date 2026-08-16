@@ -48,21 +48,25 @@ export const Route = createFileRoute('/api/public/brief-intake')({
         let verifiedSessionId: string | null = null
         let sessionUserId: string | null = null
         if (d.sessionId && /^cs_[a-zA-Z0-9_]+$/.test(d.sessionId)) {
-          try {
-            const { createStripeClient } = await import('@/lib/stripe.server')
-            const env = new URL(request.url).hostname.includes('theroyeffect.com')
-              ? ('live' as const)
-              : ('sandbox' as const)
-            const stripe = createStripeClient(env)
-            const session = await stripe.checkout.sessions.retrieve(d.sessionId)
-            if (session.status === 'complete' && session.payment_status !== 'unpaid') {
-              verifiedSessionId = session.id
-              sessionUserId = session.metadata?.['user_id'] ?? null
+          const { createStripeClient } = await import('@/lib/stripe.server')
+          const envs: Array<'sandbox' | 'live'> = process.env['STRIPE_LIVE_API_KEY']
+            ? ['live', 'sandbox']
+            : ['sandbox']
+          for (const env of envs) {
+            try {
+              const stripe = createStripeClient(env)
+              const session = await stripe.checkout.sessions.retrieve(d.sessionId)
+              if (session.status === 'complete' && session.payment_status !== 'unpaid') {
+                verifiedSessionId = session.id
+                sessionUserId = session.metadata?.['user_id'] ?? null
+              }
+              break
+            } catch {
+              // Session belongs to the other environment (or doesn't exist).
             }
-          } catch (verifyError) {
-            console.error('Brief session verification failed:', verifyError)
           }
         }
+
 
 
         // Build the PDF summary and store it privately.
