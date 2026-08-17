@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -7,7 +7,7 @@ import { Logo } from "@/components/Logo";
 export const Route = createFileRoute("/brief")({
   validateSearch: (
     search: Record<string, unknown>,
-  ): { session_id?: string; scope_type?: string; scope_estimate?: string } => ({
+  ): { session_id?: string | undefined; scope_type?: string | undefined; scope_estimate?: string | undefined } => ({
     session_id: typeof search["session_id"] === "string" ? search["session_id"] : undefined,
     scope_type: typeof search["scope_type"] === "string" ? search["scope_type"] : undefined,
     scope_estimate: typeof search["scope_estimate"] === "string" ? search["scope_estimate"] : undefined,

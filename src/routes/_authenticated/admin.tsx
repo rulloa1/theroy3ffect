@@ -276,7 +276,7 @@ function AdminPage() {
         .map((t) => t.trim())
         .filter(Boolean);
 
-      const res = await upsertPortfolioProject({
+      const res = await upsertPortfolio({
         data: {
           id: projectForm.id,
           title: projectForm.title,
@@ -319,10 +319,10 @@ function AdminPage() {
     try {
       const res = await createProposal({
         data: {
-          briefId: proposalForm.briefId,
+          ...(proposalForm.briefId ? { briefId: proposalForm.briefId } : {}),
           clientName: proposalForm.clientName,
           clientEmail: proposalForm.clientEmail,
-          clientCompany: proposalForm.clientCompany || undefined,
+          ...(proposalForm.clientCompany ? { clientCompany: proposalForm.clientCompany } : {}),
           projectTitle: proposalForm.projectTitle,
           scopeDeliverables: proposalForm.scopeDeliverables,
           timelineWeeks: proposalForm.timelineWeeks,
