@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { requireSupabaseAuth } from "@/utils/auth.middleware";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 export interface ProjectProposal {
   id: string;
@@ -43,7 +43,7 @@ export const adminListProposals = createServerFn({ method: "GET" })
       return [];
     }
 
-    return (data ?? []) as ProjectProposal[];
+    return (data ?? []) as unknown as ProjectProposal[];
   });
 
 /** Create a new proposal */
@@ -129,7 +129,7 @@ export const getPublicProposal = createServerFn({ method: "GET" })
         .eq("share_token", token);
     }
 
-    return data as ProjectProposal;
+    return data as unknown as ProjectProposal;
   });
 
 /** Public function for client to digitally sign proposal */

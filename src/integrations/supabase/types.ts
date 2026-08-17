@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      contact_inquiries: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          message: string
+          name: string
+          project_type: string | null
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          message: string
+          name: string
+          project_type?: string | null
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          message?: string
+          name?: string
+          project_type?: string | null
+          status?: string
+        }
+        Relationships: []
+      }
       orders: {
         Row: {
           amount_refunded: number
@@ -144,6 +174,9 @@ export type Database = {
           id: string
           name: string
           pdf_path: string | null
+          project_links: string | null
+          project_notes: string | null
+          project_status: string
           project_type: string
           references_links: string | null
           stripe_session_id: string | null
@@ -162,6 +195,9 @@ export type Database = {
           id?: string
           name: string
           pdf_path?: string | null
+          project_links?: string | null
+          project_notes?: string | null
+          project_status?: string
           project_type: string
           references_links?: string | null
           stripe_session_id?: string | null
@@ -180,11 +216,74 @@ export type Database = {
           id?: string
           name?: string
           pdf_path?: string | null
+          project_links?: string | null
+          project_notes?: string | null
+          project_status?: string
           project_type?: string
           references_links?: string | null
           stripe_session_id?: string | null
           timeline?: string | null
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      project_proposals: {
+        Row: {
+          balance_cents: number
+          brief_id: string | null
+          client_company: string | null
+          client_email: string
+          client_name: string
+          client_signature_name: string | null
+          client_signed_at: string | null
+          created_at: string
+          deposit_cents: number
+          id: string
+          project_title: string
+          scope_deliverables: string
+          share_token: string
+          status: string
+          terms: string
+          timeline_weeks: string
+          total_price_cents: number
+        }
+        Insert: {
+          balance_cents?: number
+          brief_id?: string | null
+          client_company?: string | null
+          client_email: string
+          client_name: string
+          client_signature_name?: string | null
+          client_signed_at?: string | null
+          created_at?: string
+          deposit_cents?: number
+          id?: string
+          project_title: string
+          scope_deliverables: string
+          share_token: string
+          status?: string
+          terms?: string
+          timeline_weeks?: string
+          total_price_cents?: number
+        }
+        Update: {
+          balance_cents?: number
+          brief_id?: string | null
+          client_company?: string | null
+          client_email?: string
+          client_name?: string
+          client_signature_name?: string | null
+          client_signed_at?: string | null
+          created_at?: string
+          deposit_cents?: number
+          id?: string
+          project_title?: string
+          scope_deliverables?: string
+          share_token?: string
+          status?: string
+          terms?: string
+          timeline_weeks?: string
+          total_price_cents?: number
         }
         Relationships: []
       }
@@ -239,6 +338,48 @@ export type Database = {
           stripe_subscription_id?: string
           updated_at?: string
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      showcase_projects: {
+        Row: {
+          category: string | null
+          created_at: string
+          description: string
+          id: string
+          is_published: boolean
+          metric: string | null
+          sort_order: number
+          tagline: string | null
+          tags: string[]
+          title: string
+          url: string | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          description: string
+          id?: string
+          is_published?: boolean
+          metric?: string | null
+          sort_order?: number
+          tagline?: string | null
+          tags?: string[]
+          title: string
+          url?: string | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          description?: string
+          id?: string
+          is_published?: boolean
+          metric?: string | null
+          sort_order?: number
+          tagline?: string | null
+          tags?: string[]
+          title?: string
+          url?: string | null
         }
         Relationships: []
       }
