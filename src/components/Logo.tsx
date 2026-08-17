@@ -8,7 +8,7 @@ export interface LogoProps {
    * - 'full': Horizontal (Emblem + THE ROY EFFECT + DIRT, REFINED INTO GOLD)
    * - 'stacked': Vertical centered (Emblem on top + THE ROY EFFECT + DIRT, REFINED INTO GOLD)
    */
-  variant?: "mark" | "compact" | "full" | "stacked";
+  variant?: "mark" | "compact" | "full" | "stacked" | "responsive";
   /** Size preset */
   size?: "sm" | "md" | "lg" | "xl";
   /** Optional custom CSS classes for the container */
