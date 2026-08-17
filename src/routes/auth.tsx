@@ -103,8 +103,10 @@ function AuthPage() {
     <main className="flex min-h-screen items-center justify-center bg-[#030014] px-5 py-24">
       <Toaster />
       <div className="w-full max-w-md border border-white/10 bg-white/[0.02] p-8">
-        <Logo variant="full" size="sm" href="/" className="mb-6" />
-        <span className="font-mono text-[10px] tracking-widest text-[#FF3333]">CLIENT ACCESS</span>
+        <div className="mb-6 flex justify-center border-b border-white/10 pb-6">
+          <Logo variant="stacked" size="md" href="/" />
+        </div>
+        <span className="font-mono text-[10px] tracking-widest text-[#DFBA73]">CLIENT ACCESS</span>
         <h1 className="mt-3 font-display text-4xl uppercase leading-[0.9] text-white">
           {mode === "signin" ? "SIGN IN" : "CREATE ACCOUNT"}
         </h1>
