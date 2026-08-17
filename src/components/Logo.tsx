@@ -216,16 +216,22 @@ export function Logo({
       <LogoMark className={currentSize.mark} animated={interactive} />
 
       {variant !== "mark" && (
-        <div className="flex min-w-0 flex-col justify-center text-left">
+        <div
+          className={`min-w-0 flex-col justify-center text-left ${
+            variant === "responsive" ? "hidden sm:flex" : "flex"
+          }`}
+        >
           <span
             className={`truncate font-serif font-black tracking-[0.22em] text-white uppercase leading-tight transition-colors duration-300 group-hover:text-[#F6DC9A] ${currentSize.title}`}
           >
             THE ROY EFFECT
           </span>
 
-          {variant === "full" && (
+          {(variant === "full" || variant === "responsive") && (
             <span
-              className={`mt-0.5 font-mono tracking-[0.32em] text-[#DFBA73] uppercase leading-none font-semibold ${currentSize.sub}`}
+              className={`mt-0.5 font-mono tracking-[0.32em] text-[#DFBA73] uppercase leading-none font-semibold ${currentSize.sub} ${
+                variant === "responsive" ? "hidden xl:block" : ""
+              }`}
             >
               DIRT, REFINED INTO GOLD
             </span>
