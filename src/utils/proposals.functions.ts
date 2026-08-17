@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { requireSupabaseAuth } from "@/utils/auth.middleware";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 export interface ProjectProposal {
   id: string;
