@@ -30,6 +30,13 @@ export function SiteHeader({ onNavigate }: { onNavigate: (target: NavTarget) => 
       </nav>
 
       <div className="flex items-center gap-2 sm:gap-3">
+        <Link
+          to="/audit"
+          className="hidden rounded-full border border-[#DFBA73]/40 bg-[#DFBA73]/10 px-3.5 py-1.5 font-mono text-[10px] font-bold tracking-widest text-[#F6DC9A] transition-all hover:bg-[#DFBA73] hover:text-black sm:inline-block sm:px-4 sm:py-2 sm:text-xs"
+        >
+          FREE AUDIT
+        </Link>
+
         <button
           type="button"
           aria-label="Open menu"
@@ -41,7 +48,7 @@ export function SiteHeader({ onNavigate }: { onNavigate: (target: NavTarget) => 
 
         <Link
           to={user ? "/account" : "/auth"}
-          className="hidden rounded-full border border-white/20 px-3 py-1.5 font-mono text-[10px] tracking-widest text-white transition-colors hover:border-[#FF3333] sm:inline-block sm:px-4 sm:py-2 sm:text-xs"
+          className="hidden rounded-full border border-white/20 px-3 py-1.5 font-mono text-[10px] tracking-widest text-white transition-colors hover:border-[#FF3333] md:inline-block sm:px-4 sm:py-2 sm:text-xs"
         >
           {user ? "ACCOUNT" : "SIGN IN"}
         </Link>

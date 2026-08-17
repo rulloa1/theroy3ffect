@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, ArrowUpRight, Check, Menu, Sparkles, X } from "lucide-react";
 import { toast } from "sonner";
@@ -171,6 +172,25 @@ export function InfoDrawer({
                     </li>
                   ))}
                   </ul>
+
+                  <div className="mt-8 border border-[#DFBA73]/30 bg-[#DFBA73]/5 p-5">
+                    <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#F6DC9A]">
+                      THE 5-MINUTE AUDIT
+                    </span>
+                    <h3 className="mt-1 font-display text-xl uppercase text-white">
+                      Is Your Website Costing You Clients?
+                    </h3>
+                    <p className="mt-1 font-mono text-xs text-white/60">
+                      Get a complimentary video teardown of your conversion rate and mobile UX.
+                    </p>
+                    <Link
+                      to="/audit"
+                      onClick={close}
+                      className="mt-4 inline-flex items-center gap-1.5 bg-[#E51924] px-4 py-2 font-mono text-xs font-bold tracking-widest text-white hover:bg-[#FF3333]"
+                    >
+                      CLAIM FREE AUDIT →
+                    </Link>
+                  </div>
                 </>
               )}
 
