@@ -11,11 +11,12 @@ export function SiteHeader({ onNavigate }: { onNavigate: (target: NavTarget) => 
 
   return (
     <header className="fixed inset-x-0 top-0 z-30 flex items-center justify-between gap-2 border-b border-white/5 bg-[#030014]/75 px-3 py-3 backdrop-blur-md transition-all sm:px-6 md:px-10 md:py-4">
-      <div className="flex min-w-0 items-center">
-        <Logo variant="full" size="md" href="/" className="hidden md:inline-flex" />
-        <Logo variant="compact" size="sm" href="/" className="hidden sm:inline-flex md:hidden" />
+      <div className="flex min-w-0 items-center overflow-hidden">
+        <Logo variant="full" size="md" href="/" className="hidden xl:inline-flex" />
+        <Logo variant="compact" size="sm" href="/" className="hidden sm:inline-flex xl:hidden" />
         <Logo variant="mark" size="sm" href="/" className="inline-flex sm:hidden" />
       </div>
+
 
 
 
