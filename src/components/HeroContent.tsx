@@ -21,25 +21,26 @@ export function HeroContent() {
   }, []);
 
   return (
-    <div className="pointer-events-none relative z-20 flex w-full flex-1 flex-col items-center justify-end px-5 pb-[28vh] text-center">
+    <div className="pointer-events-none relative z-20 flex w-full flex-1 flex-col items-center justify-center px-5 pt-24 text-center md:justify-end md:pb-[28vh] md:pt-0">
       <h1 className="flex w-full flex-col items-center leading-[0.82]">
-        <span className="mb-3 font-mono text-[10px] uppercase tracking-[0.35em] text-white/60 sm:text-xs">
+        <span className="mb-3 font-mono text-[9px] uppercase tracking-[0.28em] text-white/60 sm:text-xs sm:tracking-[0.35em]">
           Rory Ulloa — Freelance UI/UX Designer &amp; No-Code Developer
         </span>
-        <span className="text-stroke-thin font-display text-[6.5vw] uppercase tracking-[0.22em] md:[-webkit-text-stroke:2px_white]">
+        <span className="text-stroke-thin font-display text-[8vw] uppercase tracking-[0.18em] sm:text-[6.5vw] sm:tracking-[0.22em] md:[-webkit-text-stroke:2px_white]">
           DESIGN WITH
         </span>
         <ScrambleText
           text={WORDS[wordIndex]!}
-          className="font-display text-[14vw] uppercase leading-[0.78] tracking-tight text-[#FF3333]"
+          className="font-display text-[17vw] uppercase leading-[0.78] tracking-tight text-[#FF3333] sm:text-[14vw]"
         />
       </h1>
 
 
       <motion.p
         key={bioKey}
-        className="mt-4 max-w-md font-mono text-[11px] leading-relaxed text-white/50 sm:text-xs"
+        className="mt-4 max-w-md font-mono text-[11px] leading-relaxed text-white/60 sm:text-xs"
       >
+
         {BIO.split("").map((ch, i) => (
           <motion.span
             key={`${bioKey}-${i}`}
