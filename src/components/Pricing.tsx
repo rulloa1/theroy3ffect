@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, Check, Sparkles, Lock, Plus } from "lucide-react";
+import { ArrowRight, Check, Sparkles, Lock, Plus, Calculator, Layers } from "lucide-react";
 import { DepositCheckoutModal } from "@/components/DepositCheckoutModal";
+import { ScopeEstimator } from "@/components/ScopeEstimator";
 import { PRICING_TIERS, ADD_ONS } from "@/lib/commerce-catalog";
 
 export { PRICING_TIERS };
@@ -15,24 +16,57 @@ interface ActivePurchase {
 
 export function Pricing({ onCommission }: { onCommission?: () => void }) {
   const [active, setActive] = useState<ActivePurchase | null>(null);
+  const [viewMode, setViewMode] = useState<"TIERS" | "ESTIMATOR">("TIERS");
 
   return (
     <section id="pricing" className="relative z-20 w-full bg-[#030014] px-5 py-20 md:px-10 md:py-32">
       <div className="mx-auto max-w-7xl">
-        <div className="mb-12 flex flex-col gap-4 md:mb-20 md:flex-row md:items-end md:justify-between">
+        <div className="mb-8 flex flex-col gap-4 md:mb-14 md:flex-row md:items-end md:justify-between">
           <div>
-            <span className="font-mono text-xs tracking-widest text-[#FF3333]">PRICING</span>
+            <span className="font-mono text-xs tracking-widest text-[#DFBA73]">INVESTMENT &amp; SCOPE</span>
             <h2 className="mt-3 font-display text-4xl uppercase leading-[0.9] text-white md:text-6xl lg:text-7xl">
               INVESTMENT
             </h2>
           </div>
-          <p className="max-w-md font-mono text-xs leading-relaxed text-white/50">
-            Transparent starting points. Pay a 50% deposit or the full amount upfront — every
-            project still gets a custom scope before work begins.
-          </p>
+          <div className="flex flex-col gap-3">
+            <p className="max-w-md font-mono text-xs leading-relaxed text-white/50">
+              Transparent starting points &amp; custom scopes. Pay a 50% deposit or calculate custom page count &amp; 3D features below.
+            </p>
+            {/* View Toggle Tabs */}
+            <div className="inline-flex rounded-sm border border-white/15 bg-white/[0.02] p-1">
+              <button
+                type="button"
+                onClick={() => setViewMode("TIERS")}
+                className={`inline-flex items-center gap-2 px-4 py-2 font-mono text-xs font-semibold tracking-wider transition-all ${
+                  viewMode === "TIERS"
+                    ? "bg-[#E51924] text-white shadow-lg"
+                    : "text-white/60 hover:text-white"
+                }`}
+              >
+                <Layers className="size-3.5" />
+                STANDARD TIERS
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode("ESTIMATOR")}
+                className={`inline-flex items-center gap-2 px-4 py-2 font-mono text-xs font-semibold tracking-wider transition-all ${
+                  viewMode === "ESTIMATOR"
+                    ? "bg-[#DFBA73] text-black shadow-lg"
+                    : "text-white/60 hover:text-white"
+                }`}
+              >
+                <Calculator className="size-3.5" />
+                SCOPE CALCULATOR
+              </button>
+            </div>
+          </div>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {viewMode === "ESTIMATOR" ? (
+          <ScopeEstimator />
+        ) : (
+          <>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {PRICING_TIERS.map((tier, i) => (
             <motion.div
               key={tier.name}
@@ -159,12 +193,14 @@ export function Pricing({ onCommission }: { onCommission?: () => void }) {
           </div>
         </div>
 
-        <p className="mt-10 max-w-2xl font-mono text-[11px] leading-relaxed text-white/40">
-          All projects begin with a free 15-minute discovery call. Deposits are 50% of the tier’s
-          starting price, credited against your final invoice and fully refundable before kickoff.
-          Retainers bill monthly and can be paused or cancelled anytime. No account needed — you’ll
-          get a receipt and a brief link by email right after checkout.
-        </p>
+          <p className="mt-10 max-w-2xl font-mono text-[11px] leading-relaxed text-white/40">
+            All projects begin with a free 15-minute discovery call. Deposits are 50% of the tier’s
+            starting price, credited against your final invoice and fully refundable before kickoff.
+            Retainers bill monthly and can be paused or cancelled anytime. No account needed — you’ll
+            get a receipt and a brief link by email right after checkout.
+          </p>
+        </>
+      )}
       </div>
 
       <DepositCheckoutModal

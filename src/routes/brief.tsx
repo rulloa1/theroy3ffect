@@ -5,10 +5,13 @@ import { z } from "zod";
 import { Logo } from "@/components/Logo";
 
 export const Route = createFileRoute("/brief")({
-  validateSearch: (search: Record<string, unknown>): { session_id?: string } =>
-    typeof search["session_id"] === "string"
-      ? { session_id: search["session_id"] }
-      : {},
+  validateSearch: (
+    search: Record<string, unknown>,
+  ): { session_id?: string; scope_type?: string; scope_estimate?: string } => ({
+    session_id: typeof search["session_id"] === "string" ? search["session_id"] : undefined,
+    scope_type: typeof search["scope_type"] === "string" ? search["scope_type"] : undefined,
+    scope_estimate: typeof search["scope_estimate"] === "string" ? search["scope_estimate"] : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Project Brief Intake — theroyeffect.com" },
@@ -83,9 +86,19 @@ const inputClass =
 const labelClass = "block font-mono text-[10px] tracking-widest text-white/40";
 
 function BriefPage() {
-  const { session_id: sessionId } = Route.useSearch();
+  const { session_id: sessionId, scope_type: scopeType, scope_estimate: scopeEstimate } = Route.useSearch();
   const [step, setStep] = useState(0);
-  const [form, setForm] = useState<Form>(EMPTY);
+  const [form, setForm] = useState<Form>(() => ({
+    ...EMPTY,
+    projectType: scopeType
+      ? scopeType.includes("Landing") || scopeType.includes("Website")
+        ? "Design + Build"
+        : scopeType.includes("Retainer")
+          ? "Retainer"
+          : "Brand identity"
+      : "",
+    budget: scopeEstimate ? `$${Number(scopeEstimate).toLocaleString()}` : "",
+  }));
   const [sending, setSending] = useState(false);
   const [done, setDone] = useState(false);
   const [lastSaved, setLastSaved] = useState<string | null>(null);

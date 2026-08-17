@@ -5,6 +5,8 @@ import { ArrowLeft, ArrowUpRight, Check, Menu, Sparkles, X } from "lucide-react"
 import { toast } from "sonner";
 import { z } from "zod";
 import { PRICING_TIERS } from "./Pricing";
+import { ScopeEstimator } from "./ScopeEstimator";
+
 
 const MENU = ["PROJECTS", "PROCESS", "ABOUT", "RESUME", "PRICING", "LET'S WORK"] as const;
 type MenuItem = (typeof MENU)[number];
@@ -44,7 +46,9 @@ export function InfoDrawer({
   const [active, setActive] = useState<MenuItem | null>(null);
   const [projectFilter, setProjectFilter] = useState<string>("ALL");
   const [selectedCaseStudy, setSelectedCaseStudy] = useState<PortfolioProject | null>(null);
+  const [pricingView, setPricingView] = useState<"TIERS" | "ESTIMATOR">("TIERS");
   const [sending, setSending] = useState(false);
+
 
 
   useEffect(() => {
@@ -196,11 +200,38 @@ export function InfoDrawer({
 
               {active === "PRICING" && (
                 <div className="space-y-6">
-                  <div>
-                    <span className="font-mono text-xs tracking-widest text-[#FF3333]">PRICING</span>
-                    <h2 className="mt-2 font-display text-4xl uppercase text-white">Investment</h2>
+                  <div className="flex flex-wrap items-end justify-between gap-3">
+                    <div>
+                      <span className="font-mono text-xs tracking-widest text-[#DFBA73]">INVESTMENT &amp; SCOPE</span>
+                      <h2 className="mt-2 font-display text-4xl uppercase text-white">Investment</h2>
+                    </div>
+
+                    <div className="inline-flex rounded-sm border border-white/15 bg-white/[0.02] p-1">
+                      <button
+                        type="button"
+                        onClick={() => setPricingView("TIERS")}
+                        className={`px-3 py-1 font-mono text-[10px] font-semibold tracking-wider transition-all ${
+                          pricingView === "TIERS" ? "bg-[#E51924] text-white" : "text-white/60 hover:text-white"
+                        }`}
+                      >
+                        TIERS
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setPricingView("ESTIMATOR")}
+                        className={`px-3 py-1 font-mono text-[10px] font-semibold tracking-wider transition-all ${
+                          pricingView === "ESTIMATOR" ? "bg-[#DFBA73] text-black" : "text-white/60 hover:text-white"
+                        }`}
+                      >
+                        CALCULATOR
+                      </button>
+                    </div>
                   </div>
-                  <div className="space-y-4">
+
+                  {pricingView === "ESTIMATOR" ? (
+                    <ScopeEstimator />
+                  ) : (
+                    <div className="space-y-4">
                     {PRICING_TIERS.map((tier) => (
                       <div
                         key={tier.name}
@@ -237,7 +268,8 @@ export function InfoDrawer({
                         </ul>
                       </div>
                     ))}
-                  </div>
+                    </div>
+                  )}
                   <p className="font-mono text-[11px] leading-relaxed text-white/40">
                     All projects start with a free 15-minute discovery call. Scope and final quotes are always tailored to your specific needs.
                   </p>
