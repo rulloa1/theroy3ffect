@@ -13,6 +13,8 @@ import {
   ExternalLink,
   Eye,
   FileText,
+  FileCheck,
+  Copy,
   Mail,
   MessageSquare,
   Plus,
@@ -38,6 +40,13 @@ import {
   type AdminOrder,
 } from "@/utils/admin.functions";
 import type { PortfolioProject } from "@/utils/projects.functions";
+import {
+  adminListProposals,
+  adminCreateProposal,
+  adminDeleteProposal,
+  type ProjectProposal,
+  DEFAULT_TERMS,
+} from "@/utils/proposals.functions";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
@@ -71,7 +80,7 @@ const date = (value: string | null) =>
       })
     : "—";
 
-type MainView = "PROJECTS" | "INQUIRIES" | "PORTFOLIO" | "FINANCIALS";
+type MainView = "PROJECTS" | "INQUIRIES" | "PROPOSALS" | "PORTFOLIO" | "FINANCIALS";
 type FilterTab = "ALL" | "PENDING_BALANCE" | "PAID_IN_FULL" | "RETAINERS" | "REFUNDED";
 
 const MILESTONES = [
@@ -94,6 +103,9 @@ function AdminPage() {
   const listPortfolio = useServerFn(adminListPortfolioProjects);
   const upsertPortfolio = useServerFn(adminUpsertPortfolioProject);
   const deletePortfolio = useServerFn(adminDeletePortfolioProject);
+  const listProposals = useServerFn(adminListProposals);
+  const createProposal = useServerFn(adminCreateProposal);
+  const deleteProposal = useServerFn(adminDeleteProposal);
 
   const [currentView, setCurrentView] = useState<MainView>("PROJECTS");
   const [filterTab, setFilterTab] = useState<FilterTab>("ALL");
@@ -104,6 +116,29 @@ function AdminPage() {
   const [selectedBrief, setSelectedBrief] = useState<AdminBrief | null>(null);
   const [editingProject, setEditingProject] = useState<PortfolioProject | null>(null);
   const [isNewProjectModalOpen, setIsNewProjectModalOpen] = useState(false);
+  const [isProposalModalOpen, setIsProposalModalOpen] = useState(false);
+
+  // Proposal form state
+  const [proposalForm, setProposalForm] = useState<{
+    briefId?: string;
+    clientName: string;
+    clientEmail: string;
+    clientCompany: string;
+    projectTitle: string;
+    scopeDeliverables: string;
+    timelineWeeks: string;
+    totalPriceDollars: number;
+    terms: string;
+  }>({
+    clientName: "",
+    clientEmail: "",
+    clientCompany: "",
+    projectTitle: "",
+    scopeDeliverables: "• Visual Direction Sprint (Type, Color, UI Language)\n• Full Mobile & Desktop Screen Designs in Figma\n• Complete Production Build & Interactive Animations\n• Stripe eCommerce / Payment Integration\n• SEO Meta Architecture & Performance Optimization\n• 2 Comprehensive Revision Rounds",
+    timelineWeeks: "2–3 Weeks",
+    totalPriceDollars: 5000,
+    terms: DEFAULT_TERMS,
+  });
 
   // Form state for editing/adding projects
   const [projectForm, setProjectForm] = useState<{
@@ -137,6 +172,12 @@ function AdminPage() {
   const { data: inquiriesData, isLoading: inquiriesLoading } = useQuery({
     queryKey: ["admin-inquiries"],
     queryFn: () => listInquiries(),
+    retry: false,
+  });
+
+  const { data: proposalsData, isLoading: proposalsLoading } = useQuery({
+    queryKey: ["admin-proposals"],
+    queryFn: () => listProposals(),
     retry: false,
   });
 
@@ -267,6 +308,70 @@ function AdminPage() {
     } catch {
       toast.error("Failed to delete project");
     }
+  };
+
+  const handleSaveProposal = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!proposalForm.clientName || !proposalForm.clientEmail || !proposalForm.projectTitle) {
+      toast.error("Client name, email, and project title are required");
+      return;
+    }
+    try {
+      const res = await createProposal({
+        data: {
+          briefId: proposalForm.briefId,
+          clientName: proposalForm.clientName,
+          clientEmail: proposalForm.clientEmail,
+          clientCompany: proposalForm.clientCompany || undefined,
+          projectTitle: proposalForm.projectTitle,
+          scopeDeliverables: proposalForm.scopeDeliverables,
+          timelineWeeks: proposalForm.timelineWeeks,
+          totalPriceCents: Math.round(proposalForm.totalPriceDollars * 100),
+          terms: proposalForm.terms,
+        },
+      });
+
+      if (!res.success) throw new Error(res.error || "Failed to create proposal");
+      toast.success("Proposal created and client link generated!");
+      setIsProposalModalOpen(false);
+      await queryClient.invalidateQueries({ queryKey: ["admin-proposals"] });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Error creating proposal");
+    }
+  };
+
+  const handleDeleteProposalItem = async (id: string) => {
+    if (!confirm("Delete this proposal agreement?")) return;
+    try {
+      const res = await deleteProposal({ data: { id } });
+      if (!res.success) throw new Error(res.error || "Delete failed");
+      toast.success("Proposal deleted");
+      await queryClient.invalidateQueries({ queryKey: ["admin-proposals"] });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Error deleting proposal");
+    }
+  };
+
+  const copyProposalLink = (token: string) => {
+    const url = `${window.location.origin}/proposal/${token}`;
+    navigator.clipboard.writeText(url);
+    toast.success("Client proposal agreement link copied to clipboard!");
+  };
+
+  const handleOpenProposalFromBrief = (brief: AdminBrief) => {
+    setProposalForm({
+      briefId: brief.id,
+      clientName: brief.name,
+      clientEmail: brief.email,
+      clientCompany: brief.company || "",
+      projectTitle: `${brief.project_type} — Custom Scope Agreement`,
+      scopeDeliverables: brief.deliverables || "• Visual Direction Sprint (Type, Color, UI Language)\n• Custom Screen Designs in Figma (Desktop & Mobile)\n• Interactive WebGL Animations & Build Handover\n• Stripe eCommerce Integration\n• 2 Comprehensive Revision Rounds",
+      timelineWeeks: brief.timeline || "2–3 Weeks",
+      totalPriceDollars: brief.budget && brief.budget.includes("10,000") ? 10000 : 5000,
+      terms: DEFAULT_TERMS,
+    });
+    setSelectedBrief(null);
+    setIsProposalModalOpen(true);
   };
 
   // Filtered Orders
@@ -421,6 +526,7 @@ function AdminPage() {
           {[
             { id: "PROJECTS", label: "CURRENT PROJECTS", icon: Briefcase },
             { id: "INQUIRIES", label: `CLIENT LEADS (${unreadInquiriesCount})`, icon: MessageSquare },
+            { id: "PROPOSALS", label: `PROPOSALS & CONTRACTS (${(proposalsData ?? []).length})`, icon: FileCheck },
             { id: "PORTFOLIO", label: "PORTFOLIO MANAGER", icon: Eye },
             { id: "FINANCIALS", label: "FINANCIALS & CSV", icon: DollarSign },
           ].map((tab) => {
@@ -786,6 +892,145 @@ function AdminPage() {
         )}
 
         {/* ========================================================================= */}
+        {/* VIEW: PROPOSALS & DIGITAL CONTRACTS */}
+        {/* ========================================================================= */}
+        {currentView === "PROPOSALS" && (
+          <div className="mt-8 space-y-6">
+            <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-4">
+              <div>
+                <h2 className="font-display text-2xl uppercase text-white">
+                  CLIENT PROPOSALS &amp; AGREEMENTS
+                </h2>
+                <p className="mt-1 font-mono text-xs text-white/50">
+                  Generate 1-click branded scope agreements with milestones, deliverables, and digital signatures.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setProposalForm({
+                    clientName: "",
+                    clientEmail: "",
+                    clientCompany: "",
+                    projectTitle: "Custom Design & Build Scope Agreement",
+                    scopeDeliverables: "• Visual Direction Sprint (Type, Color, UI Language)\n• Custom Screen Designs in Figma (Desktop & Mobile)\n• Interactive WebGL Animations & Build Handover\n• Stripe eCommerce Integration\n• 2 Comprehensive Revision Rounds",
+                    timelineWeeks: "2–3 Weeks",
+                    totalPriceDollars: 5000,
+                    terms: DEFAULT_TERMS,
+                  });
+                  setIsProposalModalOpen(true);
+                }}
+                className="inline-flex items-center gap-2 bg-[#DFBA73] px-5 py-2.5 font-mono text-xs font-bold tracking-widest text-black transition-opacity hover:opacity-90"
+              >
+                <Plus className="size-4" />
+                CREATE NEW PROPOSAL
+              </button>
+            </div>
+
+            {proposalsLoading && (
+              <p className="font-mono text-xs text-white/40">Loading proposals…</p>
+            )}
+
+            {(proposalsData ?? []).length === 0 && !proposalsLoading && (
+              <div className="border border-white/10 bg-white/[0.02] p-10 text-center">
+                <FileCheck className="mx-auto size-8 text-white/20" />
+                <h3 className="mt-3 font-display text-lg uppercase text-white">No Proposals Yet</h3>
+                <p className="mt-1 font-mono text-xs text-white/40">
+                  Create a custom proposal from scratch or click &quot;Generate Proposal&quot; on any client brief.
+                </p>
+              </div>
+            )}
+
+            <div className="space-y-4">
+              {(proposalsData ?? []).map((prop) => {
+                const isSigned = prop.status === "signed";
+                const isViewed = prop.status === "viewed";
+                const formattedTot = money(prop.total_price_cents, "USD");
+                const formattedDep = money(prop.deposit_cents, "USD");
+
+                return (
+                  <div
+                    key={prop.id}
+                    className="border border-white/10 bg-white/[0.02] p-6 transition-all hover:border-[#DFBA73]/40"
+                  >
+                    <div className="flex flex-wrap items-start justify-between gap-4">
+                      <div>
+                        <div className="flex items-center gap-3">
+                          <h3 className="font-display text-xl uppercase text-white">{prop.project_title}</h3>
+                          <span
+                            className={`border px-2 py-0.5 font-mono text-[9px] uppercase font-bold tracking-wider ${
+                              isSigned
+                                ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-400"
+                                : isViewed
+                                  ? "border-blue-400/50 bg-blue-400/10 text-blue-400"
+                                  : "border-amber-400/50 bg-amber-400/10 text-amber-400"
+                            }`}
+                          >
+                            {isSigned ? "✓ ACCEPTED & SIGNED" : isViewed ? "👁 VIEWED BY CLIENT" : "✉ SENT"}
+                          </span>
+                        </div>
+
+                        <p className="mt-1 font-mono text-xs text-white/50">
+                          Client: <strong>{prop.client_name}</strong> ({prop.client_email})
+                          {prop.client_company ? ` &bull; ${prop.client_company}` : ""} &bull; Created {date(prop.created_at)}
+                        </p>
+                      </div>
+
+                      <div className="text-right">
+                        <span className="font-mono text-[10px] uppercase text-white/40">Investment</span>
+                        <p className="font-display text-2xl text-[#E51924]">{formattedTot}</p>
+                        <span className="font-mono text-[10px] text-white/40">Deposit: {formattedDep}</span>
+                      </div>
+                    </div>
+
+                    {isSigned && (
+                      <div className="mt-4 border-l-2 border-emerald-500 bg-emerald-500/5 p-3 font-mono text-xs text-emerald-300">
+                        ✓ Digitally signed by <strong>{prop.client_signature_name}</strong> on{" "}
+                        {prop.client_signed_at ? new Date(prop.client_signed_at).toLocaleString() : ""}
+                      </div>
+                    )}
+
+                    <div className="mt-4 border-t border-white/10 pt-4 flex flex-wrap items-center justify-between gap-3">
+                      <div className="font-mono text-xs text-white/60">
+                        Timeline: <strong className="text-white">{prop.timeline_weeks}</strong>
+                      </div>
+
+                      <div className="flex flex-wrap items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => copyProposalLink(prop.share_token)}
+                          className="inline-flex items-center gap-1.5 border border-[#DFBA73]/40 bg-[#DFBA73]/10 px-3 py-1.5 font-mono text-xs text-[#F6DC9A] hover:bg-[#DFBA73] hover:text-black"
+                        >
+                          <Copy className="size-3.5" />
+                          COPY CLIENT LINK
+                        </button>
+
+                        <a
+                          href={`/proposal/${prop.share_token}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-1 border border-white/15 px-3 py-1.5 font-mono text-xs text-white hover:border-white"
+                        >
+                          VIEW PROPOSAL ↗
+                        </a>
+
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteProposalItem(prop.id)}
+                          className="border border-white/15 p-1.5 font-mono text-xs text-rose-400 hover:border-rose-400"
+                        >
+                          <Trash2 className="size-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================================= */}
         {/* VIEW 4: FINANCIALS & CSV */}
         {/* ========================================================================= */}
         {currentView === "FINANCIALS" && (
@@ -966,19 +1211,29 @@ function AdminPage() {
               </div>
             </div>
 
-            <div className="mt-8 flex items-center justify-between border-t border-white/10 pt-4">
-              {selectedBrief.pdf_url ? (
-                <a
-                  href={selectedBrief.pdf_url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="border border-[#FF3333]/40 bg-[#FF3333]/10 px-4 py-2 font-mono text-xs tracking-widest text-[#FF3333] hover:bg-[#FF3333] hover:text-black"
+            <div className="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-4">
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => handleOpenProposalFromBrief(selectedBrief)}
+                  className="inline-flex items-center gap-1.5 border border-[#DFBA73]/50 bg-[#DFBA73]/10 px-4 py-2 font-mono text-xs font-bold tracking-widest text-[#F6DC9A] hover:bg-[#DFBA73] hover:text-black"
                 >
-                  DOWNLOAD BRIEF PDF ↓
-                </a>
-              ) : (
-                <span className="font-mono text-xs text-white/40">No generated PDF file</span>
-              )}
+                  <FileCheck className="size-3.5" />
+                  GENERATE PROPOSAL AGREEMENT →
+                </button>
+
+                {selectedBrief.pdf_url ? (
+                  <a
+                    href={selectedBrief.pdf_url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="border border-[#FF3333]/40 bg-[#FF3333]/10 px-4 py-2 font-mono text-xs tracking-widest text-[#FF3333] hover:bg-[#FF3333] hover:text-black"
+                  >
+                    DOWNLOAD BRIEF PDF ↓
+                  </a>
+                ) : null}
+              </div>
+
               <button
                 type="button"
                 onClick={() => setSelectedBrief(null)}
@@ -1133,6 +1388,172 @@ function AdminPage() {
                   className="bg-[#FF3333] px-5 py-2 font-mono text-xs font-semibold tracking-widest text-black hover:opacity-90"
                 >
                   SAVE PROJECT
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* MODAL 3: CREATE / CUSTOMIZE PROPOSAL AGREEMENT */}
+      {/* ========================================================================= */}
+      {isProposalModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm">
+          <div className="relative max-h-[85vh] w-full max-w-2xl overflow-y-auto border border-[#DFBA73]/40 bg-[#030014] p-6 shadow-2xl">
+            <div className="flex items-start justify-between border-b border-white/10 pb-4">
+              <div>
+                <span className="font-mono text-[10px] font-bold tracking-widest text-[#DFBA73]">
+                  1-CLICK CLIENT AGREEMENT BUILDER
+                </span>
+                <h2 className="mt-1 font-display text-2xl uppercase text-white">
+                  GENERATE SCOPE PROPOSAL
+                </h2>
+                <p className="mt-1 font-mono text-xs text-white/50">
+                  Creates a secure client review link with digital signature and 50% kickoff deposit terms.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsProposalModalOpen(false)}
+                className="border border-white/20 p-1.5 text-white/60 hover:border-white hover:text-white"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveProposal} className="mt-6 space-y-4 font-mono text-xs">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label className="block text-[10px] uppercase tracking-widest text-white/40">
+                    Client Name *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={proposalForm.clientName}
+                    onChange={(e) => setProposalForm({ ...proposalForm, clientName: e.target.value })}
+                    placeholder="e.g. Jane Doe"
+                    className="mt-1 w-full border border-white/15 bg-transparent p-2.5 text-white focus:border-[#DFBA73] focus:outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[10px] uppercase tracking-widest text-white/40">
+                    Client Work Email *
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    value={proposalForm.clientEmail}
+                    onChange={(e) => setProposalForm({ ...proposalForm, clientEmail: e.target.value })}
+                    placeholder="jane@company.com"
+                    className="mt-1 w-full border border-white/15 bg-transparent p-2.5 text-white focus:border-[#DFBA73] focus:outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[10px] uppercase tracking-widest text-white/40">
+                    Client Company (Optional)
+                  </label>
+                  <input
+                    type="text"
+                    value={proposalForm.clientCompany}
+                    onChange={(e) => setProposalForm({ ...proposalForm, clientCompany: e.target.value })}
+                    placeholder="e.g. Acme Corp"
+                    className="mt-1 w-full border border-white/15 bg-transparent p-2.5 text-white focus:border-[#DFBA73] focus:outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[10px] uppercase tracking-widest text-white/40">
+                    Project Title *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={proposalForm.projectTitle}
+                    onChange={(e) => setProposalForm({ ...proposalForm, projectTitle: e.target.value })}
+                    placeholder="e.g. Acme Redesign & Conversion Build"
+                    className="mt-1 w-full border border-white/15 bg-transparent p-2.5 text-white focus:border-[#DFBA73] focus:outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[10px] uppercase tracking-widest text-white/40">
+                    Total Investment ($ USD) *
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    min={100}
+                    step={100}
+                    value={proposalForm.totalPriceDollars}
+                    onChange={(e) =>
+                      setProposalForm({ ...proposalForm, totalPriceDollars: Number(e.target.value) })
+                    }
+                    className="mt-1 w-full border border-white/15 bg-transparent p-2.5 font-bold text-[#E51924] focus:border-[#DFBA73] focus:outline-none"
+                  />
+                  <span className="mt-1 block font-mono text-[10px] text-white/40">
+                    50% Deposit: ${(proposalForm.totalPriceDollars * 0.5).toLocaleString()}
+                  </span>
+                </div>
+
+                <div>
+                  <label className="block text-[10px] uppercase tracking-widest text-white/40">
+                    Estimated Delivery Timeline *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={proposalForm.timelineWeeks}
+                    onChange={(e) => setProposalForm({ ...proposalForm, timelineWeeks: e.target.value })}
+                    placeholder="e.g. 2–3 Weeks"
+                    className="mt-1 w-full border border-white/15 bg-transparent p-2.5 text-white focus:border-[#DFBA73] focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[10px] uppercase tracking-widest text-white/40">
+                  Included Scope &amp; Deliverables * (One per line)
+                </label>
+                <textarea
+                  rows={5}
+                  required
+                  value={proposalForm.scopeDeliverables}
+                  onChange={(e) => setProposalForm({ ...proposalForm, scopeDeliverables: e.target.value })}
+                  placeholder="• Deliverable 1\n• Deliverable 2..."
+                  className="mt-1 w-full resize-none border border-white/15 bg-transparent p-2.5 text-white focus:border-[#DFBA73] focus:outline-none font-mono"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] uppercase tracking-widest text-white/40">
+                  Terms &amp; Conditions / IP Transfer
+                </label>
+                <textarea
+                  rows={4}
+                  required
+                  value={proposalForm.terms}
+                  onChange={(e) => setProposalForm({ ...proposalForm, terms: e.target.value })}
+                  className="mt-1 w-full resize-none border border-white/15 bg-transparent p-2.5 text-white/70 focus:border-[#DFBA73] focus:outline-none font-mono text-[11px]"
+                />
+              </div>
+
+              <div className="mt-6 flex justify-end gap-3 border-t border-white/10 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setIsProposalModalOpen(false)}
+                  className="border border-white/15 px-4 py-2 font-mono text-xs text-white/60 hover:text-white"
+                >
+                  CANCEL
+                </button>
+                <button
+                  type="submit"
+                  className="bg-[#DFBA73] px-6 py-2.5 font-mono text-xs font-bold tracking-widest text-black transition-all hover:bg-[#F6DC9A]"
+                >
+                  GENERATE &amp; PUBLISH PROPOSAL →
                 </button>
               </div>
             </form>
