@@ -209,16 +209,16 @@ export function Logo({
   // Horizontal Variant (Mark / Compact / Full)
   const content = (
     <div
-      className={`group inline-flex items-center gap-3.5 select-none ${
+      className={`group inline-flex items-center gap-2.5 select-none sm:gap-3.5 ${
         interactive ? "cursor-pointer" : ""
-      } ${className}`}
+      } ${href ? "" : className}`}
     >
       <LogoMark className={currentSize.mark} animated={interactive} />
 
       {variant !== "mark" && (
-        <div className="flex flex-col justify-center text-left">
+        <div className="flex min-w-0 flex-col justify-center text-left">
           <span
-            className={`font-serif font-black tracking-[0.22em] text-white uppercase leading-tight transition-colors duration-300 group-hover:text-[#F6DC9A] ${currentSize.title}`}
+            className={`truncate font-serif font-black tracking-[0.22em] text-white uppercase leading-tight transition-colors duration-300 group-hover:text-[#F6DC9A] ${currentSize.title}`}
           >
             THE ROY EFFECT
           </span>
@@ -237,11 +237,12 @@ export function Logo({
 
   if (href) {
     return (
-      <Link to={href} className="inline-flex outline-none" aria-label="The Roy Effect Home">
+      <Link to={href} className={`outline-none ${className}`} aria-label="The Roy Effect Home">
         {content}
       </Link>
     );
   }
 
   return content;
+
 }
