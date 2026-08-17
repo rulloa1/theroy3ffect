@@ -278,13 +278,13 @@ function AdminPage() {
 
       const res = await upsertPortfolio({
         data: {
-          id: projectForm.id,
+          ...(projectForm.id ? { id: projectForm.id } : {}),
           title: projectForm.title,
           tagline: projectForm.tagline,
           description: projectForm.description,
           url: projectForm.url,
           category: projectForm.category,
-          metric: projectForm.metric || undefined,
+          ...(projectForm.metric ? { metric: projectForm.metric } : {}),
           tags: tagsArray,
           isPublished: projectForm.isPublished,
         },
