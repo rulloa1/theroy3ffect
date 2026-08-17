@@ -30,7 +30,7 @@ export function SiteHeader({ onNavigate }: { onNavigate: (target: NavTarget) => 
         ))}
       </nav>
 
-      <div className="flex items-center gap-2 sm:gap-3">
+      <div className="flex shrink-0 items-center gap-2 sm:gap-3">
         <Link
           to="/audit"
           className="hidden rounded-full border border-[#DFBA73]/40 bg-[#DFBA73]/10 px-3.5 py-1.5 font-mono text-[10px] font-bold tracking-widest text-[#F6DC9A] transition-all hover:bg-[#DFBA73] hover:text-black sm:inline-block sm:px-4 sm:py-2 sm:text-xs"
