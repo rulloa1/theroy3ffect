@@ -1,4 +1,5 @@
-const PHRASE = "RORY ULLOA // CREATIVE DIRECTOR // ";
+const PHRASE =
+  "RORY ULLOA // CREATIVE DIRECTOR // MAKE YOUR BUSINESS IMPOSSIBLE TO IGNORE // DESIGN WITH PURPOSE // ";
 
 export function FooterMarquee() {
   const line = PHRASE.repeat(6);
