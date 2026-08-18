@@ -10,11 +10,13 @@ export function SiteHeader({ onNavigate }: { onNavigate: (target: NavTarget) => 
   const { user } = useAuth();
 
   return (
-    <header className="fixed inset-x-0 top-0 z-30 flex items-center justify-between border-b border-white/5 bg-[#030014]/75 px-4 py-3.5 backdrop-blur-md transition-all sm:px-6 md:px-10 md:py-4">
-      <div className="flex items-center">
-        <Logo variant="full" size="md" href="/" className="hidden md:inline-flex" />
-        <Logo variant="compact" size="sm" href="/" className="inline-flex md:hidden" />
+    <header className="fixed inset-x-0 top-0 z-30 flex items-center justify-between gap-2 border-b border-white/5 bg-[#030014]/75 px-3 py-3 backdrop-blur-md transition-all sm:px-6 md:px-10 md:py-4">
+      <div className="flex min-w-0 items-center overflow-hidden">
+        <Logo variant="responsive" size="sm" href="/" className="inline-flex" />
       </div>
+
+
+
 
       <nav aria-label="Primary" className="hidden items-center gap-8 lg:flex">
         {LINKS.map((l) => (
@@ -29,7 +31,7 @@ export function SiteHeader({ onNavigate }: { onNavigate: (target: NavTarget) => 
         ))}
       </nav>
 
-      <div className="flex items-center gap-2 sm:gap-3">
+      <div className="flex shrink-0 items-center gap-2 sm:gap-3">
         <Link
           to="/audit"
           className="hidden rounded-full border border-[#DFBA73]/40 bg-[#DFBA73]/10 px-3.5 py-1.5 font-mono text-[10px] font-bold tracking-widest text-[#F6DC9A] transition-all hover:bg-[#DFBA73] hover:text-black sm:inline-block sm:px-4 sm:py-2 sm:text-xs"

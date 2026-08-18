@@ -8,7 +8,7 @@ export interface LogoProps {
    * - 'full': Horizontal (Emblem + THE ROY EFFECT + DIRT, REFINED INTO GOLD)
    * - 'stacked': Vertical centered (Emblem on top + THE ROY EFFECT + DIRT, REFINED INTO GOLD)
    */
-  variant?: "mark" | "compact" | "full" | "stacked";
+  variant?: "mark" | "compact" | "full" | "stacked" | "responsive";
   /** Size preset */
   size?: "sm" | "md" | "lg" | "xl";
   /** Optional custom CSS classes for the container */
@@ -209,23 +209,29 @@ export function Logo({
   // Horizontal Variant (Mark / Compact / Full)
   const content = (
     <div
-      className={`group inline-flex items-center gap-3.5 select-none ${
+      className={`group inline-flex items-center gap-2.5 select-none sm:gap-3.5 ${
         interactive ? "cursor-pointer" : ""
-      } ${className}`}
+      } ${href ? "" : className}`}
     >
       <LogoMark className={currentSize.mark} animated={interactive} />
 
       {variant !== "mark" && (
-        <div className="flex flex-col justify-center text-left">
+        <div
+          className={`min-w-0 flex-col justify-center text-left ${
+            variant === "responsive" ? "hidden sm:flex" : "flex"
+          }`}
+        >
           <span
-            className={`font-serif font-black tracking-[0.22em] text-white uppercase leading-tight transition-colors duration-300 group-hover:text-[#F6DC9A] ${currentSize.title}`}
+            className={`truncate font-serif font-black tracking-[0.22em] text-white uppercase leading-tight transition-colors duration-300 group-hover:text-[#F6DC9A] ${currentSize.title}`}
           >
             THE ROY EFFECT
           </span>
 
-          {variant === "full" && (
+          {(variant === "full" || variant === "responsive") && (
             <span
-              className={`mt-0.5 font-mono tracking-[0.32em] text-[#DFBA73] uppercase leading-none font-semibold ${currentSize.sub}`}
+              className={`mt-0.5 font-mono tracking-[0.32em] text-[#DFBA73] uppercase leading-none font-semibold ${currentSize.sub} ${
+                variant === "responsive" ? "hidden xl:block" : ""
+              }`}
             >
               DIRT, REFINED INTO GOLD
             </span>
@@ -237,11 +243,12 @@ export function Logo({
 
   if (href) {
     return (
-      <Link to={href} className="inline-flex outline-none" aria-label="The Roy Effect Home">
+      <Link to={href} className={`outline-none ${className}`} aria-label="The Roy Effect Home">
         {content}
       </Link>
     );
   }
 
   return content;
+
 }

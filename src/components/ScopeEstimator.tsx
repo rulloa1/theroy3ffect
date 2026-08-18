@@ -48,7 +48,7 @@ const PROJECT_TYPES = [
     maxPages: 0,
     isRetainer: true,
   },
-] as const;
+] as const satisfies ReadonlyArray<{ id: string; name: string; basePrice: number; baseDays: number; description: string; defaultPages: number; maxPages: number; isRetainer?: boolean }>;
 
 const OPTIONAL_FEATURES: ScopeFeature[] = [
   {
@@ -135,7 +135,7 @@ export function ScopeEstimator({
       days += extraPages * 1.5;
     }
 
-    if (!activeTypeObj.isRetainer) {
+    if (!("isRetainer" in activeTypeObj && activeTypeObj.isRetainer)) {
       for (const featId of selectedFeatures) {
         const feat = OPTIONAL_FEATURES.find((f) => f.id === featId);
         if (feat) {
@@ -148,7 +148,7 @@ export function ScopeEstimator({
     const calculatedDays = Math.max(days, 5);
     const weeksMin = Math.max(1, Math.round(calculatedDays / 7));
     const weeksMax = weeksMin + 1;
-    const timeline = activeTypeObj.isRetainer
+    const timeline = ("isRetainer" in activeTypeObj && activeTypeObj.isRetainer)
       ? "Monthly (Continuous)"
       : `${weeksMin}–${weeksMax} Weeks`;
 
@@ -232,7 +232,7 @@ export function ScopeEstimator({
                       </p>
                     </div>
                     <span className="mt-3 font-mono text-xs font-semibold text-[#DFBA73]">
-                      Starting at ${pt.basePrice.toLocaleString()} {pt.isRetainer ? "/mo" : ""}
+                      Starting at ${pt.basePrice.toLocaleString()} {("isRetainer" in pt && pt.isRetainer) ? "/mo" : ""}
                     </span>
                   </button>
                 );
@@ -268,7 +268,7 @@ export function ScopeEstimator({
           )}
 
           {/* Step 3: Interactive Feature Add-Ons */}
-          {!activeTypeObj.isRetainer && (
+          {!("isRetainer" in activeTypeObj && activeTypeObj.isRetainer) && (
             <div>
               <label className="block font-mono text-xs uppercase tracking-wider text-white/70">
                 {activeTypeObj.maxPages > 0 ? "3." : "2."} Select Features &amp; Add-Ons
@@ -343,7 +343,7 @@ export function ScopeEstimator({
                 </div>
               )}
 
-              {!activeTypeObj.isRetainer &&
+              {!("isRetainer" in activeTypeObj && activeTypeObj.isRetainer) &&
                 selectedFeatures.map((fId) => {
                   const feat = OPTIONAL_FEATURES.find((f) => f.id === fId);
                   if (!feat) return null;
@@ -366,7 +366,7 @@ export function ScopeEstimator({
                 </span>
               </div>
 
-              {!activeTypeObj.isRetainer && (
+              {!("isRetainer" in activeTypeObj && activeTypeObj.isRetainer) && (
                 <div className="mt-2 flex items-center justify-between border-t border-white/5 pt-2 font-mono text-xs text-[#DFBA73]">
                   <span>50% Kickoff Deposit:</span>
                   <span className="font-bold">{formattedDeposit}</span>

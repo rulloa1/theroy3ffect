@@ -168,7 +168,7 @@ export const adminListInquiries = createServerFn({ method: "GET" })
         .limit(100);
 
       if (error || !data) return { inquiries: [] };
-      return { inquiries: data as AdminInquiry[] };
+      return { inquiries: data as unknown as AdminInquiry[] };
     } catch {
       return { inquiries: [] };
     }
