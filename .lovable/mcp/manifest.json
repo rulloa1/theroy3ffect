@@ -3,7 +3,12 @@
   "sdk_version": "0.26.2",
   "path": "/mcp",
   "auth": {
-    "type": "none"
+    "type": "oauth",
+    "issuer": "https://gxuynbiypfdmhkixkktl.supabase.co/auth/v1",
+    "resource_name": "theroyeffect.com MCP",
+    "accepted_audiences": [
+      "authenticated"
+    ]
   },
   "mcp": {
     "server": {
