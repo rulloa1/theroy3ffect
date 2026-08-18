@@ -148,7 +148,7 @@ export const getMyAccount = createServerFn({ method: "GET" })
     return {
       email: profile.data?.email ?? null,
       fullName: profile.data?.full_name ?? null,
-      isAdmin: adminRole.data === true,
+      isAdmin: Boolean(adminRole.data),
       orders: (orders.data ?? []) as AccountOrder[],
       subscriptions: (subs.data ?? []) as AccountSubscription[],
       invoices: (invoices.data ?? []) as AccountInvoice[],
