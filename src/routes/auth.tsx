@@ -132,7 +132,10 @@ function AuthPage() {
         <form onSubmit={submit} className="space-y-4">
           {mode === "signup" && (
             <div>
-              <label htmlFor="fullName" className="font-mono text-[10px] tracking-widest text-white/40">
+              <label
+                htmlFor="fullName"
+                className="font-mono text-[10px] tracking-widest text-white/40"
+              >
                 FULL NAME
               </label>
               <input
@@ -159,7 +162,10 @@ function AuthPage() {
             />
           </div>
           <div>
-            <label htmlFor="password" className="font-mono text-[10px] tracking-widest text-white/40">
+            <label
+              htmlFor="password"
+              className="font-mono text-[10px] tracking-widest text-white/40"
+            >
               PASSWORD
             </label>
             <input
@@ -190,7 +196,10 @@ function AuthPage() {
         </button>
 
         <div className="mt-8">
-          <Link to="/" className="font-mono text-[11px] tracking-widest text-white/30 hover:text-white">
+          <Link
+            to="/"
+            className="font-mono text-[11px] tracking-widest text-white/30 hover:text-white"
+          >
             ← BACK TO SITE
           </Link>
         </div>

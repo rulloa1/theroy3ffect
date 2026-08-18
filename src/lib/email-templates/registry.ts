@@ -1,19 +1,18 @@
-import type { ComponentType } from 'react'
-import { template as briefConfirmation } from './brief-confirmation'
-import { template as briefNotification } from './brief-notification'
-import { template as orderConfirmation } from './order-confirmation'
-import { template as orderNotification } from './order-notification'
-import { template as projectBriefNotification } from './project-brief-notification'
-import { template as subscriptionNotification } from './subscription-notification'
-
+import type { ComponentType } from "react";
+import { template as briefConfirmation } from "./brief-confirmation";
+import { template as briefNotification } from "./brief-notification";
+import { template as orderConfirmation } from "./order-confirmation";
+import { template as orderNotification } from "./order-notification";
+import { template as projectBriefNotification } from "./project-brief-notification";
+import { template as subscriptionNotification } from "./subscription-notification";
 
 export interface TemplateEntry {
-  component: ComponentType<any>
-  subject: string | ((data: Record<string, any>) => string)
-  displayName?: string
-  previewData?: Record<string, any>
+  component: ComponentType<any>;
+  subject: string | ((data: Record<string, any>) => string);
+  displayName?: string;
+  previewData?: Record<string, any>;
   /** Fixed recipient — overrides caller-provided recipientEmail when set. */
-  to?: string
+  to?: string;
 }
 
 /**
@@ -25,11 +24,10 @@ export interface TemplateEntry {
  *   // then add to TEMPLATES: 'welcome': welcomeTemplate
  */
 export const TEMPLATES: Record<string, TemplateEntry> = {
-  'brief-confirmation': briefConfirmation,
-  'brief-notification': briefNotification,
-  'order-confirmation': orderConfirmation,
-  'order-notification': orderNotification,
-  'project-brief-notification': projectBriefNotification,
-  'subscription-notification': subscriptionNotification,
-}
-
+  "brief-confirmation": briefConfirmation,
+  "brief-notification": briefNotification,
+  "order-confirmation": orderConfirmation,
+  "order-notification": orderNotification,
+  "project-brief-notification": projectBriefNotification,
+  "subscription-notification": subscriptionNotification,
+};

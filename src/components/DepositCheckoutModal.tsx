@@ -50,10 +50,7 @@ export function DepositCheckoutModal({
     );
   };
 
-  const addOnTotalCents = selectedAddOns.reduce(
-    (sum, id) => sum + (ADD_ON_CENTS[id] ?? 0),
-    0,
-  );
+  const addOnTotalCents = selectedAddOns.reduce((sum, id) => sum + (ADD_ON_CENTS[id] ?? 0), 0);
 
   const addOnTotalFormatted = new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -67,9 +64,7 @@ export function DepositCheckoutModal({
         <PaymentTestModeBanner />
         <div className="flex items-start justify-between gap-4 border-b border-white/10 p-5">
           <div>
-            <span className="font-mono text-[10px] tracking-widest text-[#FF3333]">
-              {kicker}
-            </span>
+            <span className="font-mono text-[10px] tracking-widest text-[#FF3333]">{kicker}</span>
             <h2 className="mt-2 font-display text-2xl uppercase text-white">{tierName}</h2>
             <p className="mt-1 font-mono text-xs text-white/50">
               {depositLabel}
@@ -112,12 +107,14 @@ export function DepositCheckoutModal({
                       </span>
                       <div
                         className={`flex size-4 shrink-0 items-center justify-center border transition-colors ${
-                          isChecked
-                            ? "border-[#FF3333] bg-[#FF3333] text-black"
-                            : "border-white/30"
+                          isChecked ? "border-[#FF3333] bg-[#FF3333] text-black" : "border-white/30"
                         }`}
                       >
-                        {isChecked ? <Check className="size-3" /> : <Plus className="size-3 text-white/40" />}
+                        {isChecked ? (
+                          <Check className="size-3" />
+                        ) : (
+                          <Plus className="size-3 text-white/40" />
+                        )}
                       </div>
                     </div>
                     <div className="mt-2 flex items-baseline justify-between">
@@ -147,4 +144,3 @@ export function DepositCheckoutModal({
     </div>
   );
 }
-

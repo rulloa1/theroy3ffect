@@ -73,7 +73,7 @@ export const getPublicShowcaseProjects = createServerFn({ method: "GET" }).handl
   async (): Promise<PortfolioProject[]> => {
     try {
       const { data, error } = await supabase
-        .from("showcase_projects" as any)
+        .from("showcase_projects" as never)
         .select("*")
         .eq("is_published", true)
         .order("sort_order", { ascending: true })
@@ -83,19 +83,19 @@ export const getPublicShowcaseProjects = createServerFn({ method: "GET" }).handl
         return DEFAULT_SHOWCASE_PROJECTS;
       }
 
-      return (data as any[]).map((p) => ({
-        id: p.id,
-        title: p.title,
-        tagline: p.tagline,
-        description: p.description,
-        url: p.url,
-        category: p.category as "Brand Identity" | "UI/UX" | "No-Code",
-        metric: p.metric || null,
-        tags: Array.isArray(p.tags) ? p.tags : [],
-        sort_order: p.sort_order ?? 0,
-        is_published: p.is_published ?? true,
+      return (data as Record<string, unknown>[]).map((p) => ({
+        id: String(p["id"]),
+        title: String(p["title"]),
+        tagline: String(p["tagline"]),
+        description: String(p["description"]),
+        url: String(p["url"]),
+        category: p["category"] as "Brand Identity" | "UI/UX" | "No-Code",
+        metric: typeof p["metric"] === "string" ? p["metric"] : null,
+        tags: Array.isArray(p["tags"]) ? (p["tags"] as string[]) : [],
+        sort_order: typeof p["sort_order"] === "number" ? p["sort_order"] : 0,
+        is_published: typeof p["is_published"] === "boolean" ? p["is_published"] : true,
       }));
-    } catch {
+    } catch (_err) {
       return DEFAULT_SHOWCASE_PROJECTS;
     }
   },

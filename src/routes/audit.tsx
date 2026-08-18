@@ -98,7 +98,8 @@ export function AuditPage() {
 
           <p className="mt-5 max-w-xl font-mono text-xs leading-relaxed text-white/60 sm:text-sm">
             Most local and service websites look outdated, confusing, and push high-paying clients
-            straight to competitors. Get a free video breakdown of your UX bottlenecks and conversion leaks.
+            straight to competitors. Get a free video breakdown of your UX bottlenecks and
+            conversion leaks.
           </p>
         </div>
 
@@ -141,11 +142,11 @@ export function AuditPage() {
               <div className="mx-auto flex size-14 items-center justify-center rounded-full border border-[#DFBA73] bg-[#DFBA73]/10 text-[#DFBA73]">
                 <Check className="size-7" />
               </div>
-              <h2 className="font-display text-3xl uppercase text-white">
-                AUDIT REQUEST RECEIVED
-              </h2>
+              <h2 className="font-display text-3xl uppercase text-white">AUDIT REQUEST RECEIVED</h2>
               <p className="mx-auto max-w-md font-mono text-xs leading-relaxed text-white/60">
-                Thanks, <strong>{name}</strong>. Rory Ulloa is reviewing <strong>{websiteUrl}</strong> and will email your personalized teardown within 1 business day.
+                Thanks, <strong>{name}</strong>. Rory Ulloa is reviewing{" "}
+                <strong>{websiteUrl}</strong> and will email your personalized teardown within 1
+                business day.
               </p>
               <div className="pt-4">
                 <Link
@@ -172,7 +173,10 @@ export function AuditPage() {
 
               <div className="grid gap-6 sm:grid-cols-2">
                 <div>
-                  <label htmlFor="audit-url" className="block font-mono text-[11px] uppercase tracking-wider text-white/70">
+                  <label
+                    htmlFor="audit-url"
+                    className="block font-mono text-[11px] uppercase tracking-wider text-white/70"
+                  >
                     Your Website URL *
                   </label>
                   <input
@@ -187,7 +191,10 @@ export function AuditPage() {
                 </div>
 
                 <div>
-                  <label htmlFor="audit-name" className="block font-mono text-[11px] uppercase tracking-wider text-white/70">
+                  <label
+                    htmlFor="audit-name"
+                    className="block font-mono text-[11px] uppercase tracking-wider text-white/70"
+                  >
                     Your Name *
                   </label>
                   <input
@@ -202,7 +209,10 @@ export function AuditPage() {
                 </div>
 
                 <div>
-                  <label htmlFor="audit-email" className="block font-mono text-[11px] uppercase tracking-wider text-white/70">
+                  <label
+                    htmlFor="audit-email"
+                    className="block font-mono text-[11px] uppercase tracking-wider text-white/70"
+                  >
                     Your Work Email * (Where we send the audit)
                   </label>
                   <input
@@ -217,7 +227,10 @@ export function AuditPage() {
                 </div>
 
                 <div>
-                  <label htmlFor="audit-bottleneck" className="block font-mono text-[11px] uppercase tracking-wider text-white/70">
+                  <label
+                    htmlFor="audit-bottleneck"
+                    className="block font-mono text-[11px] uppercase tracking-wider text-white/70"
+                  >
                     Biggest Challenge / Goal *
                   </label>
                   <select
@@ -226,17 +239,30 @@ export function AuditPage() {
                     onChange={(e) => setBottleneck(e.target.value)}
                     className="mt-2 w-full border border-white/15 bg-[#030014] p-3 font-mono text-xs text-[#DFBA73] focus:border-[#DFBA73] focus:outline-none"
                   >
-                    <option value="Conversion Rate & Inbound Leads">Low conversion rate & few inquiries</option>
-                    <option value="Outdated Visual Identity">Design looks dated compared to competitors</option>
-                    <option value="Mobile Experience & Performance">Poor mobile layout / slow loading</option>
-                    <option value="Full Rebrand & Launch">Preparing for a major rebrand / new launch</option>
-                    <option value="General Teardown">General teardown & high-level recommendations</option>
+                    <option value="Conversion Rate & Inbound Leads">
+                      Low conversion rate & few inquiries
+                    </option>
+                    <option value="Outdated Visual Identity">
+                      Design looks dated compared to competitors
+                    </option>
+                    <option value="Mobile Experience & Performance">
+                      Poor mobile layout / slow loading
+                    </option>
+                    <option value="Full Rebrand & Launch">
+                      Preparing for a major rebrand / new launch
+                    </option>
+                    <option value="General Teardown">
+                      General teardown & high-level recommendations
+                    </option>
                   </select>
                 </div>
               </div>
 
               <div>
-                <label htmlFor="audit-notes" className="block font-mono text-[11px] uppercase tracking-wider text-white/70">
+                <label
+                  htmlFor="audit-notes"
+                  className="block font-mono text-[11px] uppercase tracking-wider text-white/70"
+                >
                   Any specific pages or competitors we should look at? (Optional)
                 </label>
                 <textarea

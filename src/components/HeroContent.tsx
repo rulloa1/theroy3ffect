@@ -35,12 +35,10 @@ export function HeroContent() {
         />
       </h1>
 
-
       <motion.p
         key={bioKey}
         className="mt-4 max-w-md font-mono text-[11px] leading-relaxed text-white/60 sm:text-xs"
       >
-
         {BIO.split("").map((ch, i) => (
           <motion.span
             key={`${bioKey}-${i}`}

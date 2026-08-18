@@ -32,8 +32,7 @@ export function StripeEmbeddedCheckout({
         customerEmail: customerEmail || user?.email || undefined,
         userId: user?.id,
         returnUrl:
-          returnUrl ||
-          `${window.location.origin}/checkout/return?session_id={CHECKOUT_SESSION_ID}`,
+          returnUrl || `${window.location.origin}/checkout/return?session_id={CHECKOUT_SESSION_ID}`,
         environment: getStripeEnvironment(),
       },
     });
@@ -41,7 +40,6 @@ export function StripeEmbeddedCheckout({
     if (!result.clientSecret) throw new Error("Checkout could not be started");
     return result.clientSecret;
   };
-
 
   return (
     <div id="checkout">

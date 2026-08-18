@@ -47,9 +47,7 @@
               "description": "Service tier name or a fragment of it."
             }
           },
-          "required": [
-            "name"
-          ]
+          "required": ["name"]
         },
         "outputSchema": null
       },
@@ -91,11 +89,7 @@
               "description": "What the project is about, scope, timeline and budget."
             }
           },
-          "required": [
-            "name",
-            "email",
-            "message"
-          ]
+          "required": ["name", "email", "message"]
         },
         "outputSchema": null
       }

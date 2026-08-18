@@ -14,7 +14,10 @@ export default defineTool({
   handler: ({ name }) => {
     const needle = name.toLowerCase().replace(/[^a-z0-9]+/g, "");
     const tier = PRICING_TIERS.find((t) =>
-      t.name.toLowerCase().replace(/[^a-z0-9]+/g, "").includes(needle),
+      t.name
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "")
+        .includes(needle),
     );
     if (!tier) {
       throw new ToolError(

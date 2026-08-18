@@ -1,10 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import {
-  type StripeEnv,
-  createStripeClient,
-  getStripeErrorMessage,
-} from "@/lib/stripe.server";
+import { type StripeEnv, createStripeClient, getStripeErrorMessage } from "@/lib/stripe.server";
 
 const env = (value: unknown): StripeEnv => (value === "live" ? "live" : "sandbox");
 
@@ -55,6 +51,7 @@ export interface AdminOrder {
   balance_due_cents: number;
   balance_status: string;
   balance_invoice_url: string | null;
+  stripe_subscription_id?: string | null;
   amount_refunded: number;
   created_at: string;
   brief?: AdminBrief | null;
@@ -64,6 +61,8 @@ export interface AdminInquiry {
   id: string;
   name: string;
   email: string;
+  company?: string | null;
+  services?: string[] | null;
   project_type: string | null;
   message: string;
   status: "unread" | "replied" | "archived";
@@ -75,7 +74,7 @@ export const adminListOrders = createServerFn({ method: "GET" })
   .inputValidator((data: { environment: StripeEnv }) => ({ environment: env(data.environment) }))
   .handler(async ({ data, context }): Promise<{ orders: AdminOrder[]; briefs: AdminBrief[] }> => {
     await assertAdmin(context as never);
-    
+
     const [ordersResult, briefsResult] = await Promise.all([
       context.supabase
         .from("orders")
@@ -99,13 +98,17 @@ export const adminListOrders = createServerFn({ method: "GET" })
       if (b.email) briefMap.set(b.email.toLowerCase(), b);
     }
 
-    const orders: AdminOrder[] = ((ordersResult.data ?? []) as any[]).map((order) => ({
-      ...order,
-      brief:
-        briefMap.get(order.stripe_session_id) ||
-        (order.customer_email ? briefMap.get(order.customer_email.toLowerCase()) : null) ||
-        null,
-    }));
+    const orders: AdminOrder[] = ((ordersResult.data ?? []) as Record<string, unknown>[]).map(
+      (order) => ({
+        ...(order as unknown as AdminOrder),
+        brief:
+          briefMap.get(order["stripe_session_id"] as string) ||
+          (order["customer_email"]
+            ? briefMap.get((order["customer_email"] as string).toLowerCase())
+            : null) ||
+          null,
+      }),
+    );
 
     return { orders, briefs };
   });
@@ -113,33 +116,44 @@ export const adminListOrders = createServerFn({ method: "GET" })
 export const adminGetBriefDetails = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: { briefId: string }) => ({ briefId: data.briefId }))
-  .handler(async ({ data, context }): Promise<{ brief: AdminBrief | null; pdfUrl: string | null }> => {
-    await assertAdmin(context as never);
-    const { data: brief } = await context.supabase
-      .from("project_briefs")
-      .select("*")
-      .eq("id", data.briefId)
-      .maybeSingle();
+  .handler(
+    async ({ data, context }): Promise<{ brief: AdminBrief | null; pdfUrl: string | null }> => {
+      await assertAdmin(context as never);
+      const { data: brief } = await context.supabase
+        .from("project_briefs")
+        .select("*")
+        .eq("id", data.briefId)
+        .maybeSingle();
 
-    if (!brief) return { brief: null, pdfUrl: null };
+      if (!brief) return { brief: null, pdfUrl: null };
 
-    let pdfUrl: string | null = null;
-    if (brief.pdf_path) {
-      try {
-        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-        const { data: signed } = await supabaseAdmin.storage
-          .from("brief-pdfs")
-          .createSignedUrl(brief.pdf_path, 3600);
-        pdfUrl = signed?.signedUrl ?? null;
-      } catch {}
-    }
+      let pdfUrl: string | null = null;
+      if (brief.pdf_path) {
+        try {
+          const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+          const { data: signed } = await supabaseAdmin.storage
+            .from("brief-pdfs")
+            .createSignedUrl(brief.pdf_path, 3600);
+          pdfUrl = signed?.signedUrl ?? null;
+        } catch (_err) {
+          // Signed URL generation failed
+        }
+      }
 
-    return { brief: brief as AdminBrief, pdfUrl };
-  });
+      return { brief: brief as AdminBrief, pdfUrl };
+    },
+  );
 
 export const adminUpdateProjectMilestone = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: { briefId: string; projectStatus: string; projectNotes?: string; projectLinks?: string }) => data)
+  .inputValidator(
+    (data: {
+      briefId: string;
+      projectStatus: string;
+      projectNotes?: string;
+      projectLinks?: string;
+    }) => data,
+  )
   .handler(async ({ data, context }): Promise<{ success: boolean; error?: string }> => {
     await assertAdmin(context as never);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -161,15 +175,15 @@ export const adminListInquiries = createServerFn({ method: "GET" })
   .handler(async ({ context }): Promise<{ inquiries: AdminInquiry[] }> => {
     await assertAdmin(context as never);
     try {
-      const { data, error } = await context.supabase
-        .from("contact_inquiries" as any)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data, error } = await (context.supabase.from as any)("contact_inquiries")
         .select("*")
         .order("created_at", { ascending: false })
         .limit(100);
 
       if (error || !data) return { inquiries: [] };
       return { inquiries: data as unknown as AdminInquiry[] };
-    } catch {
+    } catch (_err) {
       return { inquiries: [] };
     }
   });
@@ -180,8 +194,8 @@ export const adminUpdateInquiryStatus = createServerFn({ method: "POST" })
   .handler(async ({ data, context }): Promise<{ success: boolean }> => {
     await assertAdmin(context as never);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    await supabaseAdmin
-      .from("contact_inquiries" as any)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (supabaseAdmin.from as any)("contact_inquiries")
       .update({ status: data.status })
       .eq("id", data.inquiryId);
     return { success: true };
@@ -198,38 +212,39 @@ export const adminListPortfolioProjects = createServerFn({ method: "GET" })
 
 export const adminUpsertPortfolioProject = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: {
-    id?: string;
-    title: string;
-    tagline: string;
-    description: string;
-    url: string;
-    category: "Brand Identity" | "UI/UX" | "No-Code";
-    metric?: string;
-    tags: string[];
-    sortOrder?: number;
-    isPublished?: boolean;
-  }) => data)
+  .inputValidator(
+    (data: {
+      id?: string;
+      title: string;
+      tagline: string;
+      description: string;
+      url: string;
+      category: "Brand Identity" | "UI/UX" | "No-Code";
+      metric?: string;
+      tags: string[];
+      sortOrder?: number;
+      isPublished?: boolean;
+    }) => data,
+  )
   .handler(async ({ data, context }): Promise<{ success: boolean; error?: string }> => {
     await assertAdmin(context as never);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    
+
     const projectId = data.id && !data.id.startsWith("default-") ? data.id : crypto.randomUUID();
-    const { error } = await supabaseAdmin
-      .from("showcase_projects" as any)
-      .upsert({
-        id: projectId,
-        title: data.title,
-        tagline: data.tagline,
-        description: data.description,
-        url: data.url,
-        category: data.category,
-        metric: data.metric || null,
-        tags: data.tags,
-        sort_order: data.sortOrder ?? 0,
-        is_published: data.isPublished ?? true,
-        updated_at: new Date().toISOString(),
-      });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { error } = await (supabaseAdmin.from as any)("showcase_projects").upsert({
+      id: projectId,
+      title: data.title,
+      tagline: data.tagline,
+      description: data.description,
+      url: data.url,
+      category: data.category,
+      metric: data.metric || null,
+      tags: data.tags,
+      sort_order: data.sortOrder ?? 0,
+      is_published: data.isPublished ?? true,
+      updated_at: new Date().toISOString(),
+    });
 
     if (error) return { success: false, error: error.message };
     return { success: true };
@@ -241,13 +256,10 @@ export const adminDeletePortfolioProject = createServerFn({ method: "POST" })
   .handler(async ({ data, context }): Promise<{ success: boolean }> => {
     await assertAdmin(context as never);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    await supabaseAdmin
-      .from("showcase_projects" as any)
-      .delete()
-      .eq("id", data.projectId);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (supabaseAdmin.from as any)("showcase_projects").delete().eq("id", data.projectId);
     return { success: true };
   });
-
 
 /**
  * Invoices the remaining balance on a deposit order. Creates (or reuses) the

@@ -70,7 +70,6 @@ function Home() {
           className="pointer-events-auto absolute left-1/2 bottom-0 z-10 h-[62vh] w-auto max-w-none -translate-x-1/2 object-contain object-bottom grayscale contrast-125 brightness-95 drop-shadow-[0_25px_50px_rgba(0,0,0,0.5)] transition-transform duration-700 ease-out hover:scale-[1.03] sm:h-[78vh] md:bottom-auto md:top-[24vh] md:h-[120vh] md:object-top"
         />
 
-
         <FooterMarquee />
       </div>
 

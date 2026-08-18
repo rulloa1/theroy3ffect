@@ -1,4 +1,4 @@
-import React from 'react'
+import React from "react";
 import {
   Body,
   Container,
@@ -9,35 +9,35 @@ import {
   Link,
   Preview,
   Text,
-} from '@react-email/components'
-import type { TemplateEntry } from './registry'
+} from "@react-email/components";
+import type { TemplateEntry } from "./registry";
 
 interface Props {
-  name?: string
-  email?: string
-  company?: string
-  projectType?: string
-  goals?: string
-  audience?: string
-  deliverables?: string
-  referencesLinks?: string
-  budget?: string
-  timeline?: string
-  extra?: string
-  sessionId?: string
-  pdfUrl?: string
+  name?: string;
+  email?: string;
+  company?: string;
+  projectType?: string;
+  goals?: string;
+  audience?: string;
+  deliverables?: string;
+  referencesLinks?: string;
+  budget?: string;
+  timeline?: string;
+  extra?: string;
+  sessionId?: string;
+  pdfUrl?: string;
 }
 
 const Row = ({ label, value }: { label: string; value?: string | undefined }) => (
   <Text style={row}>
-    <strong>{label}:</strong> {value && value.trim() ? value : '—'}
+    <strong>{label}:</strong> {value && value.trim() ? value : "—"}
   </Text>
-)
+);
 
 const Email = (props: Props) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Project brief from {props.name || 'a client'}</Preview>
+    <Preview>Project brief from {props.name || "a client"}</Preview>
     <Body style={main}>
       <Container style={container}>
         <Text style={kicker}>POST-PURCHASE INTAKE</Text>
@@ -62,7 +62,7 @@ const Email = (props: Props) => (
             <Text style={row}>
               <Link href={props.pdfUrl} style={link}>
                 Download the PDF summary
-              </Link>{' '}
+              </Link>{" "}
               (link valid for 12 months)
             </Text>
           </>
@@ -70,34 +70,45 @@ const Email = (props: Props) => (
       </Container>
     </Body>
   </Html>
-)
+);
 
 export const template = {
   component: Email,
-  subject: (data: Record<string, any>) =>
-    `Project brief — ${data['name'] || 'new client'}`,
-  displayName: 'Project brief intake',
+  subject: (data: Record<string, any>) => `Project brief — ${data["name"] || "new client"}`,
+  displayName: "Project brief intake",
   previewData: {
-    name: 'Jane Doe',
-    email: 'jane@example.com',
-    company: 'Northwind',
-    projectType: 'Website / UI-UX',
-    goals: 'Relaunch the marketing site before Q4.',
-    audience: 'Enterprise ops teams',
-    deliverables: 'Design system, 6 pages, build',
-    referencesLinks: 'https://linear.app',
-    budget: '$5,000 – $10,000',
-    timeline: '4–6 weeks',
-    extra: 'Copy is mostly written.',
-    sessionId: 'cs_test_123',
-    pdfUrl: 'https://example.com/brief.pdf',
+    name: "Jane Doe",
+    email: "jane@example.com",
+    company: "Northwind",
+    projectType: "Website / UI-UX",
+    goals: "Relaunch the marketing site before Q4.",
+    audience: "Enterprise ops teams",
+    deliverables: "Design system, 6 pages, build",
+    referencesLinks: "https://linear.app",
+    budget: "$5,000 – $10,000",
+    timeline: "4–6 weeks",
+    extra: "Copy is mostly written.",
+    sessionId: "cs_test_123",
+    pdfUrl: "https://example.com/brief.pdf",
   },
-} satisfies TemplateEntry
+} satisfies TemplateEntry;
 
-const main = { backgroundColor: '#05050a', fontFamily: 'Helvetica, Arial, sans-serif' }
-const container = { backgroundColor: '#0a0a12', margin: '0 auto', padding: '36px 32px', maxWidth: '600px', border: '1px solid rgba(255, 255, 255, 0.1)' }
-const kicker = { fontSize: '11px', letterSpacing: '3px', color: '#DFBA73', margin: '0 0 8px', fontWeight: 'bold' }
-const heading = { fontSize: '26px', margin: '0 0 16px', color: '#ffffff', fontWeight: 'bold' }
-const row = { fontSize: '14px', lineHeight: '22px', color: '#e5e7eb', margin: '0 0 8px' }
-const hr = { borderColor: 'rgba(255, 255, 255, 0.1)', margin: '20px 0' }
-const link = { color: '#E51924', textDecoration: 'underline', fontWeight: 'bold' }
+const main = { backgroundColor: "#05050a", fontFamily: "Helvetica, Arial, sans-serif" };
+const container = {
+  backgroundColor: "#0a0a12",
+  margin: "0 auto",
+  padding: "36px 32px",
+  maxWidth: "600px",
+  border: "1px solid rgba(255, 255, 255, 0.1)",
+};
+const kicker = {
+  fontSize: "11px",
+  letterSpacing: "3px",
+  color: "#DFBA73",
+  margin: "0 0 8px",
+  fontWeight: "bold",
+};
+const heading = { fontSize: "26px", margin: "0 0 16px", color: "#ffffff", fontWeight: "bold" };
+const row = { fontSize: "14px", lineHeight: "22px", color: "#e5e7eb", margin: "0 0 8px" };
+const hr = { borderColor: "rgba(255, 255, 255, 0.1)", margin: "20px 0" };
+const link = { color: "#E51924", textDecoration: "underline", fontWeight: "bold" };

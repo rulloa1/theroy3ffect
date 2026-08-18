@@ -48,7 +48,16 @@ const PROJECT_TYPES = [
     maxPages: 0,
     isRetainer: true,
   },
-] as const satisfies ReadonlyArray<{ id: string; name: string; basePrice: number; baseDays: number; description: string; defaultPages: number; maxPages: number; isRetainer?: boolean }>;
+] as const satisfies ReadonlyArray<{
+  id: string;
+  name: string;
+  basePrice: number;
+  baseDays: number;
+  description: string;
+  defaultPages: number;
+  maxPages: number;
+  isRetainer?: boolean;
+}>;
 
 const OPTIONAL_FEATURES: ScopeFeature[] = [
   {
@@ -109,10 +118,7 @@ export function ScopeEstimator({
 }) {
   const [selectedType, setSelectedType] = useState<string>("full_website");
   const [pageCount, setPageCount] = useState<number>(5);
-  const [selectedFeatures, setSelectedFeatures] = useState<string[]>([
-    "webgl_3d",
-    "seo_copy",
-  ]);
+  const [selectedFeatures, setSelectedFeatures] = useState<string[]>(["webgl_3d", "seo_copy"]);
 
   const activeTypeObj = useMemo(
     () => PROJECT_TYPES.find((t) => t.id === selectedType) ?? PROJECT_TYPES[1]!,
@@ -148,9 +154,10 @@ export function ScopeEstimator({
     const calculatedDays = Math.max(days, 5);
     const weeksMin = Math.max(1, Math.round(calculatedDays / 7));
     const weeksMax = weeksMin + 1;
-    const timeline = ("isRetainer" in activeTypeObj && activeTypeObj.isRetainer)
-      ? "Monthly (Continuous)"
-      : `${weeksMin}–${weeksMax} Weeks`;
+    const timeline =
+      "isRetainer" in activeTypeObj && activeTypeObj.isRetainer
+        ? "Monthly (Continuous)"
+        : `${weeksMin}–${weeksMax} Weeks`;
 
     return {
       totalPrice: price,
@@ -232,7 +239,8 @@ export function ScopeEstimator({
                       </p>
                     </div>
                     <span className="mt-3 font-mono text-xs font-semibold text-[#DFBA73]">
-                      Starting at ${pt.basePrice.toLocaleString()} {("isRetainer" in pt && pt.isRetainer) ? "/mo" : ""}
+                      Starting at ${pt.basePrice.toLocaleString()}{" "}
+                      {"isRetainer" in pt && pt.isRetainer ? "/mo" : ""}
                     </span>
                   </button>
                 );
@@ -325,7 +333,9 @@ export function ScopeEstimator({
               <h4 className="mt-1 font-display text-2xl uppercase text-white">
                 {activeTypeObj.name}
               </h4>
-              <p className="mt-1 font-mono text-xs text-white/50">{timelineString} Estimated Delivery</p>
+              <p className="mt-1 font-mono text-xs text-white/50">
+                {timelineString} Estimated Delivery
+              </p>
             </div>
 
             <div className="space-y-3 font-mono text-xs">

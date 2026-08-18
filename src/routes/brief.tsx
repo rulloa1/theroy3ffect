@@ -7,10 +7,15 @@ import { Logo } from "@/components/Logo";
 export const Route = createFileRoute("/brief")({
   validateSearch: (
     search: Record<string, unknown>,
-  ): { session_id?: string | undefined; scope_type?: string | undefined; scope_estimate?: string | undefined } => ({
+  ): {
+    session_id?: string | undefined;
+    scope_type?: string | undefined;
+    scope_estimate?: string | undefined;
+  } => ({
     session_id: typeof search["session_id"] === "string" ? search["session_id"] : undefined,
     scope_type: typeof search["scope_type"] === "string" ? search["scope_type"] : undefined,
-    scope_estimate: typeof search["scope_estimate"] === "string" ? search["scope_estimate"] : undefined,
+    scope_estimate:
+      typeof search["scope_estimate"] === "string" ? search["scope_estimate"] : undefined,
   }),
   head: () => ({
     meta: [
@@ -34,13 +39,7 @@ export const Route = createFileRoute("/brief")({
   component: BriefPage,
 });
 
-const PROJECT_TYPES = [
-  "Brand identity",
-  "Website / UI-UX",
-  "Design + Build",
-  "Retainer",
-  "Other",
-];
+const PROJECT_TYPES = ["Brand identity", "Website / UI-UX", "Design + Build", "Retainer", "Other"];
 const BUDGETS = ["Under $2.5k", "$2.5k – $5k", "$5k – $10k", "$10k+", "Already paid"];
 const TIMELINES = ["ASAP", "2–4 weeks", "1–2 months", "Flexible"];
 
@@ -86,7 +85,11 @@ const inputClass =
 const labelClass = "block font-mono text-[10px] tracking-widest text-white/40";
 
 function BriefPage() {
-  const { session_id: sessionId, scope_type: scopeType, scope_estimate: scopeEstimate } = Route.useSearch();
+  const {
+    session_id: sessionId,
+    scope_type: scopeType,
+    scope_estimate: scopeEstimate,
+  } = Route.useSearch();
   const [step, setStep] = useState(0);
   const [form, setForm] = useState<Form>(() => ({
     ...EMPTY,
@@ -116,7 +119,9 @@ function BriefPage() {
           setLastSaved("Draft restored");
         }
       }
-    } catch {}
+    } catch (_err) {
+      // Storage unavailable or blocked
+    }
   }, [STORAGE_KEY]);
 
   // Debounced auto-save to localStorage
@@ -129,11 +134,25 @@ function BriefPage() {
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(form));
         setLastSaved(new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }));
-      } catch {}
+      } catch (_err) {
+        // Storage write failed
+      }
     }, 400);
 
     return () => clearTimeout(timer);
   }, [form, done, STORAGE_KEY]);
+
+  const clearDraft = () => {
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+    } catch (_err) {
+      // Storage remove failed
+    }
+    setForm(EMPTY);
+    setStep(0);
+    setLastSaved(null);
+    toast.info("Brief draft reset.");
+  };
 
   const set = (key: keyof Form) => (value: string) =>
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -142,9 +161,7 @@ function BriefPage() {
     const fields = STEPS[step]!.fields as readonly string[];
     const result = schema.safeParse(form);
     if (result.success) return true;
-    const issue = result.error.issues.find((i) =>
-      fields.includes(String(i.path[0])),
-    );
+    const issue = result.error.issues.find((i) => fields.includes(String(i.path[0])));
     if (issue) {
       toast.error(issue.message);
       return false;
@@ -176,13 +193,13 @@ function BriefPage() {
       }
       try {
         localStorage.removeItem(STORAGE_KEY);
-      } catch {}
+      } catch (_err) {
+        // Storage clean failed
+      }
       setDone(true);
       toast.success("Brief received — I'll reply within one business day.");
     } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "Could not send your brief right now.",
-      );
+      toast.error(error instanceof Error ? error.message : "Could not send your brief right now.");
     } finally {
       setSending(false);
     }
@@ -199,8 +216,8 @@ function BriefPage() {
             THANK YOU
           </h1>
           <p className="mt-4 font-mono text-xs leading-relaxed text-white/60">
-            Your brief is with me. I&apos;ll review it and reply within one business day
-            with scope, schedule and next steps. A copy is in your inbox.
+            Your brief is with me. I&apos;ll review it and reply within one business day with scope,
+            schedule and next steps. A copy is in your inbox.
           </p>
           <Link
             to="/"

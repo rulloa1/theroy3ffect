@@ -3,7 +3,6 @@ import listServicesTool from "./tools/list-services";
 import getServiceTool from "./tools/get-service";
 import sendInquiryTool from "./tools/send-inquiry";
 
-
 export default defineMcp({
   name: "pixel-perfect-capture",
   title: "Pixel Perfect Capture",

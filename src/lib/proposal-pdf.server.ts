@@ -1,19 +1,19 @@
 import { PDFDocument, StandardFonts, rgb, type PDFFont } from "pdf-lib";
 
-export interface BriefPdfData {
-  name: string;
-  email: string;
-  company?: string;
-  projectType: string;
-  goals: string;
-  audience?: string;
-  deliverables?: string;
-  referencesLinks?: string;
-  budget?: string;
-  timeline?: string;
-  extra?: string;
-  sessionId?: string;
-  submittedAt?: string;
+export interface ProposalPdfData {
+  clientName: string;
+  clientEmail: string;
+  clientCompany?: string | null;
+  projectTitle: string;
+  scopeDeliverables: string;
+  timelineWeeks: string;
+  totalPriceCents: number;
+  depositCents: number;
+  balanceCents: number;
+  terms: string;
+  clientSignatureName?: string | null;
+  clientSignedAt?: string | null;
+  shareToken: string;
 }
 
 const PAGE_W = 595.28;
@@ -22,6 +22,7 @@ const MARGIN = 56;
 const CRIMSON = rgb(1, 0.2, 0.2);
 const INK = rgb(0.09, 0.09, 0.11);
 const MUTED = rgb(0.42, 0.42, 0.46);
+const EMERALD = rgb(0.06, 0.65, 0.42);
 
 function wrap(text: string, font: PDFFont, size: number, maxWidth: number): string[] {
   const lines: string[] = [];
@@ -45,10 +46,12 @@ function wrap(text: string, font: PDFFont, size: number, maxWidth: number): stri
   return lines;
 }
 
-/** Renders a one-or-more page PDF summary of a submitted brief. */
-export async function buildBriefPdf(data: BriefPdfData): Promise<Uint8Array> {
+const money = (cents: number) =>
+  new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(cents / 100);
+
+export async function buildSignedProposalPdf(data: ProposalPdfData): Promise<Uint8Array> {
   const pdf = await PDFDocument.create();
-  pdf.setTitle(`Project brief — ${data.name}`);
+  pdf.setTitle(`Signed Proposal — ${data.projectTitle} — ${data.clientName}`);
   pdf.setAuthor("The Roy Effect");
 
   const bold = await pdf.embedFont(StandardFonts.HelveticaBold);
@@ -81,7 +84,7 @@ export async function buildBriefPdf(data: BriefPdfData): Promise<Uint8Array> {
     }
   };
 
-  // Header
+  // Crimson top banner bar
   page.drawRectangle({
     x: 0,
     y: PAGE_H - 10,
@@ -90,40 +93,69 @@ export async function buildBriefPdf(data: BriefPdfData): Promise<Uint8Array> {
     color: CRIMSON,
   });
   y -= 6;
+
   drawLines("THE ROY EFFECT", bold, 10, CRIMSON, 16);
-  drawLines("PROJECT BRIEF", bold, 26, INK, 32);
+  drawLines("PROJECT SCOPE AGREEMENT", bold, 24, INK, 30);
   drawLines(
-    `${data.submittedAt ?? new Date().toISOString().slice(0, 10)}${
-      data.sessionId ? `  ·  Payment ref: ${data.sessionId}` : ""
-    }`,
+    `Reference Token: ${data.shareToken}  ·  Generated: ${new Date().toISOString().slice(0, 10)}`,
     regular,
     9,
     MUTED,
     20,
   );
-  y -= 8;
+  y -= 10;
 
-  const section = (label: string, value?: string) => {
+  const section = (label: string, value?: string | null) => {
     const content = value && value.trim() ? value.trim() : "—";
-    ensure(48);
+    ensure(44);
     drawLines(label.toUpperCase(), bold, 9, CRIMSON, 15);
-    drawLines(content, regular, 11, INK, 16);
-    y -= 10;
+    drawLines(content, regular, 10, INK, 15);
+    y -= 8;
   };
 
-  section("Client", `${data.name}${data.company ? ` — ${data.company}` : ""}`);
-  section("Email", data.email);
-  section("Project type", data.projectType);
-  section("Goals", data.goals);
-  section("Audience", data.audience);
-  section("Deliverables", data.deliverables);
-  section("References & links", data.referencesLinks);
-  section("Budget", data.budget);
-  section("Timeline", data.timeline);
-  section("Anything else", data.extra);
+  section(
+    "Client",
+    `${data.clientName}${data.clientCompany ? ` (${data.clientCompany})` : ""} · ${data.clientEmail}`,
+  );
+  section("Project Title", data.projectTitle);
+  section("Scope & Deliverables", data.scopeDeliverables);
+  section("Estimated Timeline", data.timelineWeeks);
+  section(
+    "Investment",
+    `Total: ${money(data.totalPriceCents)}  |  50% Deposit: ${money(data.depositCents)}  |  Balance: ${money(data.balanceCents)}`,
+  );
+  section("Payment & Scope Terms", data.terms);
 
-  ensure(40);
-  y -= 6;
+  // Digital Signature Block
+  ensure(70);
+  y -= 10;
+  page.drawRectangle({
+    x: MARGIN - 10,
+    y: y - 55,
+    width: maxWidth + 20,
+    height: 60,
+    color: rgb(0.95, 0.98, 0.95),
+    borderColor: EMERALD,
+    borderWidth: 1,
+  });
+
+  drawLines("DIGITAL SIGNATURE & ACCEPTANCE", bold, 9, EMERALD, 14);
+  drawLines(
+    `Signed by: ${data.clientSignatureName || data.clientName} (${data.clientEmail})`,
+    bold,
+    11,
+    INK,
+    16,
+  );
+  drawLines(
+    `Timestamp: ${data.clientSignedAt ? new Date(data.clientSignedAt).toUTCString() : "Signed online"}`,
+    regular,
+    9,
+    MUTED,
+    14,
+  );
+  y -= 25;
+
   page.drawLine({
     start: { x: MARGIN, y },
     end: { x: PAGE_W - MARGIN, y },

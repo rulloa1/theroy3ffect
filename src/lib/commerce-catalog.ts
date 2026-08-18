@@ -25,8 +25,7 @@ export const PRICING_TIERS: CatalogTier[] = [
     name: "BRAND SPRINT",
     price: "$2,500",
     note: "from",
-    description:
-      "A focused brand identity package for early-stage teams and personal brands.",
+    description: "A focused brand identity package for early-stage teams and personal brands.",
     features: [
       "Brand strategy workshop",
       "Logo system + variations",
@@ -50,8 +49,7 @@ export const PRICING_TIERS: CatalogTier[] = [
     name: "WEBSITE / UI-UX",
     price: "$5,000",
     note: "from",
-    description:
-      "Full visual design and prototype for websites, apps, or digital products.",
+    description: "Full visual design and prototype for websites, apps, or digital products.",
     features: [
       "UX audit & wireframes",
       "High-fidelity UI designs",
@@ -76,8 +74,7 @@ export const PRICING_TIERS: CatalogTier[] = [
     name: "DESIGN + BUILD",
     price: "$8,000",
     note: "from",
-    description:
-      "End-to-end design paired with a no-code build on Webflow, Framer, or TanStack.",
+    description: "End-to-end design paired with a no-code build on Webflow, Framer, or TanStack.",
     features: [
       "Everything in Website/UI-UX",
       "No-code development",
@@ -101,8 +98,7 @@ export const PRICING_TIERS: CatalogTier[] = [
     name: "RETAINER",
     price: "$3,000",
     note: "/mo",
-    description:
-      "Ongoing design partnership for teams that need consistent creative output.",
+    description: "Ongoing design partnership for teams that need consistent creative output.",
     features: [
       "Monthly design capacity",
       "Priority turnaround",
@@ -172,4 +168,3 @@ export const DEPOSIT_BALANCE_CENTS: Record<string, number> = {
 export function getAddOnByPriceId(priceId: string): CatalogAddOn | undefined {
   return ADD_ONS.find((a) => a.priceId === priceId);
 }
-

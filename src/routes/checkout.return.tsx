@@ -6,9 +6,7 @@ import { getCheckoutSessionSummary } from "@/utils/payments.functions";
 
 export const Route = createFileRoute("/checkout/return")({
   validateSearch: (search: Record<string, unknown>): { session_id?: string } =>
-    typeof search["session_id"] === "string"
-      ? { session_id: search["session_id"] }
-      : {},
+    typeof search["session_id"] === "string" ? { session_id: search["session_id"] } : {},
   head: () => ({
     meta: [
       { title: "Payment Confirmed — theroyeffect.com" },
@@ -115,4 +113,3 @@ function CheckoutReturn() {
     </main>
   );
 }
-

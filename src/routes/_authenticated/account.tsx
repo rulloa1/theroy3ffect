@@ -7,11 +7,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { getStripeEnvironment } from "@/lib/stripe";
 import { Logo } from "@/components/Logo";
-import {
-  claimCheckoutSession,
-  createPortalSession,
-  getMyAccount,
-} from "@/utils/account.functions";
+import { claimCheckoutSession, createPortalSession, getMyAccount } from "@/utils/account.functions";
 
 export const Route = createFileRoute("/_authenticated/account")({
   validateSearch: (search: Record<string, unknown>): { session_id?: string } =>
@@ -43,7 +39,13 @@ const money = (cents: number, currency: string) =>
   );
 
 const date = (value: string | null) =>
-  value ? new Date(value).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "—";
+  value
+    ? new Date(value).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      })
+    : "—";
 
 function AccountPage() {
   const { session_id: sessionId } = Route.useSearch();
@@ -91,7 +93,9 @@ function AccountPage() {
         <Logo variant="compact" size="md" href="/" className="mb-6" />
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <span className="font-mono text-[10px] tracking-widest text-[#FF3333]">CLIENT ACCOUNT</span>
+            <span className="font-mono text-[10px] tracking-widest text-[#FF3333]">
+              CLIENT ACCOUNT
+            </span>
             <h1 className="mt-3 font-display text-3xl uppercase leading-[0.9] text-white sm:text-5xl md:text-6xl">
               {data?.fullName ? data.fullName.split(" ")[0] : "YOUR"} DASHBOARD
             </h1>
@@ -142,115 +146,124 @@ function AccountPage() {
         {data && (
           <div className="mt-12 space-y-12">
             {/* Active Project Milestone Tracker */}
-            {(data.orders.length > 0 || data.briefs.length > 0) && (() => {
-              const latestBrief = data.briefs[0];
-              const stageMap: Record<string, number> = {
-                brief_received: 2,
-                direction_locked: 3,
-                design_build: 4,
-                in_review: 4,
-                completed: 5,
-              };
-              const activeStage = latestBrief?.project_status
-                ? stageMap[latestBrief.project_status] ?? 2
-                : data.orders.length > 0
-                  ? 1
-                  : 0;
-              const isFullyDone = latestBrief?.project_status === "completed";
+            {(data.orders.length > 0 || data.briefs.length > 0) &&
+              (() => {
+                const latestBrief = data.briefs[0];
+                const stageMap: Record<string, number> = {
+                  brief_received: 2,
+                  direction_locked: 3,
+                  design_build: 4,
+                  in_review: 4,
+                  completed: 5,
+                };
+                const activeStage = latestBrief?.project_status
+                  ? (stageMap[latestBrief.project_status] ?? 2)
+                  : data.orders.length > 0
+                    ? 1
+                    : 0;
+                const isFullyDone = latestBrief?.project_status === "completed";
 
-              const steps = [
-                { label: "1. Deposit Reserved" },
-                { label: "2. Brief Submitted" },
-                { label: "3. Scope & Direction" },
-                { label: "4. Design & Build" },
-                { label: "5. Final & Launch" },
-              ];
+                const steps = [
+                  { label: "1. Deposit Reserved" },
+                  { label: "2. Brief Submitted" },
+                  { label: "3. Scope & Direction" },
+                  { label: "4. Design & Build" },
+                  { label: "5. Final & Launch" },
+                ];
 
-              return (
-                <section className="border border-white/10 bg-white/[0.02] p-6">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <span className="font-mono text-xs tracking-widest text-[#FF3333]">
-                      PROJECT WORKFLOW STATUS
-                    </span>
-                    <span className="font-mono text-[11px] text-white/40">
-                      {isFullyDone
-                        ? "Project Complete & Delivered"
-                        : latestBrief
-                          ? `Stage ${activeStage} of 5 in Progress`
-                          : "Awaiting Project Brief"}
-                    </span>
-                  </div>
-                  <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-5">
-                    {steps.map((step, idx) => {
-                      const stepNumber = idx + 1;
-                      const isDone = isFullyDone || stepNumber < activeStage || (stepNumber === 1 && data.orders.length > 0 && activeStage > 1);
-                      const isCurrent = !isFullyDone && stepNumber === activeStage;
-
-                      return (
-                        <div
-                          key={step.label}
-                          className={`flex flex-col border p-3 ${
-                            isDone
-                              ? "border-[#FF3333] bg-[#FF3333]/10 text-white"
-                              : isCurrent
-                                ? "border-white/40 bg-white/[0.04] text-white"
-                                : "border-white/10 text-white/30"
-                          }`}
-                        >
-                          <span className="font-mono text-[10px] tracking-widest text-[#FF3333]">
-                            {isDone ? "✓ COMPLETE" : isCurrent ? "▶ ACTIVE" : "QUEUED"}
-                          </span>
-                          <span className="mt-1 font-display text-xs uppercase">{step.label}</span>
-                        </div>
-                      );
-                    })}
-                  </div>
-
-                  {(latestBrief?.project_links || latestBrief?.project_notes) && (
-                    <div className="mt-6 border-t border-white/10 pt-4 space-y-3">
-                      {latestBrief.project_notes && (
-                        <div>
-                          <span className="font-mono text-[10px] uppercase tracking-widest text-[#FF3333]">
-                            STUDIO DIRECTION NOTE
-                          </span>
-                          <p className="mt-1 font-mono text-xs text-white/80 whitespace-pre-wrap leading-relaxed">
-                            {latestBrief.project_notes}
-                          </p>
-                        </div>
-                      )}
-                      {latestBrief.project_links && (
-                        <div>
-                          <span className="font-mono text-[10px] uppercase tracking-widest text-[#FF3333]">
-                            PROTOTYPE &amp; STAGING LINKS
-                          </span>
-                          <div className="mt-1 flex flex-wrap gap-2">
-                            {latestBrief.project_links.split("\n").filter(Boolean).map((linkStr, i) => {
-                              const trimmed = linkStr.trim();
-                              const isUrl = /^https?:\/\//i.test(trimmed);
-                              return isUrl ? (
-                                <a
-                                  key={i}
-                                  href={trimmed}
-                                  target="_blank"
-                                  rel="noreferrer"
-                                  className="inline-flex items-center gap-1.5 border border-[#FF3333]/40 bg-[#FF3333]/10 px-3 py-1.5 font-mono text-xs text-[#FF3333] transition-colors hover:bg-[#FF3333] hover:text-black"
-                                >
-                                  {trimmed} ↗
-                                </a>
-                              ) : (
-                                <span key={i} className="font-mono text-xs text-white/70">
-                                  {trimmed}
-                                </span>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      )}
+                return (
+                  <section className="border border-white/10 bg-white/[0.02] p-6">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <span className="font-mono text-xs tracking-widest text-[#FF3333]">
+                        PROJECT WORKFLOW STATUS
+                      </span>
+                      <span className="font-mono text-[11px] text-white/40">
+                        {isFullyDone
+                          ? "Project Complete & Delivered"
+                          : latestBrief
+                            ? `Stage ${activeStage} of 5 in Progress`
+                            : "Awaiting Project Brief"}
+                      </span>
                     </div>
-                  )}
-                </section>
-              );
-            })()}
+                    <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-5">
+                      {steps.map((step, idx) => {
+                        const stepNumber = idx + 1;
+                        const isDone =
+                          isFullyDone ||
+                          stepNumber < activeStage ||
+                          (stepNumber === 1 && data.orders.length > 0 && activeStage > 1);
+                        const isCurrent = !isFullyDone && stepNumber === activeStage;
+
+                        return (
+                          <div
+                            key={step.label}
+                            className={`flex flex-col border p-3 ${
+                              isDone
+                                ? "border-[#FF3333] bg-[#FF3333]/10 text-white"
+                                : isCurrent
+                                  ? "border-white/40 bg-white/[0.04] text-white"
+                                  : "border-white/10 text-white/30"
+                            }`}
+                          >
+                            <span className="font-mono text-[10px] tracking-widest text-[#FF3333]">
+                              {isDone ? "✓ COMPLETE" : isCurrent ? "▶ ACTIVE" : "QUEUED"}
+                            </span>
+                            <span className="mt-1 font-display text-xs uppercase">
+                              {step.label}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {(latestBrief?.project_links || latestBrief?.project_notes) && (
+                      <div className="mt-6 border-t border-white/10 pt-4 space-y-3">
+                        {latestBrief.project_notes && (
+                          <div>
+                            <span className="font-mono text-[10px] uppercase tracking-widest text-[#FF3333]">
+                              STUDIO DIRECTION NOTE
+                            </span>
+                            <p className="mt-1 font-mono text-xs text-white/80 whitespace-pre-wrap leading-relaxed">
+                              {latestBrief.project_notes}
+                            </p>
+                          </div>
+                        )}
+                        {latestBrief.project_links && (
+                          <div>
+                            <span className="font-mono text-[10px] uppercase tracking-widest text-[#FF3333]">
+                              PROTOTYPE &amp; STAGING LINKS
+                            </span>
+                            <div className="mt-1 flex flex-wrap gap-2">
+                              {latestBrief.project_links
+                                .split("\n")
+                                .filter(Boolean)
+                                .map((linkStr, i) => {
+                                  const trimmed = linkStr.trim();
+                                  const isUrl = /^https?:\/\//i.test(trimmed);
+                                  return isUrl ? (
+                                    <a
+                                      key={i}
+                                      href={trimmed}
+                                      target="_blank"
+                                      rel="noreferrer"
+                                      className="inline-flex items-center gap-1.5 border border-[#FF3333]/40 bg-[#FF3333]/10 px-3 py-1.5 font-mono text-xs text-[#FF3333] transition-colors hover:bg-[#FF3333] hover:text-black"
+                                    >
+                                      {trimmed} ↗
+                                    </a>
+                                  ) : (
+                                    <span key={i} className="font-mono text-xs text-white/70">
+                                      {trimmed}
+                                    </span>
+                                  );
+                                })}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </section>
+                );
+              })()}
 
             <Section title="PROJECT BRIEFS">
               {data.briefs.length === 0 ? (
@@ -269,7 +282,9 @@ function AccountPage() {
                 data.briefs.map((brief) => (
                   <Row key={brief.id}>
                     <div>
-                      <p className="font-display text-lg uppercase text-white">{brief.project_type}</p>
+                      <p className="font-display text-lg uppercase text-white">
+                        {brief.project_type}
+                      </p>
                       {brief.goals && (
                         <p className="mt-1 max-w-md font-mono text-xs text-white/50 line-clamp-1">
                           {brief.goals}
@@ -305,12 +320,16 @@ function AccountPage() {
                 data.subscriptions.map((sub) => (
                   <Row key={sub.id}>
                     <div>
-                      <p className="font-display text-lg uppercase text-white">{sub.product_name}</p>
+                      <p className="font-display text-lg uppercase text-white">
+                        {sub.product_name}
+                      </p>
                       <p className="mt-1 font-mono text-[11px] text-white/40">
                         {sub.cancel_at_period_end
                           ? `Ends ${date(sub.current_period_end)}`
                           : `Renews ${date(sub.current_period_end)}`}
-                        {sub.latest_invoice_status ? ` · last invoice ${sub.latest_invoice_status}` : ""}
+                        {sub.latest_invoice_status
+                          ? ` · last invoice ${sub.latest_invoice_status}`
+                          : ""}
                       </p>
                     </div>
                     <Badge
@@ -336,7 +355,9 @@ function AccountPage() {
                 data.orders.map((order) => (
                   <Row key={order.id}>
                     <div>
-                      <p className="font-display text-lg uppercase text-white">{order.product_name}</p>
+                      <p className="font-display text-lg uppercase text-white">
+                        {order.product_name}
+                      </p>
                       <p className="mt-1 font-mono text-[11px] text-white/40">
                         {date(order.created_at)} · {money(order.amount_total, order.currency)}
                         {order.amount_refunded > 0
@@ -355,8 +376,8 @@ function AccountPage() {
                       )}
                       {order.balance_status === "pending" && (
                         <p className="mt-2 font-mono text-[11px] text-white/40">
-                          Remaining balance {money(order.balance_due_cents, order.currency)} — invoiced
-                          at project completion.
+                          Remaining balance {money(order.balance_due_cents, order.currency)} —
+                          invoiced at project completion.
                         </p>
                       )}
                     </div>

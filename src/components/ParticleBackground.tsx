@@ -18,11 +18,11 @@ export function ParticleBackground() {
 
     (async () => {
       const THREE = await import("three");
-      const { EffectComposer } = await import("three/examples/jsm/postprocessing/EffectComposer.js");
+      const { EffectComposer } =
+        await import("three/examples/jsm/postprocessing/EffectComposer.js");
       const { RenderPass } = await import("three/examples/jsm/postprocessing/RenderPass.js");
-      const { UnrealBloomPass } = await import(
-        "three/examples/jsm/postprocessing/UnrealBloomPass.js"
-      );
+      const { UnrealBloomPass } =
+        await import("three/examples/jsm/postprocessing/UnrealBloomPass.js");
 
       const mount = holder.current;
       if (!mount || disposed) return;
@@ -41,7 +41,11 @@ export function ParticleBackground() {
       const camera = new THREE.PerspectiveCamera(70, width / height, 0.1, 1000);
       camera.position.z = 60;
 
-      const renderer = new THREE.WebGLRenderer({ antialias: !isMobile, alpha: true, powerPreference: "high-performance" });
+      const renderer = new THREE.WebGLRenderer({
+        antialias: !isMobile,
+        alpha: true,
+        powerPreference: "high-performance",
+      });
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, maxDpr));
       renderer.setSize(width, height);
       renderer.setClearColor(0x000000, 0);
@@ -124,7 +128,7 @@ export function ParticleBackground() {
         new THREE.Vector2(width, height),
         isMobile ? 0.5 : 0.8,
         0.1,
-        1.0
+        1.0,
       );
       composer.addPass(bloom);
 

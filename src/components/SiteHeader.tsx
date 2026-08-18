@@ -2,7 +2,8 @@ import { Link } from "@tanstack/react-router";
 import { useAuth } from "@/hooks/useAuth";
 import { Logo } from "@/components/Logo";
 
-export type NavTarget = "PROJECTS" | "PROCESS" | "ABOUT" | "RESUME" | "PRICING" | "LET'S WORK" | "MENU";
+export type NavTarget =
+  "PROJECTS" | "PROCESS" | "ABOUT" | "RESUME" | "PRICING" | "LET'S WORK" | "MENU";
 
 const LINKS: Exclude<NavTarget, "MENU">[] = ["PROJECTS", "ABOUT", "PROCESS", "PRICING"];
 
@@ -14,9 +15,6 @@ export function SiteHeader({ onNavigate }: { onNavigate: (target: NavTarget) => 
       <div className="flex min-w-0 items-center overflow-hidden">
         <Logo variant="responsive" size="sm" href="/" className="inline-flex" />
       </div>
-
-
-
 
       <nav aria-label="Primary" className="hidden items-center gap-8 lg:flex">
         {LINKS.map((l) => (
@@ -66,4 +64,3 @@ export function SiteHeader({ onNavigate }: { onNavigate: (target: NavTarget) => 
     </header>
   );
 }
-

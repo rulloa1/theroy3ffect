@@ -79,17 +79,17 @@ const STRUCTURED_DATA = {
     {
       "@type": "Person",
       "@id": "https://www.theroyeffect.com/#person",
-      "name": "Rory Ulloa",
-      "url": "https://www.theroyeffect.com",
-      "jobTitle": "Creative Director & UI/UX Designer",
-      "email": "rory@theroyeffect.com",
-      "address": {
+      name: "Rory Ulloa",
+      url: "https://www.theroyeffect.com",
+      jobTitle: "Creative Director & UI/UX Designer",
+      email: "rory@theroyeffect.com",
+      address: {
         "@type": "PostalAddress",
-        "addressLocality": "Houston",
-        "addressRegion": "TX",
-        "addressCountry": "US",
+        addressLocality: "Houston",
+        addressRegion: "TX",
+        addressCountry: "US",
       },
-      "knowsAbout": [
+      knowsAbout: [
         "User Interface Design",
         "User Experience Design",
         "Brand Identity Systems",
@@ -100,53 +100,53 @@ const STRUCTURED_DATA = {
     {
       "@type": "ProfessionalService",
       "@id": "https://www.theroyeffect.com/#service",
-      "name": "The Roy Effect",
-      "url": "https://www.theroyeffect.com",
-      "founder": { "@id": "https://www.theroyeffect.com/#person" },
-      "priceRange": "$$$$",
-      "hasOfferCatalog": {
+      name: "The Roy Effect",
+      url: "https://www.theroyeffect.com",
+      founder: { "@id": "https://www.theroyeffect.com/#person" },
+      priceRange: "$$$$",
+      hasOfferCatalog: {
         "@type": "OfferCatalog",
-        "name": "Design & Build Services",
-        "itemListElement": [
+        name: "Design & Build Services",
+        itemListElement: [
           {
             "@type": "Offer",
-            "itemOffered": {
+            itemOffered: {
               "@type": "Service",
-              "name": "Brand Sprint",
-              "description": "Brand strategy, logo system, and visual guidelines.",
+              name: "Brand Sprint",
+              description: "Brand strategy, logo system, and visual guidelines.",
             },
-            "price": "2500",
-            "priceCurrency": "USD",
+            price: "2500",
+            priceCurrency: "USD",
           },
           {
             "@type": "Offer",
-            "itemOffered": {
+            itemOffered: {
               "@type": "Service",
-              "name": "Website / UI-UX",
-              "description": "Full visual design and clickable prototype for digital products.",
+              name: "Website / UI-UX",
+              description: "Full visual design and clickable prototype for digital products.",
             },
-            "price": "5000",
-            "priceCurrency": "USD",
+            price: "5000",
+            priceCurrency: "USD",
           },
           {
             "@type": "Offer",
-            "itemOffered": {
+            itemOffered: {
               "@type": "Service",
-              "name": "Design + Build",
-              "description": "End-to-end design paired with a production no-code build.",
+              name: "Design + Build",
+              description: "End-to-end design paired with a production no-code build.",
             },
-            "price": "8000",
-            "priceCurrency": "USD",
+            price: "8000",
+            priceCurrency: "USD",
           },
           {
             "@type": "Offer",
-            "itemOffered": {
+            itemOffered: {
               "@type": "Service",
-              "name": "Design Retainer",
-              "description": "Ongoing monthly creative direction and UI/UX partnership.",
+              name: "Design Retainer",
+              description: "Ongoing monthly creative direction and UI/UX partnership.",
             },
-            "price": "3000",
-            "priceCurrency": "USD",
+            price: "3000",
+            priceCurrency: "USD",
           },
         ],
       },

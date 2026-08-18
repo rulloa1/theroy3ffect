@@ -1,4 +1,4 @@
-import React from 'react'
+import React from "react";
 import {
   Body,
   Container,
@@ -10,14 +10,14 @@ import {
   Preview,
   Section,
   Text,
-} from '@react-email/components'
-import type { TemplateEntry } from './registry'
+} from "@react-email/components";
+import type { TemplateEntry } from "./registry";
 
 interface Props {
-  name?: string
-  projectType?: string
-  message?: string
-  pdfUrl?: string
+  name?: string;
+  projectType?: string;
+  message?: string;
+  pdfUrl?: string;
 }
 
 const Email = ({ name, projectType, message, pdfUrl }: Props) => (
@@ -29,8 +29,8 @@ const Email = ({ name, projectType, message, pdfUrl }: Props) => (
         <Text style={kicker}>THE ROY EFFECT</Text>
         <Heading style={heading}>Brief received</Heading>
         <Text style={text}>
-          {name ? `Hi ${name},` : 'Hi there,'} thanks for reaching out. Your brief landed safely
-          and I&apos;ll get back to you personally within one business day.
+          {name ? `Hi ${name},` : "Hi there,"} thanks for reaching out. Your brief landed safely and
+          I&apos;ll get back to you personally within one business day.
         </Text>
         <Hr style={hr} />
         <Section>
@@ -48,7 +48,7 @@ const Email = ({ name, projectType, message, pdfUrl }: Props) => (
         {pdfUrl ? (
           <Section>
             <Text style={meta}>
-              A PDF summary of your brief is attached as a secure link:{' '}
+              A PDF summary of your brief is attached as a secure link:{" "}
               <Link href={pdfUrl} style={link}>
                 Download your brief (PDF)
               </Link>
@@ -60,32 +60,37 @@ const Email = ({ name, projectType, message, pdfUrl }: Props) => (
       </Container>
     </Body>
   </Html>
-)
+);
 
 export const template = {
   component: Email,
-  subject: 'Brief received — The Roy Effect',
-  displayName: 'Brief confirmation',
+  subject: "Brief received — The Roy Effect",
+  displayName: "Brief confirmation",
   previewData: {
-    name: 'Jane',
-    projectType: 'Website / UI-UX',
-    message: 'We need a bold rebrand for our launch.',
+    name: "Jane",
+    projectType: "Website / UI-UX",
+    message: "We need a bold rebrand for our launch.",
   },
-} satisfies TemplateEntry
+} satisfies TemplateEntry;
 
-const main = { backgroundColor: '#05050a', fontFamily: 'Helvetica, Arial, sans-serif' }
-const container = { backgroundColor: '#0a0a12', margin: '0 auto', padding: '36px 32px', maxWidth: '560px', border: '1px solid rgba(255, 255, 255, 0.1)' }
+const main = { backgroundColor: "#05050a", fontFamily: "Helvetica, Arial, sans-serif" };
+const container = {
+  backgroundColor: "#0a0a12",
+  margin: "0 auto",
+  padding: "36px 32px",
+  maxWidth: "560px",
+  border: "1px solid rgba(255, 255, 255, 0.1)",
+};
 const kicker = {
-  fontSize: '11px',
-  letterSpacing: '3px',
-  color: '#DFBA73',
-  margin: '0 0 8px',
-  fontWeight: 'bold',
-}
-const heading = { fontSize: '28px', margin: '0 0 16px', color: '#ffffff', fontWeight: 'bold' }
-const text = { fontSize: '14px', lineHeight: '22px', color: '#e5e7eb' }
-const meta = { fontSize: '13px', lineHeight: '22px', color: '#9ca3af', margin: '0 0 8px' }
-const hr = { borderColor: 'rgba(255, 255, 255, 0.1)', margin: '24px 0' }
-const link = { color: '#E51924', textDecoration: 'underline', fontWeight: 'bold' }
-const footer = { fontSize: '11px', color: '#9ca3af' }
-
+  fontSize: "11px",
+  letterSpacing: "3px",
+  color: "#DFBA73",
+  margin: "0 0 8px",
+  fontWeight: "bold",
+};
+const heading = { fontSize: "28px", margin: "0 0 16px", color: "#ffffff", fontWeight: "bold" };
+const text = { fontSize: "14px", lineHeight: "22px", color: "#e5e7eb" };
+const meta = { fontSize: "13px", lineHeight: "22px", color: "#9ca3af", margin: "0 0 8px" };
+const hr = { borderColor: "rgba(255, 255, 255, 0.1)", margin: "24px 0" };
+const link = { color: "#E51924", textDecoration: "underline", fontWeight: "bold" };
+const footer = { fontSize: "11px", color: "#9ca3af" };

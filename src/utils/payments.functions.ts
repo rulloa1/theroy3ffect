@@ -1,11 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { DEPOSIT_BALANCE_CENTS } from "@/lib/commerce-catalog";
 
-import {
-  type StripeEnv,
-  createStripeClient,
-  getStripeErrorMessage,
-} from "@/lib/stripe.server";
+import { type StripeEnv, createStripeClient, getStripeErrorMessage } from "@/lib/stripe.server";
 
 type CheckoutSessionResult = { clientSecret: string } | { error: string };
 
@@ -36,7 +32,7 @@ export const createCommissionCheckoutSession = createServerFn({ method: "POST" }
 
       const requestedKeys = [data.priceId, ...(data.addOnPriceIds ?? [])];
       const prices = await stripe.prices.list({ lookup_keys: requestedKeys });
-      
+
       const stripePrice = prices.data.find((p) => p.lookup_key === data.priceId);
       if (!stripePrice) throw new Error("Price not found");
 
@@ -44,9 +40,7 @@ export const createCommissionCheckoutSession = createServerFn({ method: "POST" }
       const quantity = Math.min(Math.max(data.quantity ?? 1, 1), 10);
 
       const productId =
-        typeof stripePrice.product === "string"
-          ? stripePrice.product
-          : stripePrice.product.id;
+        typeof stripePrice.product === "string" ? stripePrice.product : stripePrice.product.id;
       const product = await stripe.products.retrieve(productId);
 
       const balanceDue = (DEPOSIT_BALANCE_CENTS[data.priceId] ?? 0) * quantity;
@@ -144,4 +138,3 @@ export const getCheckoutSessionSummary = createServerFn({ method: "GET" })
       return { error: getStripeErrorMessage(error) };
     }
   });
-

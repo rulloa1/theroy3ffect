@@ -35,7 +35,9 @@ export function LogoMark({
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
         className={`size-full transition-all duration-500 ease-out ${
-          animated ? "group-hover:scale-105 group-hover:drop-shadow-[0_0_16px_rgba(223,186,115,0.65)]" : ""
+          animated
+            ? "group-hover:scale-105 group-hover:drop-shadow-[0_0_16px_rgba(223,186,115,0.65)]"
+            : ""
         }`}
         aria-hidden="true"
       >
@@ -128,10 +130,7 @@ export function LogoMark({
         {/* Gold Letter 'R' with Connector Key Notch */}
         <g className={drawOnMount ? "animate-letter-r" : ""}>
           {/* Left Vertical Stem */}
-          <path
-            d="M 31 24 H 42.5 V 76 H 31 Z"
-            fill="url(#royGoldGrad)"
-          />
+          <path d="M 31 24 H 42.5 V 76 H 31 Z" fill="url(#royGoldGrad)" />
 
           {/* Upper Loop of 'R' with Male Connector Notch Detail */}
           <path
@@ -148,10 +147,7 @@ export function LogoMark({
           />
 
           {/* Diagonal Dynamic Leg */}
-          <path
-            d="M 52.5 50 L 73 76 H 60 L 42.5 54 H 50 Z"
-            fill="url(#royGoldGrad)"
-          />
+          <path d="M 52.5 50 L 73 76 H 60 L 42.5 54 H 50 Z" fill="url(#royGoldGrad)" />
         </g>
       </svg>
     </div>
@@ -167,8 +163,16 @@ export function Logo({
 }: LogoProps) {
   const sizeMap = {
     sm: { mark: "size-7", title: "text-sm sm:text-base", sub: "text-[7px] sm:text-[8px]" },
-    md: { mark: "size-9 md:size-10", title: "text-lg md:text-xl", sub: "text-[8px] md:text-[9.5px]" },
-    lg: { mark: "size-14 md:size-16", title: "text-2xl md:text-3xl", sub: "text-[10px] md:text-xs" },
+    md: {
+      mark: "size-9 md:size-10",
+      title: "text-lg md:text-xl",
+      sub: "text-[8px] md:text-[9.5px]",
+    },
+    lg: {
+      mark: "size-14 md:size-16",
+      title: "text-2xl md:text-3xl",
+      sub: "text-[10px] md:text-xs",
+    },
     xl: { mark: "size-20 md:size-24", title: "text-3xl md:text-5xl", sub: "text-xs md:text-sm" },
   };
 
@@ -250,5 +254,4 @@ export function Logo({
   }
 
   return content;
-
 }

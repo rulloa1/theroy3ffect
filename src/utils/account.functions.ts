@@ -1,10 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import {
-  type StripeEnv,
-  createStripeClient,
-  getStripeErrorMessage,
-} from "@/lib/stripe.server";
+import { type StripeEnv, createStripeClient, getStripeErrorMessage } from "@/lib/stripe.server";
 
 const env = (value: unknown): StripeEnv => (value === "live" ? "live" : "sandbox");
 
@@ -109,35 +105,42 @@ export const getMyAccount = createServerFn({ method: "GET" })
         .limit(24),
       supabase
         .from("project_briefs")
-        .select("id, project_type, goals, pdf_path, project_status, project_notes, project_links, created_at, stripe_session_id")
+        .select(
+          "id, project_type, goals, pdf_path, project_status, project_notes, project_links, created_at, stripe_session_id",
+        )
         .eq("user_id", userId)
         .order("created_at", { ascending: false }),
       supabase.rpc("has_role", { _user_id: userId, _role: "admin" }),
     ]);
 
     const briefsWithUrls: AccountBrief[] = await Promise.all(
-      (briefs.data ?? []).map(async (b: any) => {
+      (briefs.data ?? []).map(async (b: Record<string, unknown>) => {
         let pdf_url: string | null = null;
-        if (b.pdf_path) {
+        const pdfPath = typeof b["pdf_path"] === "string" ? b["pdf_path"] : null;
+        if (pdfPath) {
           try {
             const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
             const { data: signed } = await supabaseAdmin.storage
               .from("brief-pdfs")
-              .createSignedUrl(b.pdf_path, 3600);
+              .createSignedUrl(pdfPath, 3600);
             pdf_url = signed?.signedUrl ?? null;
-          } catch {}
+          } catch (_err) {
+            // Signed URL creation failed
+          }
         }
         return {
-          id: b.id,
-          project_type: b.project_type,
-          goals: b.goals ?? null,
-          pdf_path: b.pdf_path ?? null,
+          id: String(b["id"] ?? ""),
+          project_type: String(b["project_type"] ?? "Commission"),
+          goals: typeof b["goals"] === "string" ? b["goals"] : null,
+          pdf_path: typeof b["pdf_path"] === "string" ? b["pdf_path"] : null,
           pdf_url,
-          project_status: b.project_status ?? "brief_received",
-          project_notes: b.project_notes ?? null,
-          project_links: b.project_links ?? null,
-          created_at: b.created_at,
-          stripe_session_id: b.stripe_session_id ?? null,
+          project_status:
+            typeof b["project_status"] === "string" ? b["project_status"] : "brief_received",
+          project_notes: typeof b["project_notes"] === "string" ? b["project_notes"] : null,
+          project_links: typeof b["project_links"] === "string" ? b["project_links"] : null,
+          created_at: String(b["created_at"] ?? new Date().toISOString()),
+          stripe_session_id:
+            typeof b["stripe_session_id"] === "string" ? b["stripe_session_id"] : null,
         };
       }),
     );
@@ -216,7 +219,11 @@ export const claimCheckoutSession = createServerFn({ method: "POST" })
 
     const stripe = createStripeClient(data.environment);
     const session = await stripe.checkout.sessions.retrieve(data.sessionId);
-    const paidEmail = (session.customer_details?.email ?? session.customer_email ?? "").toLowerCase();
+    const paidEmail = (
+      session.customer_details?.email ??
+      session.customer_email ??
+      ""
+    ).toLowerCase();
     if (!paidEmail || paidEmail !== userEmail) return { claimed: false };
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");

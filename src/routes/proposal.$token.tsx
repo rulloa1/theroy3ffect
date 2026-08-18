@@ -2,7 +2,16 @@ import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Check, Clock, DollarSign, FileCheck2, ShieldCheck, Sparkles, AlertCircle, ArrowRight } from "lucide-react";
+import {
+  Check,
+  Clock,
+  DollarSign,
+  FileCheck2,
+  ShieldCheck,
+  Sparkles,
+  AlertCircle,
+  ArrowRight,
+} from "lucide-react";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 import { Logo } from "@/components/Logo";
@@ -14,7 +23,8 @@ export const Route = createFileRoute("/proposal/$token")({
       { title: "Project Scope & Proposal Agreement — The Roy Effect" },
       {
         name: "description",
-        content: "Review and accept your custom project scope, deliverables, timeline, and payment terms.",
+        content:
+          "Review and accept your custom project scope, deliverables, timeline, and payment terms.",
       },
       { property: "og:title", content: "Project Scope & Proposal Agreement — The Roy Effect" },
       { property: "og:type", content: "website" },
@@ -30,7 +40,11 @@ function ProposalPage() {
   const fetchProposal = useServerFn(getPublicProposal);
   const signProposal = useServerFn(signPublicProposal);
 
-  const { data: proposal, isLoading, error } = useQuery({
+  const {
+    data: proposal,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ["proposal", token],
     queryFn: () => fetchProposal({ data: { token } }),
   });
@@ -132,23 +146,51 @@ function ProposalPage() {
 
           <p className="mt-3 font-mono text-xs text-white/50">
             Prepared for <strong>{proposal.client_name}</strong>
-            {proposal.client_company ? ` (${proposal.client_company})` : ""} &bull; Studio: Rory Ulloa
+            {proposal.client_company ? ` (${proposal.client_company})` : ""} &bull; Studio: Rory
+            Ulloa
           </p>
         </div>
 
         {/* Signed Status Banner */}
         {isSigned && (
-          <div className="mt-8 border border-emerald-500/40 bg-emerald-500/10 p-5 text-emerald-400">
-            <div className="flex items-center gap-2">
-              <Check className="size-5" />
-              <span className="font-mono text-xs font-bold uppercase tracking-wider">
-                AGREEMENT DULY EXECUTED &bull; SIGNED BY {proposal.client_signature_name} ON{" "}
-                {proposal.client_signed_at ? new Date(proposal.client_signed_at).toLocaleDateString() : ""}
-              </span>
+          <div className="mt-8 flex flex-wrap items-center justify-between gap-4 border border-emerald-500/40 bg-emerald-500/10 p-5 text-emerald-400">
+            <div>
+              <div className="flex items-center gap-2">
+                <Check className="size-5" />
+                <span className="font-mono text-xs font-bold uppercase tracking-wider">
+                  AGREEMENT DULY EXECUTED &bull; SIGNED BY {proposal.client_signature_name} ON{" "}
+                  {proposal.client_signed_at
+                    ? new Date(proposal.client_signed_at).toLocaleDateString()
+                    : ""}
+                </span>
+              </div>
+              <p className="mt-2 font-mono text-xs text-emerald-300/80">
+                Scope and terms are locked. Ready to kick off with the 50% deposit.
+              </p>
             </div>
-            <p className="mt-2 font-mono text-xs text-emerald-300/80">
-              Scope and terms are locked. Ready to kick off with the 50% deposit.
-            </p>
+
+            <button
+              type="button"
+              onClick={async () => {
+                try {
+                  const { downloadSignedProposalPdf } = await import("@/utils/proposals.functions");
+                  toast.info("Generating PDF summary...");
+                  const res = await downloadSignedProposalPdf({ data: { token } });
+                  if (!res.success || !res.pdfBase64) throw new Error(res.error || "Failed");
+
+                  const link = document.createElement("a");
+                  link.href = `data:application/pdf;base64,${res.pdfBase64}`;
+                  link.download = res.filename || "signed-proposal.pdf";
+                  link.click();
+                  toast.success("Signed proposal PDF downloaded!");
+                } catch (_err) {
+                  toast.error("Could not download PDF at this time");
+                }
+              }}
+              className="inline-flex items-center gap-2 bg-emerald-500 px-4 py-2 font-mono text-xs font-bold text-black transition-opacity hover:opacity-90"
+            >
+              DOWNLOAD SIGNED PDF ↓
+            </button>
           </div>
         )}
 
@@ -159,7 +201,9 @@ function ProposalPage() {
               TOTAL INVESTMENT
             </span>
             <p className="mt-1 font-display text-3xl text-[#E51924]">{formattedTotal}</p>
-            <p className="mt-1 font-mono text-[11px] text-white/50">50% Deposit: {formattedDeposit}</p>
+            <p className="mt-1 font-mono text-[11px] text-white/50">
+              50% Deposit: {formattedDeposit}
+            </p>
           </div>
 
           <div className="border border-white/10 bg-white/[0.02] p-5">
@@ -208,18 +252,24 @@ function ProposalPage() {
 
           <div className="mt-6 grid gap-4 sm:grid-cols-2">
             <div className="border border-white/10 bg-white/[0.02] p-4">
-              <span className="font-mono text-[10px] tracking-widest text-[#DFBA73]">MILESTONE 1 (KICKOFF)</span>
+              <span className="font-mono text-[10px] tracking-widest text-[#DFBA73]">
+                MILESTONE 1 (KICKOFF)
+              </span>
               <p className="mt-1 font-display text-xl text-white">{formattedDeposit} (50%)</p>
               <p className="mt-1 font-mono text-xs text-white/50">
-                Due upon agreement signing. Secures project schedule, visual direction sprint &amp; build queue.
+                Due upon agreement signing. Secures project schedule, visual direction sprint &amp;
+                build queue.
               </p>
             </div>
 
             <div className="border border-white/10 bg-white/[0.02] p-4">
-              <span className="font-mono text-[10px] tracking-widest text-white/40">MILESTONE 2 (DELIVERY)</span>
+              <span className="font-mono text-[10px] tracking-widest text-white/40">
+                MILESTONE 2 (DELIVERY)
+              </span>
               <p className="mt-1 font-display text-xl text-white">{formattedBalance} (50%)</p>
               <p className="mt-1 font-mono text-xs text-white/50">
-                Due upon final screen approval prior to live domain cutover or codebase &amp; Figma asset handover.
+                Due upon final screen approval prior to live domain cutover or codebase &amp; Figma
+                asset handover.
               </p>
             </div>
           </div>
@@ -253,7 +303,9 @@ function ProposalPage() {
                 </p>
                 <p className="mt-1 text-white/50">
                   <strong>Signed Timestamp:</strong>{" "}
-                  {proposal.client_signed_at ? new Date(proposal.client_signed_at).toLocaleString() : ""}
+                  {proposal.client_signed_at
+                    ? new Date(proposal.client_signed_at).toLocaleString()
+                    : ""}
                 </p>
               </div>
 
@@ -291,7 +343,10 @@ function ProposalPage() {
                   className="mt-1 size-4 rounded border-white/20 bg-[#030014] text-[#DFBA73] focus:ring-0"
                 />
                 <span className="font-mono text-xs text-white/80 leading-relaxed">
-                  I, <strong>{signatureName || "the Client"}</strong>, confirm that I have reviewed and agree to the scope of deliverables, milestone timeline ({proposal.timeline_weeks}), and payment schedule ({formattedTotal}) outlined in this agreement.
+                  I, <strong>{signatureName || "the Client"}</strong>, confirm that I have reviewed
+                  and agree to the scope of deliverables, milestone timeline (
+                  {proposal.timeline_weeks}), and payment schedule ({formattedTotal}) outlined in
+                  this agreement.
                 </span>
               </label>
 

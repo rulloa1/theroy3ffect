@@ -7,18 +7,17 @@ import { z } from "zod";
 import { PRICING_TIERS } from "./Pricing";
 import { ScopeEstimator } from "./ScopeEstimator";
 
-
 const MENU = ["PROJECTS", "PROCESS", "ABOUT", "RESUME", "PRICING", "LET'S WORK"] as const;
 type MenuItem = (typeof MENU)[number];
 
-import { DEFAULT_SHOWCASE_PROJECTS, getPublicShowcaseProjects, type PortfolioProject } from "@/utils/projects.functions";
+import {
+  DEFAULT_SHOWCASE_PROJECTS,
+  getPublicShowcaseProjects,
+  type PortfolioProject,
+} from "@/utils/projects.functions";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Logo } from "@/components/Logo";
-
-
-
-
 
 const fieldClass =
   "w-full border-0 border-b border-white/30 bg-transparent px-0 py-3 text-sm text-white placeholder:text-white/40 focus:border-[#FF3333] focus:outline-none focus:ring-0";
@@ -48,8 +47,6 @@ export function InfoDrawer({
   const [selectedCaseStudy, setSelectedCaseStudy] = useState<PortfolioProject | null>(null);
   const [pricingView, setPricingView] = useState<"TIERS" | "ESTIMATOR">("TIERS");
   const [sending, setSending] = useState(false);
-
-
 
   useEffect(() => {
     if (open) setActive(section);
@@ -108,11 +105,7 @@ export function InfoDrawer({
   const allProjects = projectsData || DEFAULT_SHOWCASE_PROJECTS;
 
   const filteredProjects =
-    projectFilter === "ALL"
-      ? allProjects
-      : allProjects.filter((p) => p.category === projectFilter);
-
-
+    projectFilter === "ALL" ? allProjects : allProjects.filter((p) => p.category === projectFilter);
 
   return (
     <AnimatePresence>
@@ -161,20 +154,20 @@ export function InfoDrawer({
                     <Logo variant="full" size="md" href="/" />
                   </div>
                   <ul className="space-y-2">
-                  {MENU.map((item) => (
-                    <li key={item}>
-                      <button
-                        type="button"
-                        onClick={() => setActive(item)}
-                        className="group flex w-full items-center justify-between border-b border-white/10 py-5 text-left"
-                      >
-                        <span className="font-display text-3xl uppercase tracking-wide text-white transition-colors group-hover:text-[#FF3333] md:text-5xl">
-                          {item}
-                        </span>
-                        <span className="font-mono text-xs text-white/40">↗</span>
-                      </button>
-                    </li>
-                  ))}
+                    {MENU.map((item) => (
+                      <li key={item}>
+                        <button
+                          type="button"
+                          onClick={() => setActive(item)}
+                          className="group flex w-full items-center justify-between border-b border-white/10 py-5 text-left"
+                        >
+                          <span className="font-display text-3xl uppercase tracking-wide text-white transition-colors group-hover:text-[#FF3333] md:text-5xl">
+                            {item}
+                          </span>
+                          <span className="font-mono text-xs text-white/40">↗</span>
+                        </button>
+                      </li>
+                    ))}
                   </ul>
 
                   <div className="mt-8 border border-[#DFBA73]/30 bg-[#DFBA73]/5 p-5">
@@ -202,8 +195,12 @@ export function InfoDrawer({
                 <div className="space-y-6">
                   <div className="flex flex-wrap items-end justify-between gap-3">
                     <div>
-                      <span className="font-mono text-xs tracking-widest text-[#DFBA73]">INVESTMENT &amp; SCOPE</span>
-                      <h2 className="mt-2 font-display text-4xl uppercase text-white">Investment</h2>
+                      <span className="font-mono text-xs tracking-widest text-[#DFBA73]">
+                        INVESTMENT &amp; SCOPE
+                      </span>
+                      <h2 className="mt-2 font-display text-4xl uppercase text-white">
+                        Investment
+                      </h2>
                     </div>
 
                     <div className="inline-flex rounded-sm border border-white/15 bg-white/[0.02] p-1">
@@ -211,7 +208,9 @@ export function InfoDrawer({
                         type="button"
                         onClick={() => setPricingView("TIERS")}
                         className={`px-3 py-1 font-mono text-[10px] font-semibold tracking-wider transition-all ${
-                          pricingView === "TIERS" ? "bg-[#E51924] text-white" : "text-white/60 hover:text-white"
+                          pricingView === "TIERS"
+                            ? "bg-[#E51924] text-white"
+                            : "text-white/60 hover:text-white"
                         }`}
                       >
                         TIERS
@@ -220,7 +219,9 @@ export function InfoDrawer({
                         type="button"
                         onClick={() => setPricingView("ESTIMATOR")}
                         className={`px-3 py-1 font-mono text-[10px] font-semibold tracking-wider transition-all ${
-                          pricingView === "ESTIMATOR" ? "bg-[#DFBA73] text-black" : "text-white/60 hover:text-white"
+                          pricingView === "ESTIMATOR"
+                            ? "bg-[#DFBA73] text-black"
+                            : "text-white/60 hover:text-white"
                         }`}
                       >
                         CALCULATOR
@@ -232,53 +233,63 @@ export function InfoDrawer({
                     <ScopeEstimator />
                   ) : (
                     <div className="space-y-4">
-                    {PRICING_TIERS.map((tier) => (
-                      <div
-                        key={tier.name}
-                        className={`border p-4 transition-colors hover:border-[#FF3333]/50 ${
-                          tier.featured ? "border-[#FF3333] bg-[#FF3333]/5" : "border-white/10 bg-white/[0.02]"
-                        }`}
-                      >
-                        <div className="flex items-start justify-between gap-4">
-                          <div>
-                            <h3 className="font-display text-lg uppercase tracking-wide text-white">
-                              {tier.name}
-                            </h3>
-                            <p className="mt-1 max-w-sm font-mono text-xs leading-relaxed text-white/50">
-                              {tier.description}
-                            </p>
-                          </div>
-                          <div className="text-right">
-                            {tier.featured && (
-                              <span className="mb-1 flex items-center justify-end gap-1 font-mono text-[10px] text-[#FF3333]">
-                                <Sparkles className="size-3" /> POPULAR
+                      {PRICING_TIERS.map((tier) => (
+                        <div
+                          key={tier.name}
+                          className={`border p-4 transition-colors hover:border-[#FF3333]/50 ${
+                            tier.featured
+                              ? "border-[#FF3333] bg-[#FF3333]/5"
+                              : "border-white/10 bg-white/[0.02]"
+                          }`}
+                        >
+                          <div className="flex items-start justify-between gap-4">
+                            <div>
+                              <h3 className="font-display text-lg uppercase tracking-wide text-white">
+                                {tier.name}
+                              </h3>
+                              <p className="mt-1 max-w-sm font-mono text-xs leading-relaxed text-white/50">
+                                {tier.description}
+                              </p>
+                            </div>
+                            <div className="text-right">
+                              {tier.featured && (
+                                <span className="mb-1 flex items-center justify-end gap-1 font-mono text-[10px] text-[#FF3333]">
+                                  <Sparkles className="size-3" /> POPULAR
+                                </span>
+                              )}
+                              <span className="font-mono text-xs text-white/40">{tier.note}</span>
+                              <span className="block font-display text-3xl text-[#FF3333]">
+                                {tier.price}
                               </span>
-                            )}
-                            <span className="font-mono text-xs text-white/40">{tier.note}</span>
-                            <span className="block font-display text-3xl text-[#FF3333]">{tier.price}</span>
+                            </div>
                           </div>
+                          <ul className="mt-4 grid gap-2 sm:grid-cols-2">
+                            {tier.features.map((feature) => (
+                              <li
+                                key={feature}
+                                className="flex items-start gap-2 font-mono text-xs text-white/70"
+                              >
+                                <Check className="mt-0.5 size-3 shrink-0 text-[#FF3333]" />
+                                {feature}
+                              </li>
+                            ))}
+                          </ul>
                         </div>
-                        <ul className="mt-4 grid gap-2 sm:grid-cols-2">
-                          {tier.features.map((feature) => (
-                            <li key={feature} className="flex items-start gap-2 font-mono text-xs text-white/70">
-                              <Check className="mt-0.5 size-3 shrink-0 text-[#FF3333]" />
-                              {feature}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    ))}
+                      ))}
                     </div>
                   )}
                   <p className="font-mono text-[11px] leading-relaxed text-white/40">
-                    All projects start with a free 15-minute discovery call. Scope and final quotes are always tailored to your specific needs.
+                    All projects start with a free 15-minute discovery call. Scope and final quotes
+                    are always tailored to your specific needs.
                   </p>
                 </div>
               )}
 
               {active === "LET'S WORK" && (
                 <form className="space-y-6" onSubmit={handleSubmit}>
-                  <h2 className="font-display text-4xl uppercase text-[#FF3333]">Let&apos;s work</h2>
+                  <h2 className="font-display text-4xl uppercase text-[#FF3333]">
+                    Let&apos;s work
+                  </h2>
                   <input
                     aria-label="Your name"
                     name="name"
@@ -296,7 +307,12 @@ export function InfoDrawer({
                     maxLength={255}
                     required
                   />
-                  <select aria-label="Project type" name="projectType" className={fieldClass} defaultValue="">
+                  <select
+                    aria-label="Project type"
+                    name="projectType"
+                    className={fieldClass}
+                    defaultValue=""
+                  >
                     <option value="" disabled className="bg-[#333333]">
                       Project type
                     </option>
@@ -328,7 +344,9 @@ export function InfoDrawer({
               {active === "PROJECTS" && (
                 <div className="space-y-6">
                   <div>
-                    <span className="font-mono text-xs tracking-widest text-[#FF3333]">SELECTED WORK</span>
+                    <span className="font-mono text-xs tracking-widest text-[#FF3333]">
+                      SELECTED WORK
+                    </span>
                     <h2 className="mt-2 font-display text-4xl uppercase text-white">Projects</h2>
                   </div>
 
@@ -368,7 +386,9 @@ export function InfoDrawer({
                                 </span>
                               )}
                             </div>
-                            <p className="mt-1 font-mono text-xs text-white/40">{project.tagline}</p>
+                            <p className="mt-1 font-mono text-xs text-white/40">
+                              {project.tagline}
+                            </p>
                           </div>
                           <span className="border border-white/10 px-2 py-0.5 font-mono text-[9px] uppercase tracking-wider text-white/50">
                             {project.category}
@@ -422,8 +442,8 @@ export function InfoDrawer({
                   </div>
 
                   <p className="font-mono text-[11px] leading-relaxed text-white/40">
-                    More case studies, Figma walkthroughs, and design systems are available on request.
-                    Reach out through Let&apos;s Work to discuss your project.
+                    More case studies, Figma walkthroughs, and design systems are available on
+                    request. Reach out through Let&apos;s Work to discuss your project.
                   </p>
                 </div>
               )}
@@ -440,7 +460,9 @@ export function InfoDrawer({
                         <h2 className="mt-1 font-display text-3xl uppercase text-white">
                           {selectedCaseStudy.title}
                         </h2>
-                        <p className="mt-1 font-mono text-xs text-white/50">{selectedCaseStudy.tagline}</p>
+                        <p className="mt-1 font-mono text-xs text-white/50">
+                          {selectedCaseStudy.tagline}
+                        </p>
                       </div>
                       <button
                         type="button"
@@ -478,7 +500,10 @@ export function InfoDrawer({
                         </span>
                         <div className="mt-2 flex flex-wrap gap-2">
                           {selectedCaseStudy.tags.map((t) => (
-                            <span key={t} className="border border-white/15 bg-white/[0.03] px-2.5 py-1 text-[11px] text-white/70">
+                            <span
+                              key={t}
+                              className="border border-white/15 bg-white/[0.03] px-2.5 py-1 text-[11px] text-white/70"
+                            >
                               {t}
                             </span>
                           ))}
@@ -521,19 +546,21 @@ export function InfoDrawer({
                   </div>
                   <div className="max-w-lg space-y-4 font-mono text-xs leading-relaxed text-white/60">
                     <p>
-                      I&apos;m a freelance UI/UX designer and no-code developer working with founders and
-                      small teams across the US, based in the Houston, Texas area and available remotely.
+                      I&apos;m a freelance UI/UX designer and no-code developer working with
+                      founders and small teams across the US, based in the Houston, Texas area and
+                      available remotely.
                     </p>
                     <p>
-                      My work sits between brand and build: identity systems, high-contrast interface
-                      design, and shipped, production-ready websites and web apps. I design in Figma and
-                      build with modern no-code and AI-assisted stacks, so the thing you approve is the
-                      thing that goes live — no handoff gap, no rebuild.
+                      My work sits between brand and build: identity systems, high-contrast
+                      interface design, and shipped, production-ready websites and web apps. I
+                      design in Figma and build with modern no-code and AI-assisted stacks, so the
+                      thing you approve is the thing that goes live — no handoff gap, no rebuild.
                     </p>
                     <p>
-                      Typical engagements run from a one-week brand sprint to a full design-and-build
-                      project, with an ongoing retainer for teams that ship continuously. Every project
-                      starts with a written brief and a fixed scope so you know the cost before we begin.
+                      Typical engagements run from a one-week brand sprint to a full
+                      design-and-build project, with an ongoing retainer for teams that ship
+                      continuously. Every project starts with a written brief and a fixed scope so
+                      you know the cost before we begin.
                     </p>
                   </div>
                   <ul className="grid gap-2 sm:grid-cols-2">
@@ -545,7 +572,10 @@ export function InfoDrawer({
                       "Design systems & component libraries",
                       "Ongoing design retainers",
                     ].map((item) => (
-                      <li key={item} className="flex items-start gap-2 font-mono text-xs text-white/70">
+                      <li
+                        key={item}
+                        className="flex items-start gap-2 font-mono text-xs text-white/70"
+                      >
                         <Check className="mt-0.5 size-3 shrink-0 text-[#FF3333]" />
                         {item}
                       </li>
@@ -560,7 +590,9 @@ export function InfoDrawer({
               {active === "PROCESS" && (
                 <div className="space-y-6">
                   <div>
-                    <span className="font-mono text-xs tracking-widest text-[#FF3333]">HOW I WORK</span>
+                    <span className="font-mono text-xs tracking-widest text-[#FF3333]">
+                      HOW I WORK
+                    </span>
                     <h2 className="mt-2 font-display text-4xl uppercase text-white">Process</h2>
                   </div>
                   <ol className="space-y-5">
@@ -610,7 +642,9 @@ export function InfoDrawer({
               {active === "RESUME" && (
                 <div className="space-y-6">
                   <div>
-                    <span className="font-mono text-xs tracking-widest text-[#FF3333]">CAPABILITIES</span>
+                    <span className="font-mono text-xs tracking-widest text-[#FF3333]">
+                      CAPABILITIES
+                    </span>
                     <h2 className="mt-2 font-display text-4xl uppercase text-white">Resume</h2>
                   </div>
                   <div className="space-y-6">
@@ -662,8 +696,6 @@ export function InfoDrawer({
                   </p>
                 </div>
               )}
-
-
             </div>
           </motion.aside>
         </>
