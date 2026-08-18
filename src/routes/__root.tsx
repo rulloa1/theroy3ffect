@@ -83,6 +83,7 @@ const STRUCTURED_DATA = {
       url: "https://www.theroyeffect.com",
       jobTitle: "Creative Director & UI/UX Designer",
       email: "rory@theroyeffect.com",
+      telephone: "281-323-0450",
       address: {
         "@type": "PostalAddress",
         addressLocality: "Houston",
@@ -101,7 +102,9 @@ const STRUCTURED_DATA = {
       "@type": "ProfessionalService",
       "@id": "https://www.theroyeffect.com/#service",
       name: "The Roy Effect",
+      slogan: "Design With Purpose",
       url: "https://www.theroyeffect.com",
+      telephone: "281-323-0450",
       founder: { "@id": "https://www.theroyeffect.com/#person" },
       priceRange: "$$$$",
       hasOfferCatalog: {
