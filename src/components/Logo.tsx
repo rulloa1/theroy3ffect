@@ -210,40 +210,41 @@ export function Logo({
     return content;
   }
 
-  // Horizontal Variant (Mark / Compact / Full)
-  const content = (
-    <div
-      className={`group inline-flex items-center gap-2.5 select-none sm:gap-3.5 ${
-        interactive ? "cursor-pointer" : ""
-      } ${href ? "" : className}`}
-    >
-      <LogoMark className={currentSize.mark} animated={interactive} />
+  // Horizontal Variant (Mark / Compact / Full) — uses the restored brand lockup
+  const lockupHeight = {
+    sm: "h-6 sm:h-7",
+    md: "h-8 md:h-9",
+    lg: "h-11 md:h-12",
+    xl: "h-14 md:h-16",
+  }[size];
 
-      {variant !== "mark" && (
-        <div
-          className={`min-w-0 flex-col justify-center text-left ${
-            variant === "responsive" ? "hidden sm:flex" : "flex"
+  const content =
+    variant === "mark" ? (
+      <div
+        className={`group inline-flex items-center select-none ${
+          interactive ? "cursor-pointer" : ""
+        } ${href ? "" : className}`}
+      >
+        <LogoMark className={currentSize.mark} animated={interactive} />
+      </div>
+    ) : (
+      <div
+        className={`group inline-flex items-center select-none ${
+          interactive ? "cursor-pointer" : ""
+        } ${href ? "" : className}`}
+      >
+        <img
+          src="/brand/roy-effect-logo.png"
+          alt="The Roy Effect — dirt, refined into gold"
+          width={2292}
+          height={307}
+          className={`w-auto max-w-full object-contain transition-all duration-300 ${lockupHeight} ${
+            interactive ? "group-hover:drop-shadow-[0_0_16px_rgba(223,186,115,0.45)]" : ""
           }`}
-        >
-          <span
-            className={`truncate font-serif font-black tracking-[0.22em] text-white uppercase leading-tight transition-colors duration-300 group-hover:text-[#F6DC9A] ${currentSize.title}`}
-          >
-            THE ROY EFFECT
-          </span>
+        />
+      </div>
+    );
 
-          {(variant === "full" || variant === "responsive") && (
-            <span
-              className={`mt-0.5 font-mono tracking-[0.32em] text-[#DFBA73] uppercase leading-none font-semibold ${currentSize.sub} ${
-                variant === "responsive" ? "hidden xl:block" : ""
-              }`}
-            >
-              DIRT, REFINED INTO GOLD
-            </span>
-          )}
-        </div>
-      )}
-    </div>
-  );
 
   if (href) {
     return (
