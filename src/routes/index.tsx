@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { ParticleBackground } from "@/components/ParticleBackground";
 import { SiteHeader, type NavTarget } from "@/components/SiteHeader";
