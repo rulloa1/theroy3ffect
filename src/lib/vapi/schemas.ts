@@ -22,19 +22,36 @@ const email = z.string().trim().email().max(255);
 const shortText = z.string().trim().max(300);
 const longText = z.string().trim().max(2000);
 
+/** Voice agents send loose values; normalize instead of rejecting a real lead. */
+const normalizeEnum = <T extends readonly string[]>(values: T, fallback?: T[number]) =>
+  z.preprocess((raw) => {
+    if (typeof raw !== "string") return fallback;
+    const key = raw.trim().toLowerCase().replace(/[\s-]+/g, "_");
+    return (values as readonly string[]).includes(key) ? key : fallback;
+  }, z.enum(values as unknown as [string, ...string[]]).optional());
+
+const looseEmail = z.preprocess((raw) => {
+  if (typeof raw !== "string") return undefined;
+  const value = raw.trim().replace(/\s+/g, "");
+  return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(value) && value.length <= 255 ? value : undefined;
+}, z.string().optional());
+
 export const captureLeadSchema = z.object({
-  full_name: z.string().trim().min(1).max(120),
+  full_name: z.preprocess(
+    (raw) => (typeof raw === "string" && raw.trim() ? raw.trim().slice(0, 120) : "Unnamed caller"),
+    z.string(),
+  ),
   company_name: shortText.optional(),
-  email: email.optional(),
+  email: looseEmail,
   phone: z.string().trim().max(40).optional(),
   website_url: shortText.optional(),
-  project_type: z.enum(PROJECT_TYPES).default("not_sure"),
+  project_type: normalizeEnum(PROJECT_TYPES, "not_sure"),
   primary_goal: longText.optional(),
   target_audience: shortText.optional(),
   timeline: shortText.optional(),
-  budget_range: z.enum(BUDGET_RANGES).optional(),
+  budget_range: normalizeEnum(BUDGET_RANGES),
   notes: longText.optional(),
-  consent_to_follow_up: z.boolean().default(false),
+  consent_to_follow_up: z.preprocess((raw) => raw === true || raw === "true", z.boolean()),
 });
 
 export const createAuditRequestSchema = z.object({

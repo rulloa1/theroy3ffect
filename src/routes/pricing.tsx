@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Logo } from "@/components/Logo";
 import { Toaster } from "@/components/ui/sonner";
 import { Pricing } from "@/components/Pricing";
@@ -44,6 +44,7 @@ export const Route = createFileRoute("/pricing")({
 });
 
 function PricingPage() {
+  const navigate = useNavigate();
   return (
     <main className="min-h-screen bg-[#030014]">
       <Toaster />
@@ -67,7 +68,7 @@ function PricingPage() {
           </Link>
         </div>
       </div>
-      <Pricing />
+      <Pricing onCommission={() => navigate({ to: "/", hash: "contact" })} />
     </main>
   );
 }

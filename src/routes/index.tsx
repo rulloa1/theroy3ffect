@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { ParticleBackground } from "@/components/ParticleBackground";
 import { SiteHeader, type NavTarget } from "@/components/SiteHeader";
@@ -50,6 +50,12 @@ function Home() {
     setDrawerSection(target === "MENU" ? null : target);
     setDrawerOpen(true);
   };
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.location.hash === "#contact") {
+      openDrawer("LET'S WORK");
+    }
+  }, []);
 
   return (
     <main className="relative flex min-h-screen flex-col overflow-x-hidden bg-[#030014]">
