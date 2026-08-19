@@ -406,8 +406,9 @@ export function AuditPage() {
             </Link>
           </div>
         </section>
-
+      </div>
     </main>
   );
 }
+
 
