@@ -5,7 +5,6 @@ const FOOTER_LINKS = [
   { label: "SERVICES", to: "/services" },
   { label: "PRICING", to: "/pricing" },
   { label: "AUDIT", to: "/audit" },
-  { label: "CONTACT", to: "/", hash: "contact" },
 ];
 
 export function SiteFooter() {
@@ -45,14 +44,20 @@ export function SiteFooter() {
                 <Link
                   key={link.label}
                   to={link.to}
-                  hash={link.hash}
                   className="font-mono text-xs tracking-widest text-white/60 transition-colors hover:text-[#FF3333]"
                 >
                   {link.label}
                 </Link>
               ))}
+              <a
+                href="mailto:rory@theroyeffect.com"
+                className="font-mono text-xs tracking-widest text-white/60 transition-colors hover:text-[#FF3333]"
+              >
+                CONTACT
+              </a>
             </nav>
           </div>
+
 
           {/* Contact */}
           <div className="lg:col-span-3">
