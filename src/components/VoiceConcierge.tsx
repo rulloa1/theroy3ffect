@@ -28,8 +28,22 @@ export function VoiceConcierge() {
     setState("connecting");
     try {
       if (!vapiRef.current) {
-        const { default: Vapi } = await import("@vapi-ai/web");
+        const mod: any = await import("@vapi-ai/web");
+        // The SDK ships a CommonJS bundle, so the constructor can land on
+        // `default`, `default.default`, or the module namespace itself.
+        const Vapi =
+          typeof mod === "function"
+            ? mod
+            : typeof mod?.default === "function"
+              ? mod.default
+              : typeof mod?.default?.default === "function"
+                ? mod.default.default
+                : mod?.Vapi;
+        if (typeof Vapi !== "function") {
+          throw new Error("Vapi SDK did not expose a constructor");
+        }
         const vapi = new Vapi(PUBLIC_KEY);
+
         vapi.on("call-start", () => setState("active"));
         vapi.on("call-end", () => {
           setState("idle");
