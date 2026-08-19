@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:voice": "python3 tests/regression/voice_agent_regression.py"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
