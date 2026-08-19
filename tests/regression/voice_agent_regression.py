@@ -24,6 +24,7 @@ import argparse
 import asyncio
 import json
 import os
+import random
 import sys
 import uuid
 from datetime import datetime, timedelta, timezone
@@ -215,9 +216,10 @@ def test_webhook(base_url: str, secret: str, email: str) -> None:
     avail = result_text(r)
     check("get_discovery_availability returns slots", r.status_code == 200 and "slot" in avail.lower(), avail)
 
-    slot = (datetime.now(timezone.utc) + timedelta(days=400)).replace(
-        minute=0, second=0, microsecond=0
-    ).isoformat()
+    # Random far-future slot so repeat runs never collide with each other.
+    slot = (
+        datetime.now(timezone.utc) + timedelta(days=random.randint(400, 1200), hours=random.randint(0, 5))
+    ).replace(minute=0, second=0, microsecond=0).isoformat()
     booking_args = {
         "full_name": "Regression Bot",
         "email": email,
@@ -226,7 +228,12 @@ def test_webhook(base_url: str, secret: str, email: str) -> None:
         "notes": "Automated regression run",
     }
     r = post(url, tool_payload("book_discovery_call", booking_args, call_id), secret)
-    check("book_discovery_call schedules the slot", r.status_code == 200 and "error" not in result_text(r).lower(), result_text(r))
+    booked = result_text(r).lower()
+    check(
+        "book_discovery_call schedules the slot",
+        r.status_code == 200 and "error" not in booked and "unavailable" not in booked,
+        result_text(r),
+    )
 
     r = post(
         url,
