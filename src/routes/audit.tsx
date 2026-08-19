@@ -114,16 +114,17 @@ export function AuditPage() {
           </div>
 
           <h1 className="mt-6 font-display text-4xl uppercase leading-[0.9] text-white sm:text-6xl md:text-7xl">
-            Is Your Website <br />
+            Free Website Audit <br />
             <span className="text-[#E51924] drop-shadow-[0_0_24px_rgba(229,25,36,0.4)]">
-              Costing You Clients?
+              For Houston Businesses
             </span>
           </h1>
 
           <p className="mt-5 max-w-xl font-mono text-xs leading-relaxed text-white/60 sm:text-sm">
-            Most local and service websites look outdated, confusing, and push high-paying clients
-            straight to competitors. Get a free video breakdown of your UX bottlenecks and
-            conversion leaks.
+            Most local service websites in Houston look dated, load slowly on phones, and send
+            high-paying clients straight to a competitor. Send me your URL and I'll record a free
+            5-minute video breaking down your UX bottlenecks and conversion leaks — no sales call,
+            no obligation.
           </p>
         </div>
 
