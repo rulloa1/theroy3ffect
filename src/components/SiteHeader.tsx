@@ -17,7 +17,19 @@ export function SiteHeader({ onNavigate }: { onNavigate: (target: NavTarget) => 
       </div>
 
       <nav aria-label="Primary" className="hidden items-center gap-8 lg:flex">
-        {LINKS.map((l) => (
+        <Link
+          to="/services"
+          className="font-mono text-xs tracking-widest text-white/50 transition-colors hover:text-[#FF3333]"
+        >
+          SERVICES
+        </Link>
+        <Link
+          to="/pricing"
+          className="font-mono text-xs tracking-widest text-white/50 transition-colors hover:text-[#FF3333]"
+        >
+          PRICING
+        </Link>
+        {LINKS.filter((l) => l !== "PRICING").map((l) => (
           <button
             key={l}
             type="button"
