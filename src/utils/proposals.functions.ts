@@ -175,7 +175,8 @@ export const signPublicProposal = createServerFn({ method: "POST" })
 
 /** Public server function to generate & return downloadable PDF bytes for a proposal */
 export const downloadSignedProposalPdf = createServerFn({ method: "POST" })
-  .inputValidator((input: { token: string }) => input)
+  .inputValidator((input: { token: string }) => ({ token: shareTokenSchema.parse(input?.token) }))
+
   .handler(
     async ({
       data: input,
