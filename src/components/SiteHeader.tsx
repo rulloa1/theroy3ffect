@@ -52,9 +52,10 @@ export function SiteHeader({ onNavigate }: { onNavigate: (target: NavTarget) => 
       <div className="flex shrink-0 items-center gap-2 sm:gap-3">
         <Link
           to="/audit"
-          className="hidden rounded-full border border-[#DFBA73]/40 bg-[#DFBA73]/10 px-3.5 py-1.5 font-mono text-[10px] font-bold tracking-widest text-[#F6DC9A] transition-all hover:bg-[#DFBA73] hover:text-black sm:inline-block sm:px-4 sm:py-2 sm:text-xs"
+          className="inline-flex items-center gap-1 rounded-full bg-[#FF3333] px-3 py-1.5 font-mono text-[10px] font-bold tracking-widest text-black transition-all hover:bg-[#FF5555] sm:px-4 sm:py-2 sm:text-xs"
         >
           FREE AUDIT
+          <ArrowUpRight className="hidden size-3 sm:inline-block" />
         </Link>
 
         <button
@@ -76,7 +77,7 @@ export function SiteHeader({ onNavigate }: { onNavigate: (target: NavTarget) => 
         <button
           type="button"
           onClick={() => onNavigate("LET'S WORK")}
-          className="rounded-full border border-white/20 px-3.5 py-1.5 font-mono text-[10px] tracking-widest text-white transition-colors hover:border-[#FF3333] hover:bg-[#FF3333] hover:text-black sm:px-5 sm:py-2 sm:text-xs"
+          className="hidden rounded-full border border-white/20 px-3.5 py-1.5 font-mono text-[10px] tracking-widest text-white transition-colors hover:border-[#FF3333] hover:bg-[#FF3333] hover:text-black sm:px-5 sm:py-2 sm:text-xs lg:inline-block"
         >
           COMMISSION
         </button>
