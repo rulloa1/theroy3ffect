@@ -13,6 +13,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AuthProvider } from "@/hooks/useAuth";
 import { SiteFooter } from "@/components/SiteFooter";
+import { VoiceConcierge } from "@/components/VoiceConcierge";
 
 
 function NotFoundComponent() {
@@ -233,6 +234,8 @@ function RootComponent() {
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
         <Outlet />
         <SiteFooter />
+        <VoiceConcierge />
+
       </AuthProvider>
     </QueryClientProvider>
   );

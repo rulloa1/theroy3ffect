@@ -470,6 +470,264 @@ export type Database = {
         }
         Relationships: []
       }
+      voice_agent_logs: {
+        Row: {
+          created_at: string
+          error_message: string | null
+          id: string
+          ok: boolean
+          request_payload: Json
+          result_payload: Json
+          tool_name: string
+          vapi_call_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          ok?: boolean
+          request_payload?: Json
+          result_payload?: Json
+          tool_name: string
+          vapi_call_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          ok?: boolean
+          request_payload?: Json
+          result_payload?: Json
+          tool_name?: string
+          vapi_call_id?: string | null
+        }
+        Relationships: []
+      }
+      voice_audit_requests: {
+        Row: {
+          consent_to_email: boolean
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          lead_id: string | null
+          primary_bottleneck: string | null
+          status: string
+          updated_at: string
+          vapi_call_id: string | null
+          website_url: string
+        }
+        Insert: {
+          consent_to_email?: boolean
+          created_at?: string
+          email: string
+          full_name: string
+          id?: string
+          lead_id?: string | null
+          primary_bottleneck?: string | null
+          status?: string
+          updated_at?: string
+          vapi_call_id?: string | null
+          website_url: string
+        }
+        Update: {
+          consent_to_email?: boolean
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          lead_id?: string | null
+          primary_bottleneck?: string | null
+          status?: string
+          updated_at?: string
+          vapi_call_id?: string | null
+          website_url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "voice_audit_requests_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "voice_leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      voice_bookings: {
+        Row: {
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          lead_id: string | null
+          meeting_reference: string | null
+          phone: string | null
+          slot_end: string
+          slot_start: string
+          status: string
+          time_zone: string
+          updated_at: string
+          vapi_call_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          full_name: string
+          id?: string
+          lead_id?: string | null
+          meeting_reference?: string | null
+          phone?: string | null
+          slot_end: string
+          slot_start: string
+          status?: string
+          time_zone?: string
+          updated_at?: string
+          vapi_call_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          lead_id?: string | null
+          meeting_reference?: string | null
+          phone?: string | null
+          slot_end?: string
+          slot_start?: string
+          status?: string
+          time_zone?: string
+          updated_at?: string
+          vapi_call_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "voice_bookings_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "voice_leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      voice_followups: {
+        Row: {
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          lead_id: string | null
+          phone: string | null
+          preferred_method: string | null
+          reason: string
+          status: string
+          summary: string
+          updated_at: string
+          urgency: string
+          vapi_call_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          lead_id?: string | null
+          phone?: string | null
+          preferred_method?: string | null
+          reason: string
+          status?: string
+          summary: string
+          updated_at?: string
+          urgency?: string
+          vapi_call_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          lead_id?: string | null
+          phone?: string | null
+          preferred_method?: string | null
+          reason?: string
+          status?: string
+          summary?: string
+          updated_at?: string
+          urgency?: string
+          vapi_call_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "voice_followups_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "voice_leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      voice_leads: {
+        Row: {
+          budget_range: string | null
+          company_name: string | null
+          consent_to_follow_up: boolean
+          created_at: string
+          email: string | null
+          full_name: string
+          id: string
+          notes: string | null
+          phone: string | null
+          primary_goal: string | null
+          project_type: string
+          source: string
+          stage: string
+          target_audience: string | null
+          timeline: string | null
+          updated_at: string
+          vapi_call_id: string | null
+          website_url: string | null
+        }
+        Insert: {
+          budget_range?: string | null
+          company_name?: string | null
+          consent_to_follow_up?: boolean
+          created_at?: string
+          email?: string | null
+          full_name: string
+          id?: string
+          notes?: string | null
+          phone?: string | null
+          primary_goal?: string | null
+          project_type?: string
+          source?: string
+          stage?: string
+          target_audience?: string | null
+          timeline?: string | null
+          updated_at?: string
+          vapi_call_id?: string | null
+          website_url?: string | null
+        }
+        Update: {
+          budget_range?: string | null
+          company_name?: string | null
+          consent_to_follow_up?: boolean
+          created_at?: string
+          email?: string | null
+          full_name?: string
+          id?: string
+          notes?: string | null
+          phone?: string | null
+          primary_goal?: string | null
+          project_type?: string
+          source?: string
+          stage?: string
+          target_audience?: string | null
+          timeline?: string | null
+          updated_at?: string
+          vapi_call_id?: string | null
+          website_url?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
