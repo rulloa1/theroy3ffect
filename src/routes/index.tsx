@@ -19,17 +19,17 @@ const HERO_IMAGE_ABSOLUTE = `https://www.theroyeffect.com${ogImageAsset.url}`;
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Rory Ulloa — Creative Director & UI/UX Designer" },
+      { title: "Houston Web Design — Creative Director & UI/UX Designer" },
       {
         name: "description",
         content:
-          "Rory Ulloa is a freelance creative director and UI/UX designer crafting bold, high-contrast digital experiences, brand systems and no-code builds.",
+          "Rory Ulloa is a Houston, Texas creative director and UI/UX designer offering web design, brand systems and no-code builds for bold businesses.",
       },
-      { property: "og:title", content: "Rory Ulloa — Creative Director & UI/UX Designer" },
+      { property: "og:title", content: "Houston Web Design — Rory Ulloa, Creative Director & UI/UX Designer" },
       {
         property: "og:description",
         content:
-          "Bold, high-contrast digital experiences: UI/UX design, brand systems and no-code builds by Rory Ulloa.",
+          "Houston web design, UI/UX design, brand systems and no-code builds by creative director Rory Ulloa.",
       },
       { property: "og:type", content: "website" },
       { property: "og:image", content: HERO_IMAGE_ABSOLUTE },
