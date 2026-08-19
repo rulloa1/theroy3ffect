@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { ParticleBackground } from "@/components/ParticleBackground";
@@ -7,6 +7,7 @@ import { HeroContent } from "@/components/HeroContent";
 import { FooterMarquee } from "@/components/FooterMarquee";
 import { InfoDrawer } from "@/components/InfoDrawer";
 import { Pricing } from "@/components/Pricing";
+import { ArrowUpRight, SearchCheck, Zap, Smartphone, Timer } from "lucide-react";
 
 import portraitAsset from "@/assets/rory-portrait-clean.png.asset.json";
 import ogImageAsset from "@/assets/og-preview.jpg.asset.json";
