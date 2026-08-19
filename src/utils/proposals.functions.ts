@@ -115,9 +115,16 @@ export const adminDeleteProposal = createServerFn({ method: "POST" })
     return { success: true };
   });
 
+const shareTokenSchema = z
+  .string()
+  .trim()
+  .min(20)
+  .max(128)
+  .regex(/^[A-Za-z0-9_-]+$/);
+
 /** Public fetcher to view proposal by share token */
 export const getPublicProposal = createServerFn({ method: "GET" })
-  .inputValidator((data: { token: string }) => data)
+  .inputValidator((data: { token: string }) => ({ token: shareTokenSchema.parse(data?.token) }))
   .handler(async ({ data: { token } }): Promise<ProjectProposal | null> => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data, error } = await supabaseAdmin
@@ -141,28 +148,35 @@ export const getPublicProposal = createServerFn({ method: "GET" })
 
 /** Public function for client to digitally sign proposal */
 export const signPublicProposal = createServerFn({ method: "POST" })
-  .inputValidator((input: { token: string; signatureName: string }) => input)
+  .inputValidator((input: { token: string; signatureName: string }) => ({
+    token: shareTokenSchema.parse(input?.token),
+    signatureName: z.string().trim().min(2).max(120).parse(input?.signatureName),
+  }))
   .handler(async ({ data: input }): Promise<{ success: boolean; error?: string }> => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await supabaseAdmin
       .from("project_proposals")
       .update({
         status: "signed",
-        client_signature_name: input.signatureName.trim(),
+        client_signature_name: input.signatureName,
         client_signed_at: new Date().toISOString(),
       })
-      .eq("share_token", input.token);
+      .eq("share_token", input.token)
+      .neq("status", "signed");
 
     if (error) {
-      return { success: false, error: error.message };
+      console.error("signPublicProposal error:", error.message);
+      return { success: false, error: "Could not sign this proposal." };
     }
 
     return { success: true };
   });
 
+
 /** Public server function to generate & return downloadable PDF bytes for a proposal */
 export const downloadSignedProposalPdf = createServerFn({ method: "POST" })
-  .inputValidator((input: { token: string }) => input)
+  .inputValidator((input: { token: string }) => ({ token: shareTokenSchema.parse(input?.token) }))
+
   .handler(
     async ({
       data: input,
