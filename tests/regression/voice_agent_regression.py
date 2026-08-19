@@ -269,6 +269,98 @@ def test_webhook(base_url: str, secret: str, email: str) -> None:
 
 
 # --------------------------------------------------------------------------- #
+# 2b. Loose / malformed agent input must still capture the lead
+# --------------------------------------------------------------------------- #
+def test_loose_capture_lead(base_url: str, secret: str, loose_email: str) -> tuple[str, str]:
+    """Voice agents transcribe sloppily. capture_lead must normalize, not reject."""
+    print("\n== capture_lead (loose input) ==")
+    url = f"{base_url.rstrip('/')}/api/public/vapi"
+    call_id = f"regression-loose-{uuid.uuid4()}"
+
+    # Spoken-style values: spaces inside the email, human-readable enums,
+    # string "true" consent, and stray casing/whitespace everywhere.
+    local, domain = loose_email.split("@", 1)
+    spoken_email = f"  {local} @ {domain.upper()} "
+    r = post(
+        url,
+        tool_payload(
+            "capture_lead",
+            {
+                "full_name": "   Loose  Input Caller   ",
+                "email": spoken_email,
+                "project_type": " Design And Build ",
+                "budget_range": "5000 7999",
+                "consent_to_follow_up": "true",
+                "notes": "Automated loose-input regression run",
+            },
+            call_id,
+        ),
+        secret,
+    )
+    body = result_text(r)
+    check(
+        "capture_lead accepts spoken-style email and enums",
+        r.status_code == 200 and "error" not in body.lower(),
+        body,
+    )
+
+    # Worst case: no name at all and values that match no enum.
+    garbage_email = f"garbage-{loose_email}"
+    r = post(
+        url,
+        tool_payload(
+            "capture_lead",
+            {
+                "email": garbage_email,
+                "project_type": "a spaceship website maybe",
+                "budget_range": "no idea honestly",
+                "consent_to_follow_up": False,
+                "notes": "Automated loose-input regression run",
+            },
+            call_id,
+        ),
+        secret,
+    )
+    body = result_text(r)
+    check(
+        "capture_lead accepts a nameless lead with unmappable enums",
+        r.status_code == 200 and "error" not in body.lower(),
+        body,
+    )
+
+    return call_id, garbage_email
+
+
+def verify_loose_lead(loose_email: str, garbage_email: str) -> None:
+    print("\n== capture_lead normalization ==")
+
+    r = rest("GET", "voice_leads", {"select": "*", "email": f"eq.{loose_email}"})
+    rows = r.json() if r.ok else []
+    check("normalized lead was inserted", r.ok and len(rows) == 1, f"{r.status_code} {r.text[:200]}")
+    if rows:
+        row = rows[0]
+        check("email whitespace/case is normalized", row["email"] == loose_email, str(row["email"]))
+        check("full_name is trimmed", row["full_name"] == "Loose  Input Caller", str(row["full_name"]))
+        check("project_type maps to enum", row["project_type"] == "design_and_build", str(row["project_type"]))
+        check("budget_range maps to enum", row["budget_range"] == "5000_7999", str(row["budget_range"]))
+        check("consent string 'true' becomes boolean", row["consent_to_follow_up"] is True, str(row["consent_to_follow_up"]))
+
+    r = rest("GET", "voice_leads", {"select": "*", "email": f"eq.{garbage_email}"})
+    rows = r.json() if r.ok else []
+    check("nameless lead was still inserted", r.ok and len(rows) == 1, f"{r.status_code} {r.text[:200]}")
+    if rows:
+        row = rows[0]
+        check("missing full_name falls back", row["full_name"] == "Unnamed caller", str(row["full_name"]))
+        check("unmappable project_type falls back to not_sure", row["project_type"] == "not_sure", str(row["project_type"]))
+        check("unmappable budget_range is dropped", row["budget_range"] in (None, "not_specified"), str(row["budget_range"]))
+
+    for filt in ({"email": f"eq.{loose_email}"}, {"email": f"eq.{garbage_email}"}):
+        r = rest("DELETE", "voice_leads", filt)
+        check("loose-input test rows cleaned up", r.ok, f"{r.status_code} {r.text[:200]}")
+
+
+
+# --------------------------------------------------------------------------- #
 # 3. Database verification + cleanup
 # --------------------------------------------------------------------------- #
 def rest(method: str, table: str, params: dict) -> requests.Response:
