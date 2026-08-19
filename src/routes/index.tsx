@@ -51,6 +51,12 @@ function Home() {
     setDrawerOpen(true);
   };
 
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.location.hash === "#contact") {
+      openDrawer("LET'S WORK");
+    }
+  }, []);
+
   return (
     <main className="relative flex min-h-screen flex-col overflow-x-hidden bg-[#030014]">
       <ParticleBackground />
