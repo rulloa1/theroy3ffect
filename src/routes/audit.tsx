@@ -9,19 +9,43 @@ import { Logo } from "@/components/Logo";
 export const Route = createFileRoute("/audit")({
   head: () => ({
     meta: [
-      { title: "Free 5-Minute Website Audit — The Roy Effect" },
+      { title: "Free Website Audit for Houston Small Businesses" },
       {
         name: "description",
         content:
-          "Is your website costing you clients? Get a complimentary 5-minute visual teardown of your conversion rate, mobile UX, and brand positioning by Rory Ulloa.",
+          "Get a free 5-minute website audit: a personal video teardown of your conversion rate, mobile experience and brand positioning, for Houston small businesses and service providers.",
       },
-      { property: "og:title", content: "Free 5-Minute Website Audit — The Roy Effect" },
+      { property: "og:title", content: "Free Website Audit for Houston Small Businesses" },
       {
         property: "og:description",
         content:
-          "Complimentary visual teardown of your website's conversion rate, mobile UX, and brand positioning.",
+          "A free 5-minute video teardown of your website's conversion rate, mobile UX and brand positioning — by Houston designer Rory Ulloa.",
       },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://www.theroyeffect.com/audit" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+    links: [{ rel: "canonical", href: "https://www.theroyeffect.com/audit" }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Service",
+          name: "Free Website Audit",
+          serviceType: "Website audit and conversion review",
+          provider: {
+            "@type": "LocalBusiness",
+            name: "The Roy Effect",
+            email: "rory@theroyeffect.com",
+            areaServed: "Houston, Texas",
+            url: "https://www.theroyeffect.com",
+          },
+          areaServed: { "@type": "City", name: "Houston" },
+          offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+          url: "https://www.theroyeffect.com/audit",
+        }),
+      },
     ],
   }),
   component: AuditPage,
