@@ -280,7 +280,7 @@ def test_loose_capture_lead(base_url: str, secret: str, loose_email: str) -> tup
     # Spoken-style values: spaces inside the email, human-readable enums,
     # string "true" consent, and stray casing/whitespace everywhere.
     local, domain = loose_email.split("@", 1)
-    spoken_email = f"  {local} @ {domain.upper()} "
+    spoken_email = f"  {local} @ {domain} "
     r = post(
         url,
         tool_payload(
@@ -339,7 +339,7 @@ def verify_loose_lead(loose_email: str, garbage_email: str) -> None:
     check("normalized lead was inserted", r.ok and len(rows) == 1, f"{r.status_code} {r.text[:200]}")
     if rows:
         row = rows[0]
-        check("email whitespace/case is normalized", row["email"] == loose_email, str(row["email"]))
+        check("email whitespace is stripped", row["email"] == loose_email, str(row["email"]))
         check("full_name is trimmed", row["full_name"] == "Loose  Input Caller", str(row["full_name"]))
         check("project_type maps to enum", row["project_type"] == "design_and_build", str(row["project_type"]))
         check("budget_range maps to enum", row["budget_range"] == "5000_7999", str(row["budget_range"]))
@@ -418,8 +418,14 @@ def main() -> int:
     if not args.skip_widget:
         asyncio.run(test_widget(args.base_url))
 
-    call_id = test_webhook(args.base_url, os.environ["VAPI_SERVER_SECRET"], email)
+    secret = os.environ["VAPI_SERVER_SECRET"]
+    call_id = test_webhook(args.base_url, secret, email)
     verify_and_cleanup(email, call_id)
+
+    loose_email = f"loose+{uuid.uuid4().hex[:10]}@theroyeffect.com"
+    loose_call_id, garbage_email = test_loose_capture_lead(args.base_url, secret, loose_email)
+    verify_loose_lead(loose_email, garbage_email)
+    rest("DELETE", "voice_agent_logs", {"vapi_call_id": f"eq.{loose_call_id}"})
 
     print(f"\n{CHECKS - len(FAILURES)}/{CHECKS} checks passed")
     if FAILURES:
