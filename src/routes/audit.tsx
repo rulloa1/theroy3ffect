@@ -406,17 +406,9 @@ export function AuditPage() {
             </Link>
           </div>
         </section>
-
-        {/* Footer info */}
-        <div className="mt-16 text-center">
-          <p className="font-mono text-xs text-white/40">
-            THE ROY EFFECT &bull; DIRT, REFINED INTO GOLD &bull;{" "}
-            <a href="mailto:rory@theroyeffect.com" className="text-[#DFBA73] hover:underline">
-              rory@theroyeffect.com
-            </a>
-          </p>
-        </div>
       </div>
     </main>
   );
 }
+
+

@@ -12,6 +12,8 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AuthProvider } from "@/hooks/useAuth";
+import { SiteFooter } from "@/components/SiteFooter";
+
 
 function NotFoundComponent() {
   return (
@@ -230,7 +232,9 @@ function RootComponent() {
       <AuthProvider>
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
         <Outlet />
+        <SiteFooter />
       </AuthProvider>
     </QueryClientProvider>
   );
 }
+
