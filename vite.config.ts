@@ -33,6 +33,9 @@ export default defineConfig({
           "node_modules/entities/lib/encode.js",
         ),
         entities: path.resolve(process.cwd(), "node_modules/entities"),
+        // tslib's CJS entry breaks ESM interop in the Worker bundle
+        // (pdf-lib crashes on `__extends` being undefined). Force the ESM build.
+        tslib: path.resolve(process.cwd(), "node_modules/tslib/tslib.es6.mjs"),
       },
     },
   },
