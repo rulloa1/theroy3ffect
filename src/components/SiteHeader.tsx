@@ -31,6 +31,12 @@ export function SiteHeader({ onNavigate }: { onNavigate: (target: NavTarget) => 
           PRICING
         </Link>
         <Link
+          to="/case-study"
+          className="font-mono text-xs tracking-widest text-white/50 transition-colors hover:text-[#FF3333]"
+        >
+          CASE STUDY
+        </Link>
+        <Link
           to="/audit"
           className="group inline-flex items-center gap-1 font-mono text-xs tracking-widest text-white/50 transition-colors hover:text-[#FF3333]"
         >
