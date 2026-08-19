@@ -5,6 +5,8 @@ import { template as orderConfirmation } from "./order-confirmation";
 import { template as orderNotification } from "./order-notification";
 import { template as projectBriefNotification } from "./project-brief-notification";
 import { template as subscriptionNotification } from "./subscription-notification";
+import { template as voiceAgentFollowup } from "./voice-agent-followup";
+import { template as voiceAgentNotification } from "./voice-agent-notification";
 
 export interface TemplateEntry {
   component: ComponentType<any>;
@@ -30,4 +32,6 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   "order-notification": orderNotification,
   "project-brief-notification": projectBriefNotification,
   "subscription-notification": subscriptionNotification,
+  "voice-agent-followup": voiceAgentFollowup,
+  "voice-agent-notification": voiceAgentNotification,
 };
