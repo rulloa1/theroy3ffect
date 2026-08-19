@@ -76,6 +76,66 @@ function Home() {
 
       <Pricing onCommission={() => openDrawer("LET'S WORK")} />
 
+      <section
+        id="audit"
+        className="relative z-20 w-full bg-[#030014] px-5 py-20 md:px-10 md:py-32"
+      >
+        <div className="mx-auto max-w-7xl">
+          <div className="grid gap-10 border border-[#FF3333]/30 bg-[#FF3333]/5 p-8 md:grid-cols-2 md:items-center md:p-12 lg:p-16">
+            <div>
+              <span className="font-mono text-xs tracking-widest text-[#FF3333]">
+                FREE 5-MINUTE AUDIT
+              </span>
+              <h2 className="mt-3 font-display text-4xl uppercase leading-[0.9] text-white md:text-5xl lg:text-6xl">
+                Is your website costing you clients?
+              </h2>
+              <p className="mt-4 max-w-md font-mono text-sm leading-relaxed text-white/60">
+                Get a complimentary video teardown of your homepage, mobile UX and conversion
+                flow. I'll send you three quick wins you can apply this week.
+              </p>
+              <Link
+                to="/audit"
+                className="mt-8 inline-flex items-center gap-2 bg-[#FF3333] px-6 py-4 font-mono text-xs font-bold tracking-widest text-black transition-all hover:bg-[#FF5555]"
+              >
+                CLAIM YOUR FREE AUDIT
+                <ArrowUpRight className="size-4" />
+              </Link>
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="border border-white/10 bg-white/[0.02] p-5">
+                <SearchCheck className="mb-3 size-5 text-[#FF3333]" />
+                <h3 className="font-display text-lg uppercase text-white">Conversion audit</h3>
+                <p className="mt-1 font-mono text-xs leading-relaxed text-white/50">
+                  Find the leaks in your funnel and fix your messaging.
+                </p>
+              </div>
+              <div className="border border-white/10 bg-white/[0.02] p-5">
+                <Smartphone className="mb-3 size-5 text-[#FF3333]" />
+                <h3 className="font-display text-lg uppercase text-white">Mobile UX review</h3>
+                <p className="mt-1 font-mono text-xs leading-relaxed text-white/50">
+                  See where friction kills enquiries on phones.
+                </p>
+              </div>
+              <div className="border border-white/10 bg-white/[0.02] p-5">
+                <Zap className="mb-3 size-5 text-[#FF3333]" />
+                <h3 className="font-display text-lg uppercase text-white">Quick wins</h3>
+                <p className="mt-1 font-mono text-xs leading-relaxed text-white/50">
+                  Actionable fixes you can implement this week.
+                </p>
+              </div>
+              <div className="border border-white/10 bg-white/[0.02] p-5">
+                <Timer className="mb-3 size-5 text-[#FF3333]" />
+                <h3 className="font-display text-lg uppercase text-white">5 minutes</h3>
+                <p className="mt-1 font-mono text-xs leading-relaxed text-white/50">
+                  Just your URL. No call, no pitch, no spam.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <InfoDrawer
         open={drawerOpen}
         section={drawerSection}
