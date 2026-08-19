@@ -44,6 +44,7 @@ export const Route = createFileRoute("/pricing")({
 });
 
 function PricingPage() {
+  const navigate = useNavigate();
   return (
     <main className="min-h-screen bg-[#030014]">
       <Toaster />
