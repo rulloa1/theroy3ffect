@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useAuth } from "@/hooks/useAuth";
 import { Logo } from "@/components/Logo";
+import { ArrowUpRight } from "lucide-react";
 
 export type NavTarget =
   "PROJECTS" | "PROCESS" | "ABOUT" | "RESUME" | "PRICING" | "LET'S WORK" | "MENU";
