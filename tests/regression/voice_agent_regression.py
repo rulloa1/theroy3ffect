@@ -257,12 +257,13 @@ def test_webhook(base_url: str, secret: str, email: str) -> None:
 # --------------------------------------------------------------------------- #
 # 3. Database verification + cleanup
 # --------------------------------------------------------------------------- #
-def rest(method: str, table: str, params: str) -> requests.Response:
+def rest(method: str, table: str, params: dict) -> requests.Response:
     base = os.environ["SUPABASE_URL"].rstrip("/")
     key = os.environ["SUPABASE_SERVICE_ROLE_KEY"]
     return requests.request(
         method,
-        f"{base}/rest/v1/{table}?{params}",
+        f"{base}/rest/v1/{table}",
+        params=params,
         headers={
             "apikey": key,
             "Authorization": f"Bearer {key}",
@@ -277,18 +278,18 @@ def verify_and_cleanup(email: str, call_id: str) -> None:
     print("\n== Database ==")
     dup = f"dup-{email}"
     expectations = [
-        ("voice_leads", f"email=in.(\"{email}\",\"{dup}\")", True),
-        ("voice_audit_requests", f"email=eq.{email}", True),
-        ("voice_bookings", f"email=in.(\"{email}\",\"{dup}\")", True),
-        ("voice_followups", f"email=eq.{email}", True),
-        ("voice_agent_logs", f"call_id=eq.{call_id}", True),
+        ("voice_leads", {"email": f'in.("{email}","{dup}")'}),
+        ("voice_audit_requests", {"email": f"eq.{email}"}),
+        ("voice_bookings", {"email": f'in.("{email}","{dup}")'}),
+        ("voice_followups", {"email": f"eq.{email}"}),
+        ("voice_agent_logs", {"vapi_call_id": f"eq.{call_id}"}),
     ]
-    for table, filt, expect_rows in expectations:
-        r = rest("GET", table, f"select=id&{filt}")
+    for table, filt in expectations:
+        r = rest("GET", table, {"select": "id", **filt})
         rows = r.json() if r.ok else []
-        check(f"{table} has rows", r.ok and (len(rows) > 0) == expect_rows, f"{r.status_code} {r.text[:200]}")
+        check(f"{table} has rows", r.ok and len(rows) > 0, f"{r.status_code} {r.text[:200]}")
 
-    for table, filt, _ in expectations:
+    for table, filt in expectations:
         r = rest("DELETE", table, filt)
         check(f"{table} test rows cleaned up", r.ok, f"{r.status_code} {r.text[:200]}")
 
