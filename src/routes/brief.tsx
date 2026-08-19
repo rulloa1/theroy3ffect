@@ -3,6 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { z } from "zod";
 import { Logo } from "@/components/Logo";
+import { Toaster } from "@/components/ui/sonner";
 
 export const Route = createFileRoute("/brief")({
   validateSearch: (
@@ -234,6 +235,7 @@ function BriefPage() {
 
   return (
     <main className="min-h-screen bg-[#030014] px-5 py-20">
+      <Toaster />
       <div className="mx-auto max-w-2xl">
         <Logo variant="compact" size="md" href="/" className="mb-8" />
         <div className="flex flex-wrap items-center justify-between gap-2">
