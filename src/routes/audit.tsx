@@ -318,6 +318,95 @@ export function AuditPage() {
           )}
         </div>
 
+        {/* Who it's for */}
+        <section className="mt-16">
+          <h2 className="font-display text-2xl uppercase text-white sm:text-3xl">
+            Who the audit is for
+          </h2>
+          <p className="mt-3 max-w-2xl font-mono text-xs leading-relaxed text-white/60">
+            I work mostly with owner-run businesses around Houston — contractors, clinics, law and
+            accounting practices, salons, restaurants, real estate agents and B2B service firms.
+            If people find you, look at the site, and still call someone else, the audit shows you
+            where that happens.
+          </p>
+          <ul className="mt-5 grid gap-3 sm:grid-cols-2">
+            {[
+              "Your site was built years ago and hasn't kept up with competitors",
+              "Most of your traffic is mobile but the layout fights small screens",
+              "You get visits from Google Business Profile but almost no form fills",
+              "You're about to spend on ads and want the landing experience checked first",
+            ].map((item) => (
+              <li
+                key={item}
+                className="flex items-start gap-2 border border-white/10 bg-white/[0.02] p-4 font-mono text-xs leading-relaxed text-white/60"
+              >
+                <Zap className="mt-0.5 size-3.5 shrink-0 text-[#DFBA73]" />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        {/* What happens next */}
+        <section className="mt-14">
+          <h2 className="font-display text-2xl uppercase text-white sm:text-3xl">
+            What happens after you submit
+          </h2>
+          <ol className="mt-5 space-y-4">
+            {[
+              "I open your site the way a customer would — on a phone first, cold, with no context.",
+              "I record a 5-minute screen video walking through what's confusing, slow or off-brand.",
+              "You get the video by email within one business day, plus three fixes ranked by impact.",
+              "If you want me to make those fixes, we talk. If not, the notes are yours to keep.",
+            ].map((step, i) => (
+              <li key={step} className="flex gap-4">
+                <span className="font-display text-2xl text-[#E51924]">0{i + 1}</span>
+                <p className="font-mono text-xs leading-relaxed text-white/60">{step}</p>
+              </li>
+            ))}
+          </ol>
+        </section>
+
+        {/* FAQ */}
+        <section className="mt-14">
+          <h2 className="font-display text-2xl uppercase text-white sm:text-3xl">
+            Common questions
+          </h2>
+          <div className="mt-5 space-y-4">
+            {[
+              {
+                q: "Is the website audit really free?",
+                a: "Yes. There's no fee and no card. I record a handful of these each week because a few people end up hiring me afterwards — that's the whole business case.",
+              },
+              {
+                q: "How long does it take to get the audit?",
+                a: "Usually within one business day, occasionally two if the queue is full. It arrives as a private video link in your inbox.",
+              },
+              {
+                q: "Do I have to be in Houston?",
+                a: "No. I'm based in Houston and know the local market best, but I audit and build for clients anywhere in the US.",
+              },
+              {
+                q: "What if I don't have a website yet?",
+                a: "Send the closest thing you have — a social profile, a directory listing, or a competitor you admire — and I'll review positioning instead of layout.",
+              },
+            ].map((faq) => (
+              <div key={faq.q} className="border border-white/10 bg-white/[0.02] p-5">
+                <h3 className="font-display text-lg uppercase text-white">{faq.q}</h3>
+                <p className="mt-2 font-mono text-xs leading-relaxed text-white/60">{faq.a}</p>
+              </div>
+            ))}
+          </div>
+          <div className="mt-8">
+            <Link
+              to="/pricing"
+              className="inline-flex items-center gap-2 border border-[#DFBA73]/40 px-6 py-3 font-mono text-xs font-bold tracking-widest text-[#F6DC9A] transition-all hover:bg-[#DFBA73] hover:text-black"
+            >
+              SEE PRICING <ArrowRight className="size-3.5" />
+            </Link>
+          </div>
+        </section>
+
         {/* Footer info */}
         <div className="mt-16 text-center">
           <p className="font-mono text-xs text-white/40">
