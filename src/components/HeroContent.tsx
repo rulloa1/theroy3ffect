@@ -9,7 +9,7 @@ const HEADLINES = [
   "YOUR BUSINESS NEEDS A WEBSITE.",
 ];
 const BIO =
-  "I'm Rory Ulloa — Creative Director, UI/UX Designer & No-Code Developer crafting high-impact digital experiences that make your brand impossible to ignore.";
+  "I'm Rory Ulloa — Creative Director, UI/UX Designer & No-Code Developer based in Houston, Texas, crafting high-impact web design that makes your brand impossible to ignore.";
 
 export function HeroContent() {
   const [wordIndex, setWordIndex] = useState(0);
