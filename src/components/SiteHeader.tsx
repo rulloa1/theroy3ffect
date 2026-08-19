@@ -30,6 +30,13 @@ export function SiteHeader({ onNavigate }: { onNavigate: (target: NavTarget) => 
         >
           PRICING
         </Link>
+        <Link
+          to="/audit"
+          className="group inline-flex items-center gap-1 font-mono text-xs tracking-widest text-white/50 transition-colors hover:text-[#FF3333]"
+        >
+          AUDIT
+          <ArrowUpRight className="size-3 opacity-50 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:opacity-100" />
+        </Link>
         {LINKS.filter((l) => l !== "PRICING").map((l) => (
           <button
             key={l}
