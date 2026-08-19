@@ -168,6 +168,18 @@ export function InfoDrawer({
                         </button>
                       </li>
                     ))}
+                    <li>
+                      <Link
+                        to="/audit"
+                        onClick={close}
+                        className="group flex w-full items-center justify-between border-b border-white/10 py-5 text-left"
+                      >
+                        <span className="font-display text-3xl uppercase tracking-wide text-white transition-colors group-hover:text-[#FF3333] md:text-5xl">
+                          AUDIT
+                        </span>
+                        <span className="font-mono text-xs text-white/40">↗</span>
+                      </Link>
+                    </li>
                   </ul>
 
                   <div className="mt-8 border border-[#DFBA73]/30 bg-[#DFBA73]/5 p-5">
