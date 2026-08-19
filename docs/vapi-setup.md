@@ -56,3 +56,21 @@ Without them the widget renders nothing.
 Paste the system prompt from `01_ASSISTANT_SYSTEM_PROMPT.md` and use
 `05_ASSISTANT_CONFIG_TEMPLATE.json`, replacing the tool ID placeholders with the
 IDs of the tools created in step 1.
+
+## Automated regression test
+
+Run the full widget + webhook regression suite (25 checks):
+
+```bash
+npm run test:voice                 # against http://localhost:8080
+npm run test:voice -- --base-url https://www.theroyeffect.com
+npm run test:voice -- --skip-widget
+```
+
+It loads the site in headless Chromium, clicks "Talk to us", and verifies the
+SDK issues a `POST https://api.vapi.ai/call/web` with the configured public key
+and assistant id (the outbound request is intercepted, so no minutes are
+billed). It then exercises every webhook tool (auth rejection, capture_lead,
+create_audit_request, availability, booking + double-booking protection,
+human followup, unknown-tool fallback, non-tool events), confirms the rows
+landed in the database, and deletes all test rows. Exit code 0 = pass.
