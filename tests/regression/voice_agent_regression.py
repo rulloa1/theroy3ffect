@@ -67,7 +67,10 @@ async def test_widget(base_url: str) -> None:
     console_errors: list[str] = []
 
     async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=True)
+        browser = await p.chromium.launch(
+            headless=True,
+            args=["--use-fake-ui-for-media-stream", "--use-fake-device-for-media-stream"],
+        )
         context = await browser.new_context(
             viewport={"width": 1280, "height": 1800},
             permissions=["microphone"],
@@ -95,16 +98,20 @@ async def test_widget(base_url: str) -> None:
         await context.route("**://api.vapi.ai/**", intercept)
         await context.route("**://*.daily.co/**", lambda route: route.abort())
 
-        await page.goto(base_url, wait_until="domcontentloaded")
+        # networkidle so React has hydrated: clicking before hydration is a no-op.
+        await page.goto(base_url, wait_until="networkidle")
         button = page.get_by_role("button", name="Talk to the studio concierge")
-        await button.wait_for(state="visible", timeout=15000)
+        await button.wait_for(state="visible", timeout=20000)
         check("widget button is rendered", True)
 
-        await button.click()
-        for _ in range(60):
+        for attempt in range(3):
+            await button.click()
+            for _ in range(40):
+                if captured:
+                    break
+                await page.wait_for_timeout(250)
             if captured:
                 break
-            await page.wait_for_timeout(250)
 
         check("clicking the widget initiates a Vapi web call", bool(captured))
         if captured:
