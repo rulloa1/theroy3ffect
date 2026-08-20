@@ -58,8 +58,9 @@ export function BookingCalendar() {
   const [result, setResult] = useState<BookingResult | null>(null);
 
   useEffect(() => {
-    if (data?.slots && data.slots.length > 0) {
-      setSelectedDay(data.slots[0].slot_start.slice(0, 10));
+    const first = data?.slots?.[0];
+    if (first) {
+      setSelectedDay(first.slot_start.slice(0, 10));
     }
   }, [data]);
 
