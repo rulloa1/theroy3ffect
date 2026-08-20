@@ -28,6 +28,8 @@ export interface TemplateEntry {
  *   // then add to TEMPLATES: 'welcome': welcomeTemplate
  */
 export const TEMPLATES: Record<string, TemplateEntry> = {
+  "booking-confirmation": bookingConfirmation,
+  "booking-notification": bookingNotification,
   "brief-confirmation": briefConfirmation,
   "brief-notification": briefNotification,
   "order-confirmation": orderConfirmation,
