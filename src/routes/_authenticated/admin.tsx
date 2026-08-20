@@ -2,7 +2,16 @@ import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Briefcase, DollarSign, Eye, FileCheck, FileText, MessageSquare, X } from "lucide-react";
+import {
+  Briefcase,
+  DollarSign,
+  Eye,
+  FileCheck,
+  FileText,
+  MessageSquare,
+  Users,
+  X,
+} from "lucide-react";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 import { getStripeEnvironment } from "@/lib/stripe";
@@ -34,6 +43,13 @@ import { AdminInquiriesView } from "@/components/admin/AdminInquiriesView";
 import { AdminProposalsView } from "@/components/admin/AdminProposalsView";
 import { AdminPortfolioCMS } from "@/components/admin/AdminPortfolioCMS";
 import { AdminFinancialsView } from "@/components/admin/AdminFinancialsView";
+import { AdminPipelineView } from "@/components/admin/AdminPipelineView";
+import {
+  adminListPipeline,
+  adminUpdateLeadStage,
+  adminUpdateBookingStatus,
+  adminResolveFollowup,
+} from "@/utils/crm.functions";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
@@ -68,7 +84,13 @@ const date = (value: string | null) =>
       })
     : "—";
 
-type MainView = "PROJECTS" | "INQUIRIES" | "PROPOSALS" | "PORTFOLIO" | "FINANCIALS";
+type MainView =
+  | "PROJECTS"
+  | "PIPELINE"
+  | "INQUIRIES"
+  | "PROPOSALS"
+  | "PORTFOLIO"
+  | "FINANCIALS";
 
 function AdminPage() {
   const environment = getStripeEnvironment();
@@ -85,6 +107,10 @@ function AdminPage() {
   const listProposals = useServerFn(adminListProposals);
   const createProposal = useServerFn(adminCreateProposal);
   const deleteProposal = useServerFn(adminDeleteProposal);
+  const listPipeline = useServerFn(adminListPipeline);
+  const updateLeadStage = useServerFn(adminUpdateLeadStage);
+  const updateBookingStatus = useServerFn(adminUpdateBookingStatus);
+  const resolveFollowup = useServerFn(adminResolveFollowup);
 
   const [currentView, setCurrentView] = useState<MainView>("PROJECTS");
   const [filterTab, setFilterTab] = useState<FilterTab>("ALL");
@@ -165,6 +191,12 @@ function AdminPage() {
     retry: false,
   });
 
+  const { data: pipelineData } = useQuery({
+    queryKey: ["admin-pipeline"],
+    queryFn: () => listPipeline(),
+    retry: false,
+  });
+
   const { data: portfolioData } = useQuery({
     queryKey: ["admin-portfolio"],
     queryFn: () => listPortfolio(),
@@ -179,6 +211,26 @@ function AdminPage() {
   const pendingBalanceTotal = (ordersData?.orders ?? [])
     .filter((o) => o.balance_due_cents > 0 && o.balance_status === "pending")
     .reduce((sum, o) => sum + o.balance_due_cents, 0);
+
+  const refreshPipeline = () => queryClient.invalidateQueries({ queryKey: ["admin-pipeline"] });
+
+  const changeLeadStage = async (leadId: string, stage: string) => {
+    const res = await updateLeadStage({ data: { leadId, stage } });
+    if (!res.success) throw new Error(res.error || "Update failed");
+    await refreshPipeline();
+  };
+
+  const changeBookingStatus = async (bookingId: string, status: string) => {
+    const res = await updateBookingStatus({ data: { bookingId, status } });
+    if (!res.success) throw new Error(res.error || "Update failed");
+    await refreshPipeline();
+  };
+
+  const closeFollowup = async (followupId: string, status: string) => {
+    const res = await resolveFollowup({ data: { followupId, status } });
+    if (!res.success) throw new Error(res.error || "Update failed");
+    await refreshPipeline();
+  };
 
   // Invoicing Action
   const invoiceBalance = async (orderId: string) => {
@@ -443,6 +495,11 @@ function AdminPage() {
           {[
             { id: "PROJECTS", label: "CURRENT PROJECTS", icon: Briefcase },
             {
+              id: "PIPELINE",
+              label: `LEAD PIPELINE (${(pipelineData?.leads ?? []).length})`,
+              icon: Users,
+            },
+            {
               id: "INQUIRIES",
               label: `CLIENT LEADS (${unreadInquiriesCount})`,
               icon: MessageSquare,
@@ -496,6 +553,16 @@ function AdminPage() {
               onCreateProposalFromBrief={handleOpenProposalFromBrief}
               busy={busy}
               money={money}
+              date={date}
+            />
+          )}
+
+          {currentView === "PIPELINE" && (
+            <AdminPipelineView
+              leads={pipelineData?.leads ?? []}
+              onUpdateStage={changeLeadStage}
+              onUpdateBooking={changeBookingStatus}
+              onResolveFollowup={closeFollowup}
               date={date}
             />
           )}
