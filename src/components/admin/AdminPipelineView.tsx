@@ -8,9 +8,11 @@ import {
   AlertTriangle,
   Users,
   ArrowRight,
+  FileText,
 } from "lucide-react";
 import { toast } from "sonner";
 import { LEAD_STAGES, type CrmLead } from "@/utils/crm.functions";
+import { LeadDetailDrawer } from "@/components/admin/LeadDetailDrawer";
 
 const STAGE_LABELS: Record<string, string> = {
   new: "NEW",
@@ -72,6 +74,7 @@ export function AdminPipelineView({
   const [stageFilter, setStageFilter] = useState<string>("ALL");
   const [query, setQuery] = useState("");
   const [busy, setBusy] = useState<string | null>(null);
+  const [detailLead, setDetailLead] = useState<CrmLead | null>(null);
 
   const filtered = leads.filter((lead) => {
     if (stageFilter !== "ALL" && lead.stage !== stageFilter) return false;
@@ -241,6 +244,14 @@ export function AdminPipelineView({
                       <ArrowRight className="size-3" />
                       {nextAction(lead)}
                     </p>
+                    <button
+                      type="button"
+                      onClick={() => setDetailLead(lead)}
+                      className="mt-3 inline-flex items-center gap-1.5 border border-white/15 px-2.5 py-1 font-mono text-[10px] tracking-widest text-white/70 transition-colors hover:border-[#FF3333] hover:text-[#FF3333]"
+                    >
+                      <FileText className="size-3" />
+                      VIEW DETAIL
+                    </button>
                   </div>
                 </div>
 
@@ -362,6 +373,8 @@ export function AdminPipelineView({
           })}
         </div>
       )}
+
+      <LeadDetailDrawer lead={detailLead} onClose={() => setDetailLead(null)} />
     </div>
   );
 }

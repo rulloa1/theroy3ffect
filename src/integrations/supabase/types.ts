@@ -609,6 +609,54 @@ export type Database = {
           },
         ]
       }
+      voice_call_records: {
+        Row: {
+          created_at: string
+          ended_at: string | null
+          ended_reason: string | null
+          id: string
+          messages: Json
+          raw_payload: Json
+          recording_url: string | null
+          started_at: string | null
+          status: string
+          summary: string | null
+          transcript: string | null
+          updated_at: string
+          vapi_call_id: string
+        }
+        Insert: {
+          created_at?: string
+          ended_at?: string | null
+          ended_reason?: string | null
+          id?: string
+          messages?: Json
+          raw_payload?: Json
+          recording_url?: string | null
+          started_at?: string | null
+          status?: string
+          summary?: string | null
+          transcript?: string | null
+          updated_at?: string
+          vapi_call_id: string
+        }
+        Update: {
+          created_at?: string
+          ended_at?: string | null
+          ended_reason?: string | null
+          id?: string
+          messages?: Json
+          raw_payload?: Json
+          recording_url?: string | null
+          started_at?: string | null
+          status?: string
+          summary?: string | null
+          transcript?: string | null
+          updated_at?: string
+          vapi_call_id?: string
+        }
+        Relationships: []
+      }
       voice_followups: {
         Row: {
           created_at: string
