@@ -1,6 +1,16 @@
 import { z } from "zod";
 import { sendTemplateEmail } from "@/lib/email-templates/send-email";
 import {
+  BOOKING_TZ,
+  OWNER_EMAIL,
+  QUESTIONNAIRE_URL,
+  SITE,
+  SLOT_MINUTES,
+  formatSlot,
+  getAvailableSlots,
+  upsertLead,
+} from "@/utils/booking.server";
+import {
   bookDiscoveryCallSchema,
   captureLeadSchema,
   createAuditRequestSchema,
@@ -11,55 +21,11 @@ import {
   type ToolName,
 } from "./schemas";
 
-const OWNER_EMAIL = "rory@theroyeffect.com";
-const SITE = "https://www.theroyeffect.com";
-const QUESTIONNAIRE_URL = `${SITE}/brief`;
 const AUDIT_URL = `${SITE}/audit`;
-const BOOKING_TZ = "America/Chicago";
-/** Discovery slots offered daily, expressed in UTC hours (10am / 1pm / 3pm Central). */
-const SLOT_HOURS_UTC = [15, 18, 20];
-const SLOT_MINUTES = 15;
 
 async function admin() {
   const mod = await import("@/integrations/supabase/client.server");
   return (mod as unknown as { supabaseAdmin: any }).supabaseAdmin;
-}
-
-function formatSlot(date: Date) {
-  return new Intl.DateTimeFormat("en-US", {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-    timeZone: BOOKING_TZ,
-  }).format(date);
-}
-
-async function upsertLead(payload: Record<string, unknown>, callId: string | null) {
-  const db = await admin();
-  const emailValue = typeof payload["email"] === "string" ? (payload["email"] as string) : null;
-
-  if (emailValue) {
-    const { data: existing } = await db
-      .from("voice_leads")
-      .select("id")
-      .ilike("email", emailValue)
-      .limit(1)
-      .maybeSingle();
-    if (existing?.id) {
-      await db.from("voice_leads").update({ ...payload, vapi_call_id: callId }).eq("id", existing.id);
-      return existing.id as string;
-    }
-  }
-
-  const { data, error } = await db
-    .from("voice_leads")
-    .insert({ ...payload, vapi_call_id: callId })
-    .select("id")
-    .single();
-  if (error) throw new Error(error.message);
-  return data.id as string;
 }
 
 async function notifyOwner(subjectLine: string, details: Record<string, string | undefined>) {
@@ -178,30 +144,7 @@ export const handlers: Record<ToolName, Handler> = {
 
   get_discovery_availability: async (args) => {
     getAvailabilitySchema.parse(args ?? {});
-    const db = await admin();
-    const now = Date.now();
-    const candidates: Date[] = [];
-
-    for (let dayOffset = 1; dayOffset <= 10 && candidates.length < 12; dayOffset += 1) {
-      const day = new Date(now + dayOffset * 86_400_000);
-      const weekday = day.getUTCDay();
-      if (weekday === 0 || weekday === 6) continue;
-      for (const hour of SLOT_HOURS_UTC) {
-        const slot = new Date(
-          Date.UTC(day.getUTCFullYear(), day.getUTCMonth(), day.getUTCDate(), hour, 0, 0),
-        );
-        if (slot.getTime() > now) candidates.push(slot);
-      }
-    }
-
-    const { data: booked } = await db
-      .from("voice_bookings")
-      .select("slot_start")
-      .gte("slot_start", new Date(now).toISOString())
-      .eq("status", "scheduled");
-
-    const taken = new Set((booked ?? []).map((b: { slot_start: string }) => new Date(b.slot_start).toISOString()));
-    const open = candidates.filter((c) => !taken.has(c.toISOString())).slice(0, 3);
+    const open = await getAvailableSlots(3);
 
     return {
       time_zone: BOOKING_TZ,
@@ -422,4 +365,3 @@ export async function logToolCall(entry: {
     console.error("Voice agent log insert failed:", error);
   }
 }
-
