@@ -63,6 +63,7 @@ function BookPage() {
           </div>
         </div>
       </section>
+      <Toaster />
     </main>
   );
 }
