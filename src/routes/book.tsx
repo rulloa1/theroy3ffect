@@ -1,4 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { Toaster } from "@/components/ui/sonner";
 import { ParticleBackground } from "@/components/ParticleBackground";
 import { SiteHeader, type NavTarget } from "@/components/SiteHeader";
 import { BookingCalendar } from "@/components/BookingCalendar";
