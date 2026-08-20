@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuditRouteImport } from './routes/audit'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as BookRouteImport } from './routes/book'
 import { Route as BriefRouteImport } from './routes/brief'
 import { Route as CaseStudyRouteImport } from './routes/case-study'
 import { Route as McpRouteImport } from './routes/mcp'
@@ -49,6 +50,11 @@ const AuditRoute = AuditRouteImport.update({
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BookRoute = BookRouteImport.update({
+  id: '/book',
+  path: '/book',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BriefRoute = BriefRouteImport.update({
@@ -151,6 +157,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/audit': typeof AuditRoute
   '/auth': typeof AuthRoute
+  '/book': typeof BookRoute
   '/brief': typeof BriefRoute
   '/case-study': typeof CaseStudyRoute
   '/mcp': typeof McpRoute
@@ -174,6 +181,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/audit': typeof AuditRoute
   '/auth': typeof AuthRoute
+  '/book': typeof BookRoute
   '/brief': typeof BriefRoute
   '/case-study': typeof CaseStudyRoute
   '/mcp': typeof McpRoute
@@ -199,6 +207,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/audit': typeof AuditRoute
   '/auth': typeof AuthRoute
+  '/book': typeof BookRoute
   '/brief': typeof BriefRoute
   '/case-study': typeof CaseStudyRoute
   '/mcp': typeof McpRoute
@@ -224,6 +233,7 @@ export interface FileRouteTypes {
     | '/'
     | '/audit'
     | '/auth'
+    | '/book'
     | '/brief'
     | '/case-study'
     | '/mcp'
@@ -247,6 +257,7 @@ export interface FileRouteTypes {
     | '/'
     | '/audit'
     | '/auth'
+    | '/book'
     | '/brief'
     | '/case-study'
     | '/mcp'
@@ -271,6 +282,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/audit'
     | '/auth'
+    | '/book'
     | '/brief'
     | '/case-study'
     | '/mcp'
@@ -296,6 +308,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuditRoute: typeof AuditRoute
   AuthRoute: typeof AuthRoute
+  BookRoute: typeof BookRoute
   BriefRoute: typeof BriefRoute
   CaseStudyRoute: typeof CaseStudyRoute
   McpRoute: typeof McpRoute
@@ -342,6 +355,13 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/book': {
+      id: '/book'
+      path: '/book'
+      fullPath: '/book'
+      preLoaderRoute: typeof BookRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/brief': {
@@ -491,6 +511,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuditRoute: AuditRoute,
   AuthRoute: AuthRoute,
+  BookRoute: BookRoute,
   BriefRoute: BriefRoute,
   CaseStudyRoute: CaseStudyRoute,
   McpRoute: McpRoute,
