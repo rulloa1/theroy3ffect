@@ -67,9 +67,12 @@ export const Route = createFileRoute("/api/public/vapi")({
           (message?.functionCall ? [{ id: message?.id, function: message.functionCall }] : []);
 
         if (!Array.isArray(toolCalls) || toolCalls.length === 0) {
-          // Non-tool server events (status updates, end-of-call reports) are acknowledged.
+          // Non-tool server events (status updates, end-of-call reports) are stored, not executed.
+          const { recordCallEvent } = await import("@/lib/vapi/handlers.server");
+          await recordCallEvent(message, callId);
           return json({ ok: true });
         }
+
 
         const { runTool, logToolCall } = await import("@/lib/vapi/handlers.server");
 
