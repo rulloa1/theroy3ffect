@@ -31,6 +31,12 @@ export function SiteHeader({ onNavigate }: { onNavigate: (target: NavTarget) => 
           PRICING
         </Link>
         <Link
+          to="/book"
+          className="font-mono text-xs tracking-widest text-white/50 transition-colors hover:text-[#FF3333]"
+        >
+          BOOK
+        </Link>
+        <Link
           to="/case-study"
           className="font-mono text-xs tracking-widest text-white/50 transition-colors hover:text-[#FF3333]"
         >
@@ -80,13 +86,12 @@ export function SiteHeader({ onNavigate }: { onNavigate: (target: NavTarget) => 
           {user ? "ACCOUNT" : "SIGN IN"}
         </Link>
 
-        <button
-          type="button"
-          onClick={() => onNavigate("LET'S WORK")}
+        <Link
+          to="/book"
           className="hidden rounded-full border border-white/20 px-3.5 py-1.5 font-mono text-[10px] tracking-widest text-white transition-colors hover:border-[#FF3333] hover:bg-[#FF3333] hover:text-black sm:px-5 sm:py-2 sm:text-xs lg:inline-block"
         >
-          COMMISSION
-        </button>
+          BOOK A CALL
+        </Link>
       </div>
     </header>
   );

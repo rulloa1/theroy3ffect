@@ -4,6 +4,7 @@ import { ArrowUpRight, SearchCheck } from "lucide-react";
 const FOOTER_LINKS = [
   { label: "SERVICES", to: "/services" },
   { label: "PRICING", to: "/pricing" },
+  { label: "BOOK", to: "/book" },
   { label: "CASE STUDY", to: "/case-study" },
   { label: "AUDIT", to: "/audit" },
 ];
