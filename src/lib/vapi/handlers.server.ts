@@ -365,3 +365,37 @@ export async function logToolCall(entry: {
     console.error("Voice agent log insert failed:", error);
   }
 }
+
+/** Persist status updates / end-of-call reports so admins can read the transcript later. */
+export async function recordCallEvent(message: any, callId: string | null) {
+  if (!callId) return;
+  try {
+    const db = await admin();
+    const type = String(message?.type ?? "");
+    const artifact = message?.artifact ?? {};
+    const transcript: string | null =
+      message?.transcript ?? artifact?.transcript ?? message?.call?.transcript ?? null;
+    const messages = message?.messages ?? artifact?.messages ?? null;
+    const isEnd = type === "end-of-call-report" || Boolean(message?.endedReason);
+
+    const row: Record<string, unknown> = {
+      vapi_call_id: callId,
+      status: isEnd ? "ended" : (message?.status ?? "in_progress"),
+      raw_payload: message ?? {},
+      updated_at: new Date().toISOString(),
+    };
+    if (transcript) row["transcript"] = transcript;
+    if (message?.summary ?? artifact?.summary) row["summary"] = message?.summary ?? artifact?.summary;
+    if (message?.recordingUrl ?? artifact?.recordingUrl)
+      row["recording_url"] = message?.recordingUrl ?? artifact?.recordingUrl;
+    if (message?.endedReason) row["ended_reason"] = message.endedReason;
+    if (Array.isArray(messages)) row["messages"] = messages;
+    if (message?.startedAt ?? message?.call?.createdAt)
+      row["started_at"] = new Date(message?.startedAt ?? message?.call?.createdAt).toISOString();
+    if (isEnd) row["ended_at"] = new Date(message?.endedAt ?? Date.now()).toISOString();
+
+    await db.from("voice_call_records").upsert(row, { onConflict: "vapi_call_id" });
+  } catch (error) {
+    console.error("Voice call record upsert failed:", error);
+  }
+}
