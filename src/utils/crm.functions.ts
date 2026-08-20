@@ -78,6 +78,8 @@ export interface CrmLead {
   followups: CrmFollowup[];
 }
 
+export type CrmJson = string | number | boolean | null | CrmJson[] | { [key: string]: CrmJson };
+
 export interface CrmCallRecord {
   id: string;
   vapi_call_id: string;
@@ -86,7 +88,7 @@ export interface CrmCallRecord {
   summary: string | null;
   recording_url: string | null;
   ended_reason: string | null;
-  messages: unknown;
+  messages: CrmJson;
   started_at: string | null;
   ended_at: string | null;
   created_at: string;
@@ -96,8 +98,8 @@ export interface CrmToolLog {
   id: string;
   vapi_call_id: string | null;
   tool_name: string;
-  request_payload: unknown;
-  result_payload: unknown;
+  request_payload: CrmJson;
+  result_payload: CrmJson;
   ok: boolean;
   error_message: string | null;
   created_at: string;
