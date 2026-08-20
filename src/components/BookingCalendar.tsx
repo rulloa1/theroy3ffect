@@ -180,7 +180,7 @@ export function BookingCalendar() {
               <span className="block font-mono text-[10px] uppercase tracking-wider opacity-70">
                 {formatDayLabel(day + "T00:00:00")}
               </span>
-              <span className="block font-mono text-xs font-semibold">{slotsByDay[day].length} slots</span>
+              <span className="block font-mono text-xs font-semibold">{slotsByDay[day]?.length ?? 0} slots</span>
             </button>
           );
         })}
