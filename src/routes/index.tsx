@@ -142,6 +142,46 @@ function Home() {
         </div>
       </section>
 
+      <section className="relative z-20 w-full bg-[#030014] px-5 py-20 md:px-10 md:py-32">
+        <div className="mx-auto max-w-7xl">
+          <div className="grid gap-10 border border-white/10 bg-white/[0.02] p-8 md:grid-cols-2 md:items-center md:p-12 lg:p-16">
+            <div>
+              <span className="font-mono text-xs tracking-widest text-[#FF3333]">PREFER TO TALK?</span>
+              <h2 className="mt-3 font-display text-4xl uppercase leading-[0.9] text-white md:text-5xl lg:text-6xl">
+                Book a free 15-minute call
+              </h2>
+              <p className="mt-4 max-w-md font-mono text-sm leading-relaxed text-white/60">
+                Not sure what you need yet? Grab a quick slot and we&apos;ll run through your goals,
+                timeline, and budget.
+              </p>
+              <Link
+                to="/book"
+                className="mt-8 inline-flex items-center gap-2 bg-[#FF3333] px-6 py-4 font-mono text-xs font-bold tracking-widest text-black transition-all hover:bg-[#FF5555]"
+              >
+                BOOK A DISCOVERY CALL
+                <ArrowUpRight className="size-4" />
+              </Link>
+            </div>
+            <div className="border border-white/10 bg-[#030014] p-6 md:p-8">
+              <ul className="space-y-4 font-mono text-sm text-white/70">
+                <li className="flex items-start gap-3">
+                  <Check className="mt-0.5 size-4 shrink-0 text-[#FF3333]" />
+                  <span>15 minutes, no pitch</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check className="mt-0.5 size-4 shrink-0 text-[#FF3333]" />
+                  <span>Scope, timeline, and budget clarity</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check className="mt-0.5 size-4 shrink-0 text-[#FF3333]" />
+                  <span>Leave with a written recommendation</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <InfoDrawer
         open={drawerOpen}
         section={drawerSection}
