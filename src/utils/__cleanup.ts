@@ -14,6 +14,10 @@ async function cleanup() {
     return;
   }
 
+  if (!booking || !booking.lead_id) {
+    console.log("Booking or lead not found");
+    return;
+  }
   await supabaseAdmin.from("voice_bookings").delete().eq("id", bookingId);
   await supabaseAdmin.from("voice_leads").delete().eq("id", booking.lead_id);
   console.log("Cleaned up booking", bookingId, "and lead", booking.lead_id);
