@@ -59,7 +59,7 @@ function AccountPage() {
   const portal = useServerFn(createPortalSession);
   const [portalBusy, setPortalBusy] = useState(false);
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ["account", environment],
     queryFn: () => fetchAccount({ data: { environment } }),
   });
@@ -68,7 +68,13 @@ function AccountPage() {
     if (!sessionId || !user) return;
     void claim({ data: { sessionId, environment } })
       .then(() => queryClient.invalidateQueries({ queryKey: ["account", environment] }))
-      .catch(() => {});
+      .catch((error) => {
+        toast.error(
+          error instanceof Error
+            ? `We couldn't link that payment to your account: ${error.message}`
+            : "We couldn't link that payment to your account. Email rory@theroyeffect.com and we'll sort it out.",
+        );
+      });
   }, [sessionId, user, claim, environment, queryClient]);
 
   const openPortal = async () => {
@@ -141,6 +147,24 @@ function AccountPage() {
 
         {isLoading && (
           <p className="mt-12 font-mono text-xs text-white/40">Loading your account…</p>
+        )}
+
+        {isError && (
+          <div className="mt-12 border border-[#FF3333]/40 bg-[#FF3333]/5 p-6">
+            <p className="font-mono text-xs tracking-widest text-[#FF3333]">
+              COULDN'T LOAD YOUR ACCOUNT
+            </p>
+            <p className="mt-2 text-sm text-white/60">
+              Something went wrong fetching your projects and invoices.
+            </p>
+            <button
+              type="button"
+              onClick={() => void refetch()}
+              className="mt-4 border border-white/20 px-4 py-2 font-mono text-[11px] tracking-widest text-white/80 transition-colors hover:border-white/50 hover:text-white"
+            >
+              TRY AGAIN
+            </button>
+          </div>
         )}
 
         {data && (

@@ -12,12 +12,12 @@ export function SiteHeader({ onNavigate }: { onNavigate: (target: NavTarget) => 
   const { user } = useAuth();
 
   return (
-    <header className="fixed inset-x-0 top-0 z-30 flex items-center justify-between gap-2 border-b border-white/5 bg-[#030014]/75 px-3 py-3 backdrop-blur-md transition-all sm:px-6 md:px-10 md:py-4">
-      <div className="flex min-w-0 items-center overflow-hidden">
+    <header className="fixed inset-x-0 top-0 z-30 flex items-center justify-between gap-4 border-b md:gap-8 border-white/5 bg-[#030014]/75 px-3 py-3 backdrop-blur-md transition-all sm:px-6 md:px-10 md:py-4">
+      <div className="flex min-w-0 shrink items-center overflow-hidden">
         <Logo variant="responsive" size="sm" href="/" className="inline-flex" />
       </div>
 
-      <nav aria-label="Primary" className="hidden items-center gap-8 lg:flex">
+      <nav aria-label="Primary" className="hidden shrink-0 items-center gap-6 lg:flex xl:gap-8">
         <Link
           to="/services"
           className="font-mono text-xs tracking-widest text-white/50 transition-colors hover:text-[#FF3333]"
