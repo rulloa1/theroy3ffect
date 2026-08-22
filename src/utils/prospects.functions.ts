@@ -17,6 +17,13 @@ async function assertAdmin(context: {
   if (!data) throw new Error("Forbidden");
 }
 
+export interface ProspectVariant {
+  key: "A" | "B";
+  subject: string;
+  opening: string;
+  rationale: string;
+}
+
 export interface Prospect {
   id: string;
   business_name: string;
@@ -40,10 +47,17 @@ export interface Prospect {
   status: string;
   notes: string | null;
   created_at: string;
+  variants: ProspectVariant[];
+  sent_variant: string | null;
+  lead_id: string | null;
+  replied_at: string | null;
+  booked_at: string | null;
+  won_at: string | null;
 }
 
 const SELECT =
-  "id, business_name, industry, category, address, phone, website, contact_email, has_website, pain_score, signals, scanned_at, report_token, report_viewed_at, draft_subject, draft_body, draft_rationale, draft_status, contacted_at, status, notes, created_at";
+  "id, business_name, industry, category, address, phone, website, contact_email, has_website, pain_score, signals, scanned_at, report_token, report_viewed_at, draft_subject, draft_body, draft_rationale, draft_status, contacted_at, status, notes, created_at, variants, sent_variant, lead_id, replied_at, booked_at, won_at";
+
 
 export const adminListProspects = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
