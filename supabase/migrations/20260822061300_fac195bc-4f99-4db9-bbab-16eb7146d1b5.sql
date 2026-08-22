@@ -1,0 +1,2 @@
+INSERT INTO public.voice_leads (full_name, company_name, email, project_type, primary_goal, timeline, budget_range, notes, consent_to_follow_up, stage, source, created_at)
+VALUES ('Smoke Test', 'Test Co', 'smoke-test@example.com', 'website', 'Get more Houston leads from the site', '6 weeks', '5k_10k', 'Current site is slow and has no clear call to action.', true, 'new', 'smoke_test', now() - interval '5 hours');
