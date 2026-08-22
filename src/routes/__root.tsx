@@ -12,6 +12,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AuthProvider } from "@/hooks/useAuth";
+import { FirebaseProvider } from "@/integrations/firebase";
 import { SiteFooter } from "@/components/SiteFooter";
 import { VoiceConcierge } from "@/components/VoiceConcierge";
 
@@ -231,11 +232,12 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-        <Outlet />
-        <SiteFooter />
-        <VoiceConcierge />
-
+        <FirebaseProvider>
+          {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+          <Outlet />
+          <SiteFooter />
+          <VoiceConcierge />
+        </FirebaseProvider>
       </AuthProvider>
     </QueryClientProvider>
   );
