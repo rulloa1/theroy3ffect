@@ -11,6 +11,7 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { captureClientError, initSentryClient } from "../lib/sentry/client";
 import { AuthProvider } from "@/hooks/useAuth";
 import { FirebaseProvider } from "@/integrations/firebase/provider";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -44,6 +45,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   const router = useRouter();
   useEffect(() => {
     reportLovableError(error, { boundary: "tanstack_root_error_component" });
+    captureClientError(error, { boundary: "tanstack_root_error_component" });
   }, [error]);
 
   return (
@@ -228,6 +230,11 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+
+  // Boot error tracking after hydration; no-ops when no DSN is configured.
+  useEffect(() => {
+    void initSentryClient();
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
