@@ -3,6 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import {
+  Bot,
   Briefcase,
   DollarSign,
   Eye,
@@ -44,12 +45,22 @@ import { AdminProposalsView } from "@/components/admin/AdminProposalsView";
 import { AdminPortfolioCMS } from "@/components/admin/AdminPortfolioCMS";
 import { AdminFinancialsView } from "@/components/admin/AdminFinancialsView";
 import { AdminPipelineView } from "@/components/admin/AdminPipelineView";
+import { AdminAutopilotView } from "@/components/admin/AdminAutopilotView";
 import {
   adminListPipeline,
   adminUpdateLeadStage,
   adminUpdateBookingStatus,
   adminResolveFollowup,
 } from "@/utils/crm.functions";
+import {
+  adminGetAutopilot,
+  adminRunAutopilot,
+  adminSetAutopilotStatus,
+  adminApproveDraft,
+  adminDismissDraft,
+  adminRetryDraft,
+  adminUpdateDraft,
+} from "@/utils/automation.functions";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
@@ -87,6 +98,7 @@ const date = (value: string | null) =>
 type MainView =
   | "PROJECTS"
   | "PIPELINE"
+  | "AUTOPILOT"
   | "INQUIRIES"
   | "PROPOSALS"
   | "PORTFOLIO"
@@ -111,6 +123,13 @@ function AdminPage() {
   const updateLeadStage = useServerFn(adminUpdateLeadStage);
   const updateBookingStatus = useServerFn(adminUpdateBookingStatus);
   const resolveFollowup = useServerFn(adminResolveFollowup);
+  const getAutopilot = useServerFn(adminGetAutopilot);
+  const runAutopilot = useServerFn(adminRunAutopilot);
+  const setAutopilotStatus = useServerFn(adminSetAutopilotStatus);
+  const approveDraftFn = useServerFn(adminApproveDraft);
+  const dismissDraftFn = useServerFn(adminDismissDraft);
+  const retryDraftFn = useServerFn(adminRetryDraft);
+  const updateDraftFn = useServerFn(adminUpdateDraft);
 
   const [currentView, setCurrentView] = useState<MainView>("PROJECTS");
   const [filterTab, setFilterTab] = useState<FilterTab>("ALL");
@@ -196,6 +215,91 @@ function AdminPage() {
     queryFn: () => listPipeline(),
     retry: false,
   });
+
+  const { data: autopilotData } = useQuery({
+    queryKey: ["admin-autopilot"],
+    queryFn: () => getAutopilot(),
+    retry: false,
+  });
+
+  const refreshAutopilot = () => queryClient.invalidateQueries({ queryKey: ["admin-autopilot"] });
+
+  const runAutopilotScan = async () => {
+    setBusy("autopilot-run");
+    try {
+      const result = await runAutopilot();
+      if (result.status === "paused") toast.error(result.message ?? "Autopilot paused");
+      else if (result.status === "skipped_locked") toast.info("A scan is already running.");
+      else toast.success(`Scan complete — ${result.drafted} new draft(s).`);
+      await refreshAutopilot();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Scan failed");
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const toggleAutopilot = async (paused: boolean) => {
+    setBusy("autopilot-toggle");
+    try {
+      await setAutopilotStatus({ data: { paused } });
+      toast.success(paused ? "Autopilot paused" : "Autopilot resumed");
+      await refreshAutopilot();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not update autopilot");
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const approveDraft = async (id: string) => {
+    setBusy(id);
+    try {
+      const result = await approveDraftFn({ data: { id } });
+      if (result.ok) toast.success("Follow-up sent.");
+      else toast.error(result.message ?? "Not sent");
+      await refreshAutopilot();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Send failed");
+      await refreshAutopilot();
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const dismissDraft = async (id: string) => {
+    setBusy(id);
+    try {
+      await dismissDraftFn({ data: { id } });
+      await refreshAutopilot();
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const retryDraft = async (id: string) => {
+    setBusy(id);
+    try {
+      await retryDraftFn({ data: { id } });
+      await refreshAutopilot();
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const saveDraft = async (id: string, subject: string, body: string) => {
+    setBusy(id);
+    try {
+      await updateDraftFn({ data: { id, subject, body } });
+      toast.success("Draft updated.");
+      await refreshAutopilot();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not save draft");
+    } finally {
+      setBusy(null);
+    }
+  };
+
 
   const { data: portfolioData } = useQuery({
     queryKey: ["admin-portfolio"],
@@ -500,6 +604,11 @@ function AdminPage() {
               icon: Users,
             },
             {
+              id: "AUTOPILOT",
+              label: `FOLLOW-UP AUTOPILOT (${(autopilotData?.drafts ?? []).filter((d) => d.status === "draft").length})`,
+              icon: Bot,
+            },
+            {
               id: "INQUIRIES",
               label: `CLIENT LEADS (${unreadInquiriesCount})`,
               icon: MessageSquare,
@@ -553,6 +662,20 @@ function AdminPage() {
               onCreateProposalFromBrief={handleOpenProposalFromBrief}
               busy={busy}
               money={money}
+              date={date}
+            />
+          )}
+
+          {currentView === "AUTOPILOT" && (
+            <AdminAutopilotView
+              state={autopilotData}
+              busy={busy}
+              onRun={runAutopilotScan}
+              onTogglePause={toggleAutopilot}
+              onApprove={approveDraft}
+              onDismiss={dismissDraft}
+              onRetry={retryDraft}
+              onSave={saveDraft}
               date={date}
             />
           )}

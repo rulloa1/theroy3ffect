@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      automation_jobs: {
+        Row: {
+          consecutive_failures: number
+          items_processed: number
+          job_key: string
+          last_error: string | null
+          last_run_at: string | null
+          lease_expires_at: string | null
+          lease_owner: string | null
+          paused_reason: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          consecutive_failures?: number
+          items_processed?: number
+          job_key: string
+          last_error?: string | null
+          last_run_at?: string | null
+          lease_expires_at?: string | null
+          lease_owner?: string | null
+          paused_reason?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          consecutive_failures?: number
+          items_processed?: number
+          job_key?: string
+          last_error?: string | null
+          last_run_at?: string | null
+          lease_expires_at?: string | null
+          lease_owner?: string | null
+          paused_reason?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       contact_inquiries: {
         Row: {
           created_at: string
@@ -43,6 +82,80 @@ export type Database = {
           status?: string
         }
         Relationships: []
+      }
+      followup_drafts: {
+        Row: {
+          body: string
+          created_at: string
+          cta_label: string | null
+          cta_url: string | null
+          error_message: string | null
+          id: string
+          lead_id: string | null
+          model: string | null
+          playbook: string
+          rationale: string | null
+          recipient_email: string
+          recipient_name: string
+          sent_at: string | null
+          source_id: string
+          source_table: string
+          status: string
+          subject: string
+          trigger_key: string
+          updated_at: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          cta_label?: string | null
+          cta_url?: string | null
+          error_message?: string | null
+          id?: string
+          lead_id?: string | null
+          model?: string | null
+          playbook: string
+          rationale?: string | null
+          recipient_email: string
+          recipient_name: string
+          sent_at?: string | null
+          source_id: string
+          source_table: string
+          status?: string
+          subject: string
+          trigger_key: string
+          updated_at?: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          cta_label?: string | null
+          cta_url?: string | null
+          error_message?: string | null
+          id?: string
+          lead_id?: string | null
+          model?: string | null
+          playbook?: string
+          rationale?: string | null
+          recipient_email?: string
+          recipient_name?: string
+          sent_at?: string | null
+          source_id?: string
+          source_table?: string
+          status?: string
+          subject?: string
+          trigger_key?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "followup_drafts_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "voice_leads"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       orders: {
         Row: {
@@ -781,7 +894,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      automation_cron_token: { Args: never; Returns: string }
     }
     Enums: {
       app_role: "admin" | "client"
