@@ -8,6 +8,7 @@ import path from "node:path";
 import { loadEnv } from "vite";
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 import { mcpPlugin } from "@lovable.dev/mcp-js/stacks/tanstack/vite";
+import { sentryVitePlugin } from "@sentry/vite-plugin";
 
 // Load non-VITE_ env vars into process.env for server-side code only.
 // These are NOT injected into the client bundle.
@@ -21,7 +22,31 @@ export default defineConfig({
     server: { entry: "server" },
   },
   vite: {
-    plugins: [mcpPlugin()],
+    build: {
+      // Needed for readable Sentry stack traces; maps are uploaded and then
+      // deleted by @sentry/vite-plugin in CI so they are never served publicly.
+      sourcemap: true,
+    },
+    plugins: [
+      mcpPlugin(),
+      // Only active in CI, where SENTRY_AUTH_TOKEN is provided.
+      ...(process.env["SENTRY_AUTH_TOKEN"] &&
+      process.env["SENTRY_ORG"] &&
+      process.env["SENTRY_PROJECT"]
+        ? [
+            sentryVitePlugin({
+              org: process.env["SENTRY_ORG"],
+              project: process.env["SENTRY_PROJECT"],
+              authToken: process.env["SENTRY_AUTH_TOKEN"],
+              ...(process.env["SENTRY_RELEASE"]
+                ? { release: { name: process.env["SENTRY_RELEASE"] } }
+                : {}),
+              sourcemaps: { filesToDeleteAfterUpload: ["**/*.map"] },
+              telemetry: false,
+            }),
+          ]
+        : []),
+    ],
     resolve: {
       alias: {
         "entities/lib/decode.js": path.resolve(

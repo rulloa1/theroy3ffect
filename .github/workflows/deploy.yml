@@ -1,0 +1,87 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - staging # -> staging worker
+      - main # -> production worker
+  workflow_dispatch:
+    inputs:
+      target:
+        description: Environment to deploy
+        required: true
+        default: staging
+        type: choice
+        options: [staging, production]
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Build and deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    environment:
+      name: ${{ inputs.target || (github.ref == 'refs/heads/main' && 'production' || 'staging') }}
+    env:
+      TARGET_ENV: ${{ inputs.target || (github.ref == 'refs/heads/main' && 'production' || 'staging') }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # full history so Sentry can associate commits
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      # The repo carries pre-existing formatting/lint debt, so lint reports but
+      # does not block. Typecheck and tests are the hard gates.
+      - name: Lint
+        continue-on-error: true
+        run: bun run lint
+
+      - name: Typecheck
+        run: bunx tsc --noEmit
+
+      - name: Unit tests
+        run: bun run test
+
+      - name: Build (${{ env.TARGET_ENV }})
+        run: bun run build -- --mode $TARGET_ENV
+        env:
+          VITE_APP_ENV: ${{ env.TARGET_ENV }}
+          VITE_APP_RELEASE: ${{ github.sha }}
+          VITE_SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+          # Source map upload happens inside the build via @sentry/vite-plugin
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+          SENTRY_RELEASE: ${{ github.sha }}
+
+      - name: Deploy to Cloudflare Workers
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy --env ${{ env.TARGET_ENV }}
+          secrets: |
+            SENTRY_DSN
+            APP_RELEASE
+        env:
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+          APP_RELEASE: ${{ github.sha }}
+
+      - name: Mark Sentry release as deployed
+        if: ${{ env.SENTRY_AUTH_TOKEN != '' }}
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+        run: |
+          bunx @sentry/cli releases set-commits "${{ github.sha }}" --auto || true
+          bunx @sentry/cli releases deploys "${{ github.sha }}" new -e "$TARGET_ENV" || true
