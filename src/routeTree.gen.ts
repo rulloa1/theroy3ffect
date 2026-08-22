@@ -30,6 +30,7 @@ import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[
 import { Route as ApiPublicBriefIntakeRouteImport } from './routes/api/public/brief-intake'
 import { Route as ApiPublicContactRouteImport } from './routes/api/public/contact'
 import { Route as ApiPublicVapiRouteImport } from './routes/api/public/vapi'
+import { Route as ApiPublicAutomationFollowupsRouteImport } from './routes/api/public/automation/followups'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 
@@ -140,6 +141,12 @@ const ApiPublicVapiRoute = ApiPublicVapiRouteImport.update({
   path: '/api/public/vapi',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicAutomationFollowupsRoute =
+  ApiPublicAutomationFollowupsRouteImport.update({
+    id: '/api/public/automation/followups',
+    path: '/api/public/automation/followups',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicPaymentsWebhookRoute =
   ApiPublicPaymentsWebhookRouteImport.update({
     id: '/api/public/payments/webhook',
@@ -174,6 +181,7 @@ export interface FileRoutesByFullPath {
   '/api/public/brief-intake': typeof ApiPublicBriefIntakeRoute
   '/api/public/contact': typeof ApiPublicContactRoute
   '/api/public/vapi': typeof ApiPublicVapiRoute
+  '/api/public/automation/followups': typeof ApiPublicAutomationFollowupsRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
@@ -198,6 +206,7 @@ export interface FileRoutesByTo {
   '/api/public/brief-intake': typeof ApiPublicBriefIntakeRoute
   '/api/public/contact': typeof ApiPublicContactRoute
   '/api/public/vapi': typeof ApiPublicVapiRoute
+  '/api/public/automation/followups': typeof ApiPublicAutomationFollowupsRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
@@ -224,6 +233,7 @@ export interface FileRoutesById {
   '/api/public/brief-intake': typeof ApiPublicBriefIntakeRoute
   '/api/public/contact': typeof ApiPublicContactRoute
   '/api/public/vapi': typeof ApiPublicVapiRoute
+  '/api/public/automation/followups': typeof ApiPublicAutomationFollowupsRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
@@ -250,6 +260,7 @@ export interface FileRouteTypes {
     | '/api/public/brief-intake'
     | '/api/public/contact'
     | '/api/public/vapi'
+    | '/api/public/automation/followups'
     | '/api/public/payments/webhook'
     | '/lovable/email/transactional/preview'
   fileRoutesByTo: FileRoutesByTo
@@ -274,6 +285,7 @@ export interface FileRouteTypes {
     | '/api/public/brief-intake'
     | '/api/public/contact'
     | '/api/public/vapi'
+    | '/api/public/automation/followups'
     | '/api/public/payments/webhook'
     | '/lovable/email/transactional/preview'
   id:
@@ -299,6 +311,7 @@ export interface FileRouteTypes {
     | '/api/public/brief-intake'
     | '/api/public/contact'
     | '/api/public/vapi'
+    | '/api/public/automation/followups'
     | '/api/public/payments/webhook'
     | '/lovable/email/transactional/preview'
   fileRoutesById: FileRoutesById
@@ -323,6 +336,7 @@ export interface RootRouteChildren {
   ApiPublicBriefIntakeRoute: typeof ApiPublicBriefIntakeRoute
   ApiPublicContactRoute: typeof ApiPublicContactRoute
   ApiPublicVapiRoute: typeof ApiPublicVapiRoute
+  ApiPublicAutomationFollowupsRoute: typeof ApiPublicAutomationFollowupsRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
   LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
 }
@@ -476,6 +490,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicVapiRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/automation/followups': {
+      id: '/api/public/automation/followups'
+      path: '/api/public/automation/followups'
+      fullPath: '/api/public/automation/followups'
+      preLoaderRoute: typeof ApiPublicAutomationFollowupsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/payments/webhook': {
       id: '/api/public/payments/webhook'
       path: '/api/public/payments/webhook'
@@ -527,6 +548,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicBriefIntakeRoute: ApiPublicBriefIntakeRoute,
   ApiPublicContactRoute: ApiPublicContactRoute,
   ApiPublicVapiRoute: ApiPublicVapiRoute,
+  ApiPublicAutomationFollowupsRoute: ApiPublicAutomationFollowupsRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
   LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
 }
