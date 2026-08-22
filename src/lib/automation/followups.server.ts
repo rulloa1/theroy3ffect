@@ -181,22 +181,50 @@ export async function findCandidates(limit = BATCH_SIZE): Promise<Candidate[]> {
   return out.filter((c) => !seen.has(c.triggerKey)).slice(0, limit);
 }
 
-const DraftSchema = z.object({
-  subject: z.string(),
-  body: z.string(),
-  rationale: z.string(),
-});
-
 const SYSTEM = `You write follow-up emails for Rory Ulloa, creative director and no-code developer at The Roy Effect (theroyeffect.com), a Houston-based studio building brands and websites.
 
 Voice: direct, warm, confident, zero fluff. Short paragraphs. No emoji, no exclamation marks, no "I hope this email finds you well", no corporate filler.
-Rules: address the person by first name, reference the specific details you are given (never invent facts, prices, dates, or promises), keep the body under 130 words, end with one clear next step. Do not include a subject line, greeting sign-off block, or the CTA link inside the body — the CTA button is added separately. Sign-off is handled by the template.`;
+Rules: address the person by first name, reference the specific details you are given (never invent facts, prices, dates, or promises), keep the body under 130 words, end with one clear next step. Do not include a subject line, greeting sign-off block, or the CTA link inside the body — the CTA button is added separately. Sign-off is handled by the template.
+
+Reply with ONLY a JSON object using exactly these keys: {"subject": string, "body": string, "rationale": string}. No markdown fence, no commentary.`;
 
 export interface GeneratedDraft {
   subject: string;
   body: string;
   rationale: string;
   model: string;
+}
+
+const pick = (obj: Record<string, unknown>, keys: string[]): string => {
+  for (const key of keys) {
+    const value = obj[key];
+    if (typeof value === "string" && value.trim()) return value.trim();
+  }
+  return "";
+};
+
+/** Tolerant parse: models vary on key names, fences, and array wrappers. */
+export function parseDraftResponse(raw: string): Omit<GeneratedDraft, "model"> {
+  const cleaned = raw
+    .trim()
+    .replace(/^```(?:json)?/i, "")
+    .replace(/```$/, "")
+    .trim();
+  const start = cleaned.search(/[[{]/);
+  if (start === -1) throw new Error("AI returned no JSON");
+  let parsed: unknown = JSON.parse(cleaned.slice(start));
+  if (Array.isArray(parsed)) parsed = parsed[0];
+  if (!parsed || typeof parsed !== "object") throw new Error("AI returned no draft object");
+  const obj = parsed as Record<string, unknown>;
+  const subject = pick(obj, ["subject", "subjectLine", "subject_line", "title", "heading"]);
+  const body = pick(obj, ["body", "emailBody", "email_body", "message", "content"]);
+  const rationale = pick(obj, ["rationale", "reason", "why", "reasoning"]);
+  if (!subject || !body) throw new Error("AI draft missing subject or body");
+  return {
+    subject: subject.slice(0, 140),
+    body: body.slice(0, 4000),
+    rationale: rationale.slice(0, 500),
+  };
 }
 
 /** Calls the AI gateway to draft one follow-up. Throws AiGatewayBlockedError on 402/403. */
@@ -207,10 +235,9 @@ export async function generateDraft(candidate: Candidate): Promise<GeneratedDraf
   const gateway = createLovableAiGatewayProvider(apiKey);
 
   try {
-    const { output } = await generateText({
+    const result = streamText({
       model: gateway(MODEL),
       system: SYSTEM,
-      output: Output.object({ schema: DraftSchema }),
       prompt: [
         `Situation: ${play.label}.`,
         `Objective: ${play.goal}`,
@@ -220,12 +247,8 @@ export async function generateDraft(candidate: Candidate): Promise<GeneratedDraf
         `Write the subject line (under 60 characters, no colon-heavy clickbait), the email body, and a one-sentence rationale explaining to Rory why this send makes sense now.`,
       ].join("\n"),
     });
-    return {
-      subject: output.subject.slice(0, 140),
-      body: output.body.slice(0, 4000),
-      rationale: output.rationale.slice(0, 500),
-      model: MODEL,
-    };
+    const text = await result.text;
+    return { ...parseDraftResponse(text), model: MODEL };
   } catch (error) {
     const status = statusFromAiError(error);
     if (status === 402 || status === 403) {
