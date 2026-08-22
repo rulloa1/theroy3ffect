@@ -12,6 +12,7 @@ import {
   MessageSquare,
   Users,
   X,
+  Radar,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
@@ -46,6 +47,16 @@ import { AdminPortfolioCMS } from "@/components/admin/AdminPortfolioCMS";
 import { AdminFinancialsView } from "@/components/admin/AdminFinancialsView";
 import { AdminPipelineView } from "@/components/admin/AdminPipelineView";
 import { AdminAutopilotView } from "@/components/admin/AdminAutopilotView";
+import { AdminProspectsView } from "@/components/admin/AdminProspectsView";
+import {
+  adminListProspects,
+  adminFindProspects,
+  adminScanPending,
+  adminDraftOutreach,
+  adminSaveProspectDraft,
+  adminSendOutreach,
+  adminUpdateProspect,
+} from "@/utils/prospects.functions";
 import {
   adminListPipeline,
   adminUpdateLeadStage,
@@ -99,6 +110,7 @@ type MainView =
   | "PROJECTS"
   | "PIPELINE"
   | "AUTOPILOT"
+  | "PROSPECTS"
   | "INQUIRIES"
   | "PROPOSALS"
   | "PORTFOLIO"
@@ -130,6 +142,13 @@ function AdminPage() {
   const dismissDraftFn = useServerFn(adminDismissDraft);
   const retryDraftFn = useServerFn(adminRetryDraft);
   const updateDraftFn = useServerFn(adminUpdateDraft);
+  const listProspects = useServerFn(adminListProspects);
+  const findProspects = useServerFn(adminFindProspects);
+  const scanPendingFn = useServerFn(adminScanPending);
+  const draftOutreachFn = useServerFn(adminDraftOutreach);
+  const saveProspectDraftFn = useServerFn(adminSaveProspectDraft);
+  const sendOutreachFn = useServerFn(adminSendOutreach);
+  const updateProspectFn = useServerFn(adminUpdateProspect);
 
   const [currentView, setCurrentView] = useState<MainView>("PROJECTS");
   const [filterTab, setFilterTab] = useState<FilterTab>("ALL");
@@ -300,6 +319,101 @@ function AdminPage() {
     }
   };
 
+
+  const { data: prospectsData } = useQuery({
+    queryKey: ["admin-prospects"],
+    queryFn: () => listProspects(),
+    retry: false,
+  });
+
+  const refreshProspects = () => queryClient.invalidateQueries({ queryKey: ["admin-prospects"] });
+
+  const findProspectsFor = async (industry: string) => {
+    setBusy("find");
+    try {
+      const result = await findProspects({ data: { industry } });
+      toast.success(
+        `Found ${result.found} businesses — ${result.added} new, ${result.scanned} sites checked.`,
+      );
+      await refreshProspects();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Search failed");
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const scanPendingSites = async () => {
+    setBusy("scan");
+    try {
+      const { scanned } = await scanPendingFn();
+      toast.success(`Checked ${scanned} more site(s).`);
+      await refreshProspects();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Site check failed");
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const draftProspectEmail = async (id: string) => {
+    setBusy(`draft-${id}`);
+    try {
+      await draftOutreachFn({ data: { id } });
+      toast.success("Draft ready for your review.");
+      await refreshProspects();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not write the draft");
+      await refreshProspects();
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const saveProspectDraft = async (
+    id: string,
+    subject: string,
+    body: string,
+    contactEmail: string | null,
+  ) => {
+    setBusy(`save-${id}`);
+    try {
+      await saveProspectDraftFn({ data: { id, subject, body, contactEmail } });
+      toast.success("Draft saved.");
+      await refreshProspects();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not save the draft");
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const sendProspectEmail = async (id: string) => {
+    setBusy(`send-${id}`);
+    try {
+      const result = await sendOutreachFn({ data: { id } });
+      if (result.ok) toast.success("Email sent.");
+      else toast.error(`Not delivered: ${result.reason}`);
+      await refreshProspects();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Send failed");
+      await refreshProspects();
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const updateProspect = async (
+    id: string,
+    patch: { status?: string; contactEmail?: string | null },
+  ) => {
+    try {
+      await updateProspectFn({ data: { id, ...patch } as never });
+      await refreshProspects();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not update prospect");
+    }
+  };
 
   const { data: portfolioData } = useQuery({
     queryKey: ["admin-portfolio"],
@@ -609,6 +723,11 @@ function AdminPage() {
               icon: Bot,
             },
             {
+              id: "PROSPECTS",
+              label: `PROSPECT FINDER (${(prospectsData?.prospects ?? []).filter((p) => p.pain_score >= 20 && p.status === "new").length})`,
+              icon: Radar,
+            },
+            {
               id: "INQUIRIES",
               label: `CLIENT LEADS (${unreadInquiriesCount})`,
               icon: MessageSquare,
@@ -676,6 +795,20 @@ function AdminPage() {
               onDismiss={dismissDraft}
               onRetry={retryDraft}
               onSave={saveDraft}
+              date={date}
+            />
+          )}
+
+          {currentView === "PROSPECTS" && (
+            <AdminProspectsView
+              prospects={prospectsData?.prospects ?? []}
+              busy={busy}
+              onFind={findProspectsFor}
+              onScanPending={scanPendingSites}
+              onDraft={draftProspectEmail}
+              onSaveDraft={saveProspectDraft}
+              onSend={sendProspectEmail}
+              onUpdate={updateProspect}
               date={date}
             />
           )}

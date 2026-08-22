@@ -400,6 +400,102 @@ export type Database = {
         }
         Relationships: []
       }
+      prospects: {
+        Row: {
+          address: string | null
+          business_name: string
+          category: string | null
+          city: string
+          contact_email: string | null
+          contacted_at: string | null
+          created_at: string
+          draft_body: string | null
+          draft_rationale: string | null
+          draft_status: string
+          draft_subject: string | null
+          has_website: boolean
+          id: string
+          industry: string
+          lat: number | null
+          lon: number | null
+          notes: string | null
+          pain_score: number
+          phone: string | null
+          report_token: string
+          report_viewed_at: string | null
+          scan_data: Json
+          scanned_at: string | null
+          signals: Json
+          source: string
+          source_ref: string | null
+          status: string
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          address?: string | null
+          business_name: string
+          category?: string | null
+          city?: string
+          contact_email?: string | null
+          contacted_at?: string | null
+          created_at?: string
+          draft_body?: string | null
+          draft_rationale?: string | null
+          draft_status?: string
+          draft_subject?: string | null
+          has_website?: boolean
+          id?: string
+          industry: string
+          lat?: number | null
+          lon?: number | null
+          notes?: string | null
+          pain_score?: number
+          phone?: string | null
+          report_token?: string
+          report_viewed_at?: string | null
+          scan_data?: Json
+          scanned_at?: string | null
+          signals?: Json
+          source?: string
+          source_ref?: string | null
+          status?: string
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          address?: string | null
+          business_name?: string
+          category?: string | null
+          city?: string
+          contact_email?: string | null
+          contacted_at?: string | null
+          created_at?: string
+          draft_body?: string | null
+          draft_rationale?: string | null
+          draft_status?: string
+          draft_subject?: string | null
+          has_website?: boolean
+          id?: string
+          industry?: string
+          lat?: number | null
+          lon?: number | null
+          notes?: string | null
+          pain_score?: number
+          phone?: string | null
+          report_token?: string
+          report_viewed_at?: string | null
+          scan_data?: Json
+          scanned_at?: string | null
+          signals?: Json
+          source?: string
+          source_ref?: string | null
+          status?: string
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
       retainer_subscriptions: {
         Row: {
           cancel_at_period_end: boolean

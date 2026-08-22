@@ -26,6 +26,7 @@ import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as CheckoutReturnRouteImport } from './routes/checkout.return'
 import { Route as ProposalTokenRouteImport } from './routes/proposal.$token'
+import { Route as SiteReportTokenRouteImport } from './routes/site-report.$token'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 import { Route as ApiPublicBriefIntakeRouteImport } from './routes/api/public/brief-intake'
 import { Route as ApiPublicContactRouteImport } from './routes/api/public/contact'
@@ -120,6 +121,11 @@ const ProposalTokenRoute = ProposalTokenRouteImport.update({
   path: '/proposal/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SiteReportTokenRoute = SiteReportTokenRouteImport.update({
+  id: '/site-report/$token',
+  path: '/site-report/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const Char91DotmcpChar93InvokeToolToolRoute =
   Char91DotmcpChar93InvokeToolToolRouteImport.update({
     id: '/.mcp/invoke-tool/$tool',
@@ -177,6 +183,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AuthenticatedAdminRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/proposal/$token': typeof ProposalTokenRoute
+  '/site-report/$token': typeof SiteReportTokenRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/api/public/brief-intake': typeof ApiPublicBriefIntakeRoute
   '/api/public/contact': typeof ApiPublicContactRoute
@@ -202,6 +209,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AuthenticatedAdminRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/proposal/$token': typeof ProposalTokenRoute
+  '/site-report/$token': typeof SiteReportTokenRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/api/public/brief-intake': typeof ApiPublicBriefIntakeRoute
   '/api/public/contact': typeof ApiPublicContactRoute
@@ -229,6 +237,7 @@ export interface FileRoutesById {
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/proposal/$token': typeof ProposalTokenRoute
+  '/site-report/$token': typeof SiteReportTokenRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/api/public/brief-intake': typeof ApiPublicBriefIntakeRoute
   '/api/public/contact': typeof ApiPublicContactRoute
@@ -256,6 +265,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/checkout/return'
     | '/proposal/$token'
+    | '/site-report/$token'
     | '/.mcp/invoke-tool/$tool'
     | '/api/public/brief-intake'
     | '/api/public/contact'
@@ -281,6 +291,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/checkout/return'
     | '/proposal/$token'
+    | '/site-report/$token'
     | '/.mcp/invoke-tool/$tool'
     | '/api/public/brief-intake'
     | '/api/public/contact'
@@ -307,6 +318,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin'
     | '/checkout/return'
     | '/proposal/$token'
+    | '/site-report/$token'
     | '/.mcp/invoke-tool/$tool'
     | '/api/public/brief-intake'
     | '/api/public/contact'
@@ -332,6 +344,7 @@ export interface RootRouteChildren {
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   CheckoutReturnRoute: typeof CheckoutReturnRoute
   ProposalTokenRoute: typeof ProposalTokenRoute
+  SiteReportTokenRoute: typeof SiteReportTokenRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
   ApiPublicBriefIntakeRoute: typeof ApiPublicBriefIntakeRoute
   ApiPublicContactRoute: typeof ApiPublicContactRoute
@@ -462,6 +475,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProposalTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/site-report/$token': {
+      id: '/site-report/$token'
+      path: '/site-report/$token'
+      fullPath: '/site-report/$token'
+      preLoaderRoute: typeof SiteReportTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/.mcp/invoke-tool/$tool': {
       id: '/.mcp/invoke-tool/$tool'
       path: '/.mcp/invoke-tool/$tool'
@@ -544,6 +564,7 @@ const rootRouteChildren: RootRouteChildren = {
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
   CheckoutReturnRoute: CheckoutReturnRoute,
   ProposalTokenRoute: ProposalTokenRoute,
+  SiteReportTokenRoute: SiteReportTokenRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
   ApiPublicBriefIntakeRoute: ApiPublicBriefIntakeRoute,
   ApiPublicContactRoute: ApiPublicContactRoute,
