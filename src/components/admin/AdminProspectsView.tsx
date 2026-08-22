@@ -289,6 +289,45 @@ export function AdminProspectsView({
                 ))}
               </ul>
 
+              {(p.variants ?? []).length > 0 && (
+                <div className="mt-4 grid gap-3 md:grid-cols-2">
+                  {(p.variants ?? []).map((v) => {
+                    const active = p.sent_variant === v.key;
+                    return (
+                      <div
+                        key={v.key}
+                        className={`border p-3 ${
+                          active ? "border-[#FF3333]/60 bg-[#FF3333]/[0.06]" : "border-white/10 bg-black/40"
+                        }`}
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="font-mono text-[10px] tracking-widest text-white/50">
+                            VARIANT {v.key}
+                          </span>
+                          <button
+                            type="button"
+                            disabled={busy !== null || p.draft_status === "sent"}
+                            onClick={() => onSelectVariant(p.id, v.key)}
+                            className={`px-3 py-1 font-mono text-[10px] font-bold tracking-widest disabled:opacity-40 ${
+                              active ? "bg-[#FF3333] text-black" : "border border-white/20 text-white/70"
+                            }`}
+                          >
+                            {active ? "IN USE" : "USE THIS"}
+                          </button>
+                        </div>
+                        <p className="mt-2 font-mono text-xs font-bold text-white">{v.subject}</p>
+                        <p className="mt-1 font-mono text-xs leading-relaxed text-white/60">{v.opening}</p>
+                        {v.rationale && (
+                          <p className="mt-2 font-mono text-[10px] italic text-white/35">{v.rationale}</p>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+
+
               {(p.draft_body || editing) && (
                 <div className="mt-4 border-t border-white/10 pt-4">
                   {p.draft_rationale && !editing && (
