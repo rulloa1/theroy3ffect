@@ -100,9 +100,7 @@ export async function captureServerException(
   const dsn = parseDsn();
   if (!dsn) return;
 
-  const environment = normalizeEnvironment(
-    process.env["APP_ENV"] ?? process.env["VITE_APP_ENV"],
-  );
+  const environment = normalizeEnvironment(process.env["APP_ENV"] ?? process.env["VITE_APP_ENV"]);
   const release = process.env["APP_RELEASE"] ?? process.env["VITE_APP_RELEASE"];
   const eventId = crypto.randomUUID().replace(/-/g, "");
   const sentAt = new Date().toISOString();

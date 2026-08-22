@@ -58,10 +58,7 @@ export function initSentryClient(): Promise<SentryModule | null> {
 }
 
 /** Report a handled/boundary error from the browser. */
-export function captureClientError(
-  error: unknown,
-  context?: Record<string, unknown>,
-): void {
+export function captureClientError(error: unknown, context?: Record<string, unknown>): void {
   if (!isSentryClientEnabled()) return;
   void initSentryClient().then((Sentry) => {
     Sentry?.captureException(error, context ? { extra: context } : undefined);
