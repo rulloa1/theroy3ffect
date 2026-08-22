@@ -154,6 +154,11 @@ function AdminPage() {
   const saveProspectDraftFn = useServerFn(adminSaveProspectDraft);
   const sendOutreachFn = useServerFn(adminSendOutreach);
   const updateProspectFn = useServerFn(adminUpdateProspect);
+  const generateVariantsFn = useServerFn(adminGenerateVariants);
+  const selectVariantFn = useServerFn(adminSelectVariant);
+  const syncProspectCrmFn = useServerFn(adminSyncProspectCrm);
+  const prospectAnalyticsFn = useServerFn(adminProspectAnalytics);
+
 
   const [currentView, setCurrentView] = useState<MainView>("PROJECTS");
   const [filterTab, setFilterTab] = useState<FilterTab>("ALL");
