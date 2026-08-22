@@ -32,6 +32,7 @@ import { Route as ApiPublicBriefIntakeRouteImport } from './routes/api/public/br
 import { Route as ApiPublicContactRouteImport } from './routes/api/public/contact'
 import { Route as ApiPublicVapiRouteImport } from './routes/api/public/vapi'
 import { Route as ApiPublicAutomationFollowupsRouteImport } from './routes/api/public/automation/followups'
+import { Route as ApiPublicAutomationProspectSyncRouteImport } from './routes/api/public/automation/prospect-sync'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 
@@ -153,6 +154,12 @@ const ApiPublicAutomationFollowupsRoute =
     path: '/api/public/automation/followups',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicAutomationProspectSyncRoute =
+  ApiPublicAutomationProspectSyncRouteImport.update({
+    id: '/api/public/automation/prospect-sync',
+    path: '/api/public/automation/prospect-sync',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicPaymentsWebhookRoute =
   ApiPublicPaymentsWebhookRouteImport.update({
     id: '/api/public/payments/webhook',
@@ -189,6 +196,7 @@ export interface FileRoutesByFullPath {
   '/api/public/contact': typeof ApiPublicContactRoute
   '/api/public/vapi': typeof ApiPublicVapiRoute
   '/api/public/automation/followups': typeof ApiPublicAutomationFollowupsRoute
+  '/api/public/automation/prospect-sync': typeof ApiPublicAutomationProspectSyncRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
@@ -215,6 +223,7 @@ export interface FileRoutesByTo {
   '/api/public/contact': typeof ApiPublicContactRoute
   '/api/public/vapi': typeof ApiPublicVapiRoute
   '/api/public/automation/followups': typeof ApiPublicAutomationFollowupsRoute
+  '/api/public/automation/prospect-sync': typeof ApiPublicAutomationProspectSyncRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
@@ -243,6 +252,7 @@ export interface FileRoutesById {
   '/api/public/contact': typeof ApiPublicContactRoute
   '/api/public/vapi': typeof ApiPublicVapiRoute
   '/api/public/automation/followups': typeof ApiPublicAutomationFollowupsRoute
+  '/api/public/automation/prospect-sync': typeof ApiPublicAutomationProspectSyncRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
@@ -271,6 +281,7 @@ export interface FileRouteTypes {
     | '/api/public/contact'
     | '/api/public/vapi'
     | '/api/public/automation/followups'
+    | '/api/public/automation/prospect-sync'
     | '/api/public/payments/webhook'
     | '/lovable/email/transactional/preview'
   fileRoutesByTo: FileRoutesByTo
@@ -297,6 +308,7 @@ export interface FileRouteTypes {
     | '/api/public/contact'
     | '/api/public/vapi'
     | '/api/public/automation/followups'
+    | '/api/public/automation/prospect-sync'
     | '/api/public/payments/webhook'
     | '/lovable/email/transactional/preview'
   id:
@@ -324,6 +336,7 @@ export interface FileRouteTypes {
     | '/api/public/contact'
     | '/api/public/vapi'
     | '/api/public/automation/followups'
+    | '/api/public/automation/prospect-sync'
     | '/api/public/payments/webhook'
     | '/lovable/email/transactional/preview'
   fileRoutesById: FileRoutesById
@@ -350,6 +363,7 @@ export interface RootRouteChildren {
   ApiPublicContactRoute: typeof ApiPublicContactRoute
   ApiPublicVapiRoute: typeof ApiPublicVapiRoute
   ApiPublicAutomationFollowupsRoute: typeof ApiPublicAutomationFollowupsRoute
+  ApiPublicAutomationProspectSyncRoute: typeof ApiPublicAutomationProspectSyncRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
   LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
 }
@@ -517,6 +531,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicAutomationFollowupsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/automation/prospect-sync': {
+      id: '/api/public/automation/prospect-sync'
+      path: '/api/public/automation/prospect-sync'
+      fullPath: '/api/public/automation/prospect-sync'
+      preLoaderRoute: typeof ApiPublicAutomationProspectSyncRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/payments/webhook': {
       id: '/api/public/payments/webhook'
       path: '/api/public/payments/webhook'
@@ -570,6 +591,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicContactRoute: ApiPublicContactRoute,
   ApiPublicVapiRoute: ApiPublicVapiRoute,
   ApiPublicAutomationFollowupsRoute: ApiPublicAutomationFollowupsRoute,
+  ApiPublicAutomationProspectSyncRoute: ApiPublicAutomationProspectSyncRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
   LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
 }
