@@ -866,7 +866,9 @@ function AdminPage() {
               onSelectVariant={chooseProspectVariant}
               onSyncCrm={syncProspectPipeline}
 
+              busy={busy}
               onFind={findProspectsFor}
+
               onScanPending={scanPendingSites}
               onDraft={draftProspectEmail}
               onSaveDraft={saveProspectDraft}
