@@ -149,6 +149,24 @@ function AccountPage() {
           <p className="mt-12 font-mono text-xs text-white/40">Loading your account…</p>
         )}
 
+        {isError && (
+          <div className="mt-12 border border-[#FF3333]/40 bg-[#FF3333]/5 p-6">
+            <p className="font-mono text-xs tracking-widest text-[#FF3333]">
+              COULDN'T LOAD YOUR ACCOUNT
+            </p>
+            <p className="mt-2 text-sm text-white/60">
+              Something went wrong fetching your projects and invoices.
+            </p>
+            <button
+              type="button"
+              onClick={() => void refetch()}
+              className="mt-4 border border-white/20 px-4 py-2 font-mono text-[11px] tracking-widest text-white/80 transition-colors hover:border-white/50 hover:text-white"
+            >
+              TRY AGAIN
+            </button>
+          </div>
+        )}
+
         {data && (
           <div className="mt-12 space-y-12">
             {/* Active Project Milestone Tracker */}
