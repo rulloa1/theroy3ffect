@@ -145,32 +145,41 @@ export function AdminProspectsView({
             ["drafted", `DRAFTED (${prospects.filter((p) => p.draft_status === "draft").length})`],
             ["contacted", `CONTACTED (${prospects.filter((p) => p.draft_status === "sent").length})`],
             ["all", `ALL (${prospects.length})`],
+            ["analytics", "PERFORMANCE"],
           ] as [Tab, string][]
         ).map(([key, label]) => (
           <button
             key={key}
             type="button"
             onClick={() => setTab(key)}
-            className={`px-4 py-2 font-mono text-[10px] tracking-widest ${
+            className={`flex items-center gap-2 px-4 py-2 font-mono text-[10px] tracking-widest ${
               tab === key ? "bg-white text-black" : "border border-white/10 text-white/50 hover:text-white"
             }`}
           >
+            {key === "analytics" && <BarChart3 className="size-3" />}
             {label}
           </button>
         ))}
-        <input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search by name"
-          className="ml-auto border border-white/10 bg-black px-3 py-2 font-mono text-xs text-white placeholder:text-white/30"
-        />
+        {tab !== "analytics" && (
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search by name"
+            className="ml-auto border border-white/10 bg-black px-3 py-2 font-mono text-xs text-white placeholder:text-white/30"
+          />
+        )}
       </div>
 
-      {filtered.length === 0 && (
+      {tab === "analytics" && (
+        <ProspectAnalyticsPanel analytics={analytics} busy={busy} onSync={onSyncCrm} />
+      )}
+
+      {tab !== "analytics" && filtered.length === 0 && (
         <p className="border border-white/10 bg-white/[0.02] p-6 font-mono text-xs text-white/40">
           Nothing here yet. Pick an industry above and run the finder.
         </p>
       )}
+
 
       <div className="space-y-4">
         {filtered.map((p) => {
