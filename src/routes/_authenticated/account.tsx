@@ -59,7 +59,7 @@ function AccountPage() {
   const portal = useServerFn(createPortalSession);
   const [portalBusy, setPortalBusy] = useState(false);
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ["account", environment],
     queryFn: () => fetchAccount({ data: { environment } }),
   });
@@ -68,7 +68,13 @@ function AccountPage() {
     if (!sessionId || !user) return;
     void claim({ data: { sessionId, environment } })
       .then(() => queryClient.invalidateQueries({ queryKey: ["account", environment] }))
-      .catch(() => {});
+      .catch((error) => {
+        toast.error(
+          error instanceof Error
+            ? `We couldn't link that payment to your account: ${error.message}`
+            : "We couldn't link that payment to your account. Email rory@theroyeffect.com and we'll sort it out.",
+        );
+      });
   }, [sessionId, user, claim, environment, queryClient]);
 
   const openPortal = async () => {
