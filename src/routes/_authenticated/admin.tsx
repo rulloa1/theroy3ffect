@@ -97,6 +97,7 @@ const date = (value: string | null) =>
 type MainView =
   | "PROJECTS"
   | "PIPELINE"
+  | "AUTOPILOT"
   | "INQUIRIES"
   | "PROPOSALS"
   | "PORTFOLIO"
