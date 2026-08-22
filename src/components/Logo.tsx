@@ -233,15 +233,19 @@ export function Logo({
           interactive ? "cursor-pointer" : ""
         } ${href ? "" : className}`}
       >
-        <img
-          src="/brand/roy-effect-logo.png"
-          alt="The Roy Effect — dirt, refined into gold"
-          width={2292}
-          height={307}
-          className={`w-auto max-w-full object-contain transition-all duration-300 ${lockupHeight} ${
-            interactive ? "group-hover:drop-shadow-[0_0_16px_rgba(223,186,115,0.45)]" : ""
-          }`}
-        />
+        <picture>
+          <source srcSet="/brand/roy-effect-logo.webp" type="image/webp" />
+          <img
+            src="/brand/roy-effect-logo.png"
+            alt="The Roy Effect — dirt, refined into gold"
+            width={2292}
+            height={307}
+            decoding="async"
+            className={`w-auto max-w-full object-contain transition-all duration-300 ${lockupHeight} ${
+              interactive ? "group-hover:drop-shadow-[0_0_16px_rgba(223,186,115,0.45)]" : ""
+            }`}
+          />
+        </picture>
       </div>
     );
 
