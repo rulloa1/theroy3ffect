@@ -13,18 +13,10 @@ export const BATCH_SIZE = 6;
 const LEASE_MINUTES = 5;
 const MODEL = "google/gemini-3-flash-preview";
 
-type Admin = Awaited<
-  ReturnType<typeof import("@/integrations/supabase/client.server").getSupabaseAdmin>
->;
-
-async function admin(): Promise<Admin> {
-  const mod = await import("@/integrations/supabase/client.server");
-  // Support both the factory and the eager-client shape.
-  const anyMod = mod as unknown as Record<string, unknown>;
-  if (typeof anyMod["getSupabaseAdmin"] === "function") {
-    return (anyMod["getSupabaseAdmin"] as () => Admin)();
-  }
-  return anyMod["supabaseAdmin"] as Admin;
+async function admin() {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return supabaseAdmin as any;
 }
 
 export interface Candidate {
