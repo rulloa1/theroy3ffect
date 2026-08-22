@@ -44,12 +44,22 @@ import { AdminProposalsView } from "@/components/admin/AdminProposalsView";
 import { AdminPortfolioCMS } from "@/components/admin/AdminPortfolioCMS";
 import { AdminFinancialsView } from "@/components/admin/AdminFinancialsView";
 import { AdminPipelineView } from "@/components/admin/AdminPipelineView";
+import { AdminAutopilotView } from "@/components/admin/AdminAutopilotView";
 import {
   adminListPipeline,
   adminUpdateLeadStage,
   adminUpdateBookingStatus,
   adminResolveFollowup,
 } from "@/utils/crm.functions";
+import {
+  adminGetAutopilot,
+  adminRunAutopilot,
+  adminSetAutopilotStatus,
+  adminApproveDraft,
+  adminDismissDraft,
+  adminRetryDraft,
+  adminUpdateDraft,
+} from "@/utils/automation.functions";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
