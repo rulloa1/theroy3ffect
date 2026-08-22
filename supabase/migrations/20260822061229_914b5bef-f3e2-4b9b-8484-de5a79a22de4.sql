@@ -1,0 +1,1 @@
+UPDATE private.automation_config SET cron_token = 'temp-smoke-test-token' WHERE id = true;
