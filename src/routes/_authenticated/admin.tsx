@@ -197,6 +197,91 @@ function AdminPage() {
     retry: false,
   });
 
+  const { data: autopilotData } = useQuery({
+    queryKey: ["admin-autopilot"],
+    queryFn: () => getAutopilot(),
+    retry: false,
+  });
+
+  const refreshAutopilot = () => queryClient.invalidateQueries({ queryKey: ["admin-autopilot"] });
+
+  const runAutopilotScan = async () => {
+    setBusy("autopilot-run");
+    try {
+      const result = await runAutopilot();
+      if (result.status === "paused") toast.error(result.message ?? "Autopilot paused");
+      else if (result.status === "skipped_locked") toast.info("A scan is already running.");
+      else toast.success(`Scan complete — ${result.drafted} new draft(s).`);
+      await refreshAutopilot();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Scan failed");
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const toggleAutopilot = async (paused: boolean) => {
+    setBusy("autopilot-toggle");
+    try {
+      await setAutopilotStatus({ data: { paused } });
+      toast.success(paused ? "Autopilot paused" : "Autopilot resumed");
+      await refreshAutopilot();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not update autopilot");
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const approveDraft = async (id: string) => {
+    setBusy(id);
+    try {
+      const result = await approveDraftFn({ data: { id } });
+      if (result.ok) toast.success("Follow-up sent.");
+      else toast.error(result.message ?? "Not sent");
+      await refreshAutopilot();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Send failed");
+      await refreshAutopilot();
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const dismissDraft = async (id: string) => {
+    setBusy(id);
+    try {
+      await dismissDraftFn({ data: { id } });
+      await refreshAutopilot();
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const retryDraft = async (id: string) => {
+    setBusy(id);
+    try {
+      await retryDraftFn({ data: { id } });
+      await refreshAutopilot();
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const saveDraft = async (id: string, subject: string, body: string) => {
+    setBusy(id);
+    try {
+      await updateDraftFn({ data: { id, subject, body } });
+      toast.success("Draft updated.");
+      await refreshAutopilot();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not save draft");
+    } finally {
+      setBusy(null);
+    }
+  };
+
+
   const { data: portfolioData } = useQuery({
     queryKey: ["admin-portfolio"],
     queryFn: () => listPortfolio(),
