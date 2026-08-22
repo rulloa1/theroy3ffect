@@ -403,6 +403,7 @@ export type Database = {
       prospects: {
         Row: {
           address: string | null
+          booked_at: string | null
           business_name: string
           category: string | null
           city: string
@@ -417,23 +418,29 @@ export type Database = {
           id: string
           industry: string
           lat: number | null
+          lead_id: string | null
           lon: number | null
           notes: string | null
           pain_score: number
           phone: string | null
+          replied_at: string | null
           report_token: string
           report_viewed_at: string | null
           scan_data: Json
           scanned_at: string | null
+          sent_variant: string | null
           signals: Json
           source: string
           source_ref: string | null
           status: string
           updated_at: string
+          variants: Json
           website: string | null
+          won_at: string | null
         }
         Insert: {
           address?: string | null
+          booked_at?: string | null
           business_name: string
           category?: string | null
           city?: string
@@ -448,23 +455,29 @@ export type Database = {
           id?: string
           industry: string
           lat?: number | null
+          lead_id?: string | null
           lon?: number | null
           notes?: string | null
           pain_score?: number
           phone?: string | null
+          replied_at?: string | null
           report_token?: string
           report_viewed_at?: string | null
           scan_data?: Json
           scanned_at?: string | null
+          sent_variant?: string | null
           signals?: Json
           source?: string
           source_ref?: string | null
           status?: string
           updated_at?: string
+          variants?: Json
           website?: string | null
+          won_at?: string | null
         }
         Update: {
           address?: string | null
+          booked_at?: string | null
           business_name?: string
           category?: string | null
           city?: string
@@ -479,22 +492,35 @@ export type Database = {
           id?: string
           industry?: string
           lat?: number | null
+          lead_id?: string | null
           lon?: number | null
           notes?: string | null
           pain_score?: number
           phone?: string | null
+          replied_at?: string | null
           report_token?: string
           report_viewed_at?: string | null
           scan_data?: Json
           scanned_at?: string | null
+          sent_variant?: string | null
           signals?: Json
           source?: string
           source_ref?: string | null
           status?: string
           updated_at?: string
+          variants?: Json
           website?: string | null
+          won_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "prospects_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "voice_leads"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       retainer_subscriptions: {
         Row: {
