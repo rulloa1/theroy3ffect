@@ -191,11 +191,18 @@ export const adminSendOutreach = createServerFn({ method: "POST" })
         .update({
           draft_status: "sent",
           status: "contacted",
+          sent_variant: p.sent_variant ?? (p.variants?.length ? p.variants[0]!.key : null),
           contacted_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         })
         .eq("id", p.id);
+
+      // Mirror the prospect into the CRM pipeline so replies and calls can advance it.
+      const { ensureLeadForProspect } = await import("@/lib/prospecting/crm.server");
+      await ensureLeadForProspect(p);
+
       return { ok: true as const };
+
     } catch (err) {
       const message = err instanceof Error ? err.message : "Send failed";
       await db.from("prospects").update({ draft_status: "failed", notes: message }).eq("id", p.id);
