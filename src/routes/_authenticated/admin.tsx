@@ -56,7 +56,12 @@ import {
   adminSaveProspectDraft,
   adminSendOutreach,
   adminUpdateProspect,
+  adminGenerateVariants,
+  adminSelectVariant,
+  adminSyncProspectCrm,
+  adminProspectAnalytics,
 } from "@/utils/prospects.functions";
+
 import {
   adminListPipeline,
   adminUpdateLeadStage,
