@@ -1,0 +1,31 @@
+# Cloudflare Workers deployment (mirror of the Lovable-hosted site).
+# The build output is produced by `vite build` via the nitro cloudflare preset.
+name = "theroyeffect"
+main = ".output/server/index.mjs"
+compatibility_date = "2025-09-01"
+compatibility_flags = ["nodejs_compat"]
+
+[assets]
+directory = ".output/public"
+binding = "ASSETS"
+
+[observability]
+enabled = true
+
+# ---------------------------------------------------------------------------
+# Staging
+# ---------------------------------------------------------------------------
+[env.staging]
+name = "theroyeffect-staging"
+
+[env.staging.vars]
+APP_ENV = "staging"
+
+# ---------------------------------------------------------------------------
+# Production
+# ---------------------------------------------------------------------------
+[env.production]
+name = "theroyeffect-production"
+
+[env.production.vars]
+APP_ENV = "production"
