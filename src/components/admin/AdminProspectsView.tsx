@@ -40,12 +40,16 @@ const painTone = (score: number) =>
 export function AdminProspectsView({
   prospects,
   busy,
+  analytics,
   onFind,
   onScanPending,
   onDraft,
   onSaveDraft,
   onSend,
   onUpdate,
+  onGenerateVariants,
+  onSelectVariant,
+  onSyncCrm,
   date,
 }: AdminProspectsViewProps) {
   const [industry, setIndustry] = useState(INDUSTRIES[0]?.key ?? "");
@@ -58,6 +62,7 @@ export function AdminProspectsView({
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
+    if (tab === "analytics") return [];
     return prospects.filter((p) => {
       if (q && !p.business_name.toLowerCase().includes(q)) return false;
       if (tab === "hot") return p.pain_score >= 20 && p.status === "new";
@@ -66,6 +71,7 @@ export function AdminProspectsView({
       return true;
     });
   }, [prospects, tab, query]);
+
 
   const pendingScans = prospects.filter((p) => p.website && !p.scanned_at).length;
 
