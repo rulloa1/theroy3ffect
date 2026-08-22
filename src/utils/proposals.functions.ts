@@ -71,7 +71,9 @@ export const adminCreateProposal = createServerFn({ method: "POST" })
       data: input,
     }): Promise<{ success: boolean; proposal?: ProjectProposal; error?: string }> => {
       const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-      const token = crypto.randomUUID().replace(/-/g, "").slice(0, 16);
+      // Full 32-char hex token (128-bit) — unguessable share link secret.
+      // Must stay >= 20 chars to satisfy the public shareTokenSchema validator.
+      const token = crypto.randomUUID().replace(/-/g, "");
       const deposit = input.depositCents ?? Math.round(input.totalPriceCents * 0.5);
       const balance = input.totalPriceCents - deposit;
 
