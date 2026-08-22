@@ -336,7 +336,56 @@ function AdminPage() {
     retry: false,
   });
 
-  const refreshProspects = () => queryClient.invalidateQueries({ queryKey: ["admin-prospects"] });
+  const { data: prospectAnalytics } = useQuery({
+    queryKey: ["admin-prospect-analytics"],
+    queryFn: () => prospectAnalyticsFn(),
+    retry: false,
+  });
+
+  const refreshProspects = async () => {
+    await queryClient.invalidateQueries({ queryKey: ["admin-prospects"] });
+    await queryClient.invalidateQueries({ queryKey: ["admin-prospect-analytics"] });
+  };
+
+  const generateProspectVariants = async (id: string) => {
+    setBusy(`variants-${id}`);
+    try {
+      await generateVariantsFn({ data: { id } });
+      toast.success("Two variants ready — pick one to send.");
+      await refreshProspects();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not write the variants");
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const chooseProspectVariant = async (id: string, key: "A" | "B") => {
+    setBusy(`variant-${id}`);
+    try {
+      await selectVariantFn({ data: { id, key } });
+      toast.success(`Variant ${key} applied to the draft.`);
+      await refreshProspects();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not apply that variant");
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const syncProspectPipeline = async () => {
+    setBusy("sync-crm");
+    try {
+      const result = await syncProspectCrmFn();
+      toast.success(`Synced — ${result.booked} call(s) and ${result.won} sale(s) matched.`);
+      await refreshProspects();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Sync failed");
+    } finally {
+      setBusy(null);
+    }
+  };
+
 
   const findProspectsFor = async (industry: string) => {
     setBusy("find");
