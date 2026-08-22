@@ -121,6 +121,13 @@ function AdminPage() {
   const updateLeadStage = useServerFn(adminUpdateLeadStage);
   const updateBookingStatus = useServerFn(adminUpdateBookingStatus);
   const resolveFollowup = useServerFn(adminResolveFollowup);
+  const getAutopilot = useServerFn(adminGetAutopilot);
+  const runAutopilot = useServerFn(adminRunAutopilot);
+  const setAutopilotStatus = useServerFn(adminSetAutopilotStatus);
+  const approveDraftFn = useServerFn(adminApproveDraft);
+  const dismissDraftFn = useServerFn(adminDismissDraft);
+  const retryDraftFn = useServerFn(adminRetryDraft);
+  const updateDraftFn = useServerFn(adminUpdateDraft);
 
   const [currentView, setCurrentView] = useState<MainView>("PROJECTS");
   const [filterTab, setFilterTab] = useState<FilterTab>("ALL");
