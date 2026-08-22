@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 
-import { initializeFirebase, getFirebaseAnalytics } from "./client";
+import { getFirebaseConfig } from "./config";
 
 interface FirebaseContextValue {
   ready: boolean;
@@ -12,12 +12,26 @@ export function FirebaseProvider({ children }: { children: ReactNode }) {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    const app = initializeFirebase();
-    setReady(!!app);
+    // Firebase is only pulled into the bundle when a complete config is present.
+    // This keeps ~200kB of SDK out of the initial page load for every visitor.
+    if (!getFirebaseConfig()) return;
 
-    if (app) {
-      getFirebaseAnalytics().catch(() => null);
-    }
+    let cancelled = false;
+
+    void import("./client")
+      .then(async (mod) => {
+        const app = mod.initializeFirebase();
+        if (cancelled) return;
+        setReady(!!app);
+        if (app) await mod.getFirebaseAnalytics().catch(() => null);
+      })
+      .catch(() => {
+        if (!cancelled) setReady(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   return (
