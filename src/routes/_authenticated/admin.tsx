@@ -12,6 +12,7 @@ import {
   MessageSquare,
   Users,
   X,
+  Radar,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
