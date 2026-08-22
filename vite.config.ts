@@ -38,7 +38,9 @@ export default defineConfig({
               org: process.env["SENTRY_ORG"],
               project: process.env["SENTRY_PROJECT"],
               authToken: process.env["SENTRY_AUTH_TOKEN"],
-              release: { name: process.env["SENTRY_RELEASE"] },
+              ...(process.env["SENTRY_RELEASE"]
+                ? { release: { name: process.env["SENTRY_RELEASE"] } }
+                : {}),
               sourcemaps: { filesToDeleteAfterUpload: ["**/*.map"] },
               telemetry: false,
             }),
