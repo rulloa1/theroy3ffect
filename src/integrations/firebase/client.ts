@@ -16,7 +16,15 @@ export function initializeFirebase(): FirebaseApp | null {
     return null;
   }
 
-  firebaseApp = getApps().length > 0 ? getApp() : initializeApp(config);
+  firebaseApp = getApps().length > 0 ? getApp() : initializeApp({
+    apiKey: config.apiKey,
+    authDomain: config.authDomain,
+    projectId: config.projectId,
+    storageBucket: config.storageBucket,
+    messagingSenderId: config.messagingSenderId,
+    appId: config.appId,
+    ...(config.measurementId ? { measurementId: config.measurementId } : {}),
+  });
   return firebaseApp;
 }
 
