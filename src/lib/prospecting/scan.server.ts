@@ -62,7 +62,9 @@ const BLOCKED_HOSTNAME =
 
 /** Returns true when an IPv4 address (dotted parts) is private, reserved, or non-routable. */
 function isPrivateIpv4(parts: number[]): boolean {
-  const [a, b, c] = parts;
+  const a = parts[0] ?? -1;
+  const b = parts[1] ?? -1;
+  const c = parts[2] ?? -1;
   return (
     a === 0 || // 0.0.0.0/8 "this network"
     a === 10 || // 10.0.0.0/8 private
