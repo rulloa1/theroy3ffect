@@ -1,24 +1,41 @@
 import { useMemo, useState } from "react";
-import { ExternalLink, Mail, Radar, RefreshCw, Search, Send, Sparkles } from "lucide-react";
+import {
+  BarChart3,
+  ExternalLink,
+  FlaskConical,
+  Mail,
+  Radar,
+  RefreshCw,
+  Search,
+  Send,
+  Sparkles,
+  Users,
+} from "lucide-react";
 import { INDUSTRIES, INDUSTRY_GROUPS } from "@/lib/prospecting/industries";
-import type { Prospect } from "@/utils/prospects.functions";
+import type { Prospect, ProspectAnalytics } from "@/utils/prospects.functions";
+import { ProspectAnalyticsPanel } from "./ProspectAnalyticsPanel";
 
 export interface AdminProspectsViewProps {
   prospects: Prospect[];
   busy: string | null;
+  analytics: ProspectAnalytics | undefined;
   onFind: (industry: string) => Promise<void>;
   onScanPending: () => Promise<void>;
   onDraft: (id: string) => Promise<void>;
   onSaveDraft: (id: string, subject: string, body: string, email: string | null) => Promise<void>;
   onSend: (id: string) => Promise<void>;
   onUpdate: (id: string, patch: { status?: string; contactEmail?: string | null }) => Promise<void>;
+  onGenerateVariants: (id: string) => Promise<void>;
+  onSelectVariant: (id: string, key: "A" | "B") => Promise<void>;
+  onSyncCrm: () => Promise<void>;
   date: (value: string | null) => string;
 }
 
-type Tab = "hot" | "all" | "drafted" | "contacted";
+type Tab = "hot" | "all" | "drafted" | "contacted" | "analytics";
 
 const painTone = (score: number) =>
   score >= 40 ? "text-[#FF3333]" : score >= 20 ? "text-amber-300" : "text-white/50";
+
 
 export function AdminProspectsView({
   prospects,
