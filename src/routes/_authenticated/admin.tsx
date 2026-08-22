@@ -3,6 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import {
+  Bot,
   Briefcase,
   DollarSign,
   Eye,
@@ -661,6 +662,20 @@ function AdminPage() {
               onCreateProposalFromBrief={handleOpenProposalFromBrief}
               busy={busy}
               money={money}
+              date={date}
+            />
+          )}
+
+          {currentView === "AUTOPILOT" && (
+            <AdminAutopilotView
+              state={autopilotData}
+              busy={busy}
+              onRun={runAutopilotScan}
+              onTogglePause={toggleAutopilot}
+              onApprove={approveDraft}
+              onDismiss={dismissDraft}
+              onRetry={retryDraft}
+              onSave={saveDraft}
               date={date}
             />
           )}
