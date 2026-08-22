@@ -603,6 +603,11 @@ function AdminPage() {
               icon: Users,
             },
             {
+              id: "AUTOPILOT",
+              label: `FOLLOW-UP AUTOPILOT (${(autopilotData?.drafts ?? []).filter((d) => d.status === "draft").length})`,
+              icon: Bot,
+            },
+            {
               id: "INQUIRIES",
               label: `CLIENT LEADS (${unreadInquiriesCount})`,
               icon: MessageSquare,
