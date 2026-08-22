@@ -226,6 +226,16 @@ export function AdminProspectsView({
                         Report opened {date(p.report_viewed_at)}
                       </span>
                     )}
+                    {p.lead_id && (
+                      <span className="inline-flex items-center gap-1 font-mono text-[10px] text-white/50">
+                        <Users className="size-3" /> In pipeline
+                      </span>
+                    )}
+                    {p.sent_variant && (
+                      <span className="font-mono text-[10px] text-white/50">
+                        Variant {p.sent_variant}
+                      </span>
+                    )}
                   </div>
                 </div>
 
@@ -235,7 +245,7 @@ export function AdminProspectsView({
                     onChange={(e) => onUpdate(p.id, { status: e.target.value })}
                     className="border border-white/10 bg-black px-2 py-1.5 font-mono text-[10px] text-white"
                   >
-                    {["new", "queued", "contacted", "replied", "won", "lost", "skipped"].map((s) => (
+                    {["new", "queued", "contacted", "replied", "meeting", "won", "lost", "skipped"].map((s) => (
                       <option key={s} value={s}>
                         {s.toUpperCase()}
                       </option>
@@ -250,7 +260,18 @@ export function AdminProspectsView({
                     <Sparkles className="size-3" />
                     {busy === `draft-${p.id}` ? "WRITING…" : p.draft_body ? "REWRITE" : "WRITE EMAIL"}
                   </button>
+                  <button
+                    type="button"
+                    disabled={busy !== null || !p.draft_body}
+                    onClick={() => onGenerateVariants(p.id)}
+                    className="flex items-center gap-2 border border-white/10 px-3 py-1.5 font-mono text-[10px] tracking-widest text-white/70 hover:text-white disabled:opacity-40"
+                    title={p.draft_body ? "Generate two subject/opening variants" : "Write the email first"}
+                  >
+                    <FlaskConical className="size-3" />
+                    {busy === `variants-${p.id}` ? "TESTING…" : "A/B VARIANTS"}
+                  </button>
                 </div>
+
               </div>
 
               <ul className="mt-4 flex flex-wrap gap-2">
