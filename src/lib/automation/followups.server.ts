@@ -1,5 +1,4 @@
-import { generateText, Output } from "ai";
-import { z } from "zod";
+import { streamText } from "ai";
 import {
   AiGatewayBlockedError,
   createLovableAiGatewayProvider,
