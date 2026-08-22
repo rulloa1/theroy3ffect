@@ -96,7 +96,7 @@ export async function generateOutreachDraft(prospect: {
   } catch (error) {
     const status = statusFromAiError(error);
     if (status === 402 || status === 403) {
-      throw new AiGatewayBlockedError(status, "AI drafting is blocked", error);
+      throw new AiGatewayBlockedError(status, "AI drafting is blocked");
     }
     throw error;
   }
