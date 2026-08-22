@@ -1,34 +1,55 @@
 import { useMemo, useState } from "react";
-import { ExternalLink, Mail, Radar, RefreshCw, Search, Send, Sparkles } from "lucide-react";
+import {
+  BarChart3,
+  ExternalLink,
+  FlaskConical,
+  Mail,
+  Radar,
+  RefreshCw,
+  Search,
+  Send,
+  Sparkles,
+  Users,
+} from "lucide-react";
 import { INDUSTRIES, INDUSTRY_GROUPS } from "@/lib/prospecting/industries";
-import type { Prospect } from "@/utils/prospects.functions";
+import type { Prospect, ProspectAnalytics } from "@/utils/prospects.functions";
+import { ProspectAnalyticsPanel } from "./ProspectAnalyticsPanel";
 
 export interface AdminProspectsViewProps {
   prospects: Prospect[];
   busy: string | null;
+  analytics: ProspectAnalytics | undefined;
   onFind: (industry: string) => Promise<void>;
   onScanPending: () => Promise<void>;
   onDraft: (id: string) => Promise<void>;
   onSaveDraft: (id: string, subject: string, body: string, email: string | null) => Promise<void>;
   onSend: (id: string) => Promise<void>;
   onUpdate: (id: string, patch: { status?: string; contactEmail?: string | null }) => Promise<void>;
+  onGenerateVariants: (id: string) => Promise<void>;
+  onSelectVariant: (id: string, key: "A" | "B") => Promise<void>;
+  onSyncCrm: () => Promise<void>;
   date: (value: string | null) => string;
 }
 
-type Tab = "hot" | "all" | "drafted" | "contacted";
+type Tab = "hot" | "all" | "drafted" | "contacted" | "analytics";
 
 const painTone = (score: number) =>
   score >= 40 ? "text-[#FF3333]" : score >= 20 ? "text-amber-300" : "text-white/50";
 
+
 export function AdminProspectsView({
   prospects,
   busy,
+  analytics,
   onFind,
   onScanPending,
   onDraft,
   onSaveDraft,
   onSend,
   onUpdate,
+  onGenerateVariants,
+  onSelectVariant,
+  onSyncCrm,
   date,
 }: AdminProspectsViewProps) {
   const [industry, setIndustry] = useState(INDUSTRIES[0]?.key ?? "");
@@ -41,6 +62,7 @@ export function AdminProspectsView({
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
+    if (tab === "analytics") return [];
     return prospects.filter((p) => {
       if (q && !p.business_name.toLowerCase().includes(q)) return false;
       if (tab === "hot") return p.pain_score >= 20 && p.status === "new";
@@ -49,6 +71,7 @@ export function AdminProspectsView({
       return true;
     });
   }, [prospects, tab, query]);
+
 
   const pendingScans = prospects.filter((p) => p.website && !p.scanned_at).length;
 
@@ -122,32 +145,41 @@ export function AdminProspectsView({
             ["drafted", `DRAFTED (${prospects.filter((p) => p.draft_status === "draft").length})`],
             ["contacted", `CONTACTED (${prospects.filter((p) => p.draft_status === "sent").length})`],
             ["all", `ALL (${prospects.length})`],
+            ["analytics", "PERFORMANCE"],
           ] as [Tab, string][]
         ).map(([key, label]) => (
           <button
             key={key}
             type="button"
             onClick={() => setTab(key)}
-            className={`px-4 py-2 font-mono text-[10px] tracking-widest ${
+            className={`flex items-center gap-2 px-4 py-2 font-mono text-[10px] tracking-widest ${
               tab === key ? "bg-white text-black" : "border border-white/10 text-white/50 hover:text-white"
             }`}
           >
+            {key === "analytics" && <BarChart3 className="size-3" />}
             {label}
           </button>
         ))}
-        <input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search by name"
-          className="ml-auto border border-white/10 bg-black px-3 py-2 font-mono text-xs text-white placeholder:text-white/30"
-        />
+        {tab !== "analytics" && (
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search by name"
+            className="ml-auto border border-white/10 bg-black px-3 py-2 font-mono text-xs text-white placeholder:text-white/30"
+          />
+        )}
       </div>
 
-      {filtered.length === 0 && (
+      {tab === "analytics" && (
+        <ProspectAnalyticsPanel analytics={analytics} busy={busy} onSync={onSyncCrm} />
+      )}
+
+      {tab !== "analytics" && filtered.length === 0 && (
         <p className="border border-white/10 bg-white/[0.02] p-6 font-mono text-xs text-white/40">
           Nothing here yet. Pick an industry above and run the finder.
         </p>
       )}
+
 
       <div className="space-y-4">
         {filtered.map((p) => {
@@ -194,6 +226,16 @@ export function AdminProspectsView({
                         Report opened {date(p.report_viewed_at)}
                       </span>
                     )}
+                    {p.lead_id && (
+                      <span className="inline-flex items-center gap-1 font-mono text-[10px] text-white/50">
+                        <Users className="size-3" /> In pipeline
+                      </span>
+                    )}
+                    {p.sent_variant && (
+                      <span className="font-mono text-[10px] text-white/50">
+                        Variant {p.sent_variant}
+                      </span>
+                    )}
                   </div>
                 </div>
 
@@ -203,7 +245,7 @@ export function AdminProspectsView({
                     onChange={(e) => onUpdate(p.id, { status: e.target.value })}
                     className="border border-white/10 bg-black px-2 py-1.5 font-mono text-[10px] text-white"
                   >
-                    {["new", "queued", "contacted", "replied", "won", "lost", "skipped"].map((s) => (
+                    {["new", "queued", "contacted", "replied", "meeting", "won", "lost", "skipped"].map((s) => (
                       <option key={s} value={s}>
                         {s.toUpperCase()}
                       </option>
@@ -218,7 +260,18 @@ export function AdminProspectsView({
                     <Sparkles className="size-3" />
                     {busy === `draft-${p.id}` ? "WRITING…" : p.draft_body ? "REWRITE" : "WRITE EMAIL"}
                   </button>
+                  <button
+                    type="button"
+                    disabled={busy !== null || !p.draft_body}
+                    onClick={() => onGenerateVariants(p.id)}
+                    className="flex items-center gap-2 border border-white/10 px-3 py-1.5 font-mono text-[10px] tracking-widest text-white/70 hover:text-white disabled:opacity-40"
+                    title={p.draft_body ? "Generate two subject/opening variants" : "Write the email first"}
+                  >
+                    <FlaskConical className="size-3" />
+                    {busy === `variants-${p.id}` ? "TESTING…" : "A/B VARIANTS"}
+                  </button>
                 </div>
+
               </div>
 
               <ul className="mt-4 flex flex-wrap gap-2">
@@ -235,6 +288,45 @@ export function AdminProspectsView({
                   </li>
                 ))}
               </ul>
+
+              {(p.variants ?? []).length > 0 && (
+                <div className="mt-4 grid gap-3 md:grid-cols-2">
+                  {(p.variants ?? []).map((v) => {
+                    const active = p.sent_variant === v.key;
+                    return (
+                      <div
+                        key={v.key}
+                        className={`border p-3 ${
+                          active ? "border-[#FF3333]/60 bg-[#FF3333]/[0.06]" : "border-white/10 bg-black/40"
+                        }`}
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="font-mono text-[10px] tracking-widest text-white/50">
+                            VARIANT {v.key}
+                          </span>
+                          <button
+                            type="button"
+                            disabled={busy !== null || p.draft_status === "sent"}
+                            onClick={() => onSelectVariant(p.id, v.key)}
+                            className={`px-3 py-1 font-mono text-[10px] font-bold tracking-widest disabled:opacity-40 ${
+                              active ? "bg-[#FF3333] text-black" : "border border-white/20 text-white/70"
+                            }`}
+                          >
+                            {active ? "IN USE" : "USE THIS"}
+                          </button>
+                        </div>
+                        <p className="mt-2 font-mono text-xs font-bold text-white">{v.subject}</p>
+                        <p className="mt-1 font-mono text-xs leading-relaxed text-white/60">{v.opening}</p>
+                        {v.rationale && (
+                          <p className="mt-2 font-mono text-[10px] italic text-white/35">{v.rationale}</p>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+
 
               {(p.draft_body || editing) && (
                 <div className="mt-4 border-t border-white/10 pt-4">
