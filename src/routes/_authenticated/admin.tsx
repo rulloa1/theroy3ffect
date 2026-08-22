@@ -861,7 +861,11 @@ function AdminPage() {
           {currentView === "PROSPECTS" && (
             <AdminProspectsView
               prospects={prospectsData?.prospects ?? []}
-              busy={busy}
+              analytics={prospectAnalytics}
+              onGenerateVariants={generateProspectVariants}
+              onSelectVariant={chooseProspectVariant}
+              onSyncCrm={syncProspectPipeline}
+
               onFind={findProspectsFor}
               onScanPending={scanPendingSites}
               onDraft={draftProspectEmail}
