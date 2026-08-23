@@ -126,8 +126,8 @@ async function resolveSiteUrl(): Promise<string> {
 interface InspectionResult {
   verdict: string;
   coverageState: string;
-  indexingState?: string;
-  lastCrawlTime?: string;
+  indexingState?: string | undefined;
+  lastCrawlTime?: string | undefined;
 }
 
 async function inspectUrl(siteUrl: string, url: string): Promise<InspectionResult> {
