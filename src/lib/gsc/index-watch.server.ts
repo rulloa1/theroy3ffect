@@ -144,13 +144,17 @@ async function inspectUrl(siteUrl: string, url: string): Promise<InspectionResul
   };
 }
 
-async function notifyOwner(subjectLine: string, details: Record<string, string | undefined>) {
+async function notifyOwner(subjectLine: string, details: Record<string, string | number | undefined>) {
   // Mirror every alert to Slack; email remains the primary channel.
   const { postSlackAlert } = await import("@/lib/slack/notify.server");
   await postSlackAlert(subjectLine, details);
   try {
+    const emailDetails: Record<string, string | undefined> = {};
+    for (const [key, value] of Object.entries(details)) {
+      emailDetails[key] = value === undefined ? undefined : String(value);
+    }
     await sendTemplateEmail("voice-agent-notification", OWNER_EMAIL, {
-      templateData: { subjectLine, details },
+      templateData: { subjectLine, details: emailDetails },
       idempotencyKey: `gsc-watch-${crypto.randomUUID()}`,
     });
   } catch (error) {
@@ -217,7 +221,11 @@ export async function runIndexWatch(runner: string): Promise<IndexWatchResult> {
     if (job.last_error !== message) {
       await notifyOwner(
         pause ? "SEO index watch paused" : "SEO index watch failed",
-        { Problem: message, "Next step": "Fix the issue, then resume the job from the next scheduled run." },
+        {
+          Problem: message,
+          "Next step": "Fix the issue, then resume the job from the next scheduled run.",
+          "Detected at": new Date().toISOString(),
+        },
       );
     }
     return {
@@ -264,10 +272,14 @@ export async function runIndexWatch(runner: string): Promise<IndexWatchResult> {
         await notifyOwner(
           rank === 2 ? `SEO win: guide is now indexed` : `SEO progress: guide discovered by Google`,
           {
+            URL: url,
             Page: url.replace(SITE_TARGET, "theroyeffect.com/"),
-            "New status": `${RANK_LABELS[rank]} — ${inspection.coverageState}`,
-            "Previous status": previous ? previous.coverageState : "Unknown",
+            "Previous rank": `${previousRank} — ${RANK_LABELS[previousRank]}`,
+            "Previous state": previous ? previous.coverageState : "Unknown",
+            "New rank": `${rank} — ${RANK_LABELS[rank]}`,
+            "New state": inspection.coverageState || "Unknown",
             "Last crawl": inspection.lastCrawlTime,
+            "Changed at": checkedAt,
           },
         );
       }
