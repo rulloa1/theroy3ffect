@@ -9,6 +9,12 @@ const FOOTER_LINKS = [
   { label: "AUDIT", to: "/audit" },
 ];
 
+const GUIDE_LINKS = [
+  { label: "Website audit checklist", to: "/guides/website-audit-checklist" },
+  { label: "Houston website cost", to: "/guides/houston-website-cost" },
+  { label: "Squarespace vs custom", to: "/guides/squarespace-vs-custom-website" },
+];
+
 export function SiteFooter() {
   return (
     <footer className="relative z-20 w-full border-t border-white/10 bg-[#030014] px-5 py-12 md:px-10 md:py-16">
