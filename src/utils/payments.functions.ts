@@ -1,5 +1,11 @@
 import { createServerFn } from "@tanstack/react-start";
 import { DEPOSIT_BALANCE_CENTS } from "@/lib/commerce-catalog";
+import {
+  assertValidPriceId,
+  assertValidPriceIds,
+  assertValidSessionId,
+  clampQuantity,
+} from "@/lib/checkout-validation";
 
 import { type StripeEnv, createStripeClient, getStripeErrorMessage } from "@/lib/stripe.server";
 
@@ -17,12 +23,8 @@ export const createCommissionCheckoutSession = createServerFn({ method: "POST" }
       returnUrl: string;
       environment: StripeEnv;
     }) => {
-      if (!/^[a-zA-Z0-9_-]+$/.test(data.priceId)) throw new Error("Invalid priceId");
-      if (data.addOnPriceIds) {
-        for (const id of data.addOnPriceIds) {
-          if (!/^[a-zA-Z0-9_-]+$/.test(id)) throw new Error("Invalid addOnPriceId");
-        }
-      }
+      assertValidPriceId(data.priceId);
+      if (data.addOnPriceIds) assertValidPriceIds(data.addOnPriceIds);
       return data;
     },
   )
