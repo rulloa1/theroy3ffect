@@ -145,6 +145,9 @@ async function inspectUrl(siteUrl: string, url: string): Promise<InspectionResul
 }
 
 async function notifyOwner(subjectLine: string, details: Record<string, string | undefined>) {
+  // Mirror every alert to Slack; email remains the primary channel.
+  const { postSlackAlert } = await import("@/lib/slack/notify.server");
+  await postSlackAlert(subjectLine, details);
   try {
     await sendTemplateEmail("voice-agent-notification", OWNER_EMAIL, {
       templateData: { subjectLine, details },
