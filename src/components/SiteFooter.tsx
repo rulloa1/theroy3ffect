@@ -67,6 +67,22 @@ export function SiteFooter() {
           </div>
 
 
+          {/* Guides */}
+          <div className="lg:col-span-3">
+            <h3 className="font-mono text-[11px] tracking-widest text-white/40">GUIDES</h3>
+            <nav className="mt-4 flex flex-col gap-3" aria-label="Guides">
+              {GUIDE_LINKS.map((link) => (
+                <Link
+                  key={link.to}
+                  to={link.to}
+                  className="font-mono text-xs tracking-widest text-white/60 transition-colors hover:text-[#FF3333]"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
+          </div>
+
           {/* Contact */}
           <div className="lg:col-span-3">
             <h3 className="font-mono text-[11px] tracking-widest text-white/40">
