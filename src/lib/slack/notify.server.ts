@@ -28,7 +28,7 @@ async function resolveChannelId(): Promise<string> {
 /** Post a plain-text alert to the configured Slack channel. Never throws. */
 export async function postSlackAlert(
   title: string,
-  details: Record<string, string | undefined>,
+  details: Record<string, string | number | undefined>,
 ): Promise<void> {
   try {
     const lovableKey = process.env["LOVABLE_API_KEY"];
