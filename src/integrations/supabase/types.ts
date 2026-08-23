@@ -24,6 +24,7 @@ export type Database = {
           lease_expires_at: string | null
           lease_owner: string | null
           paused_reason: string | null
+          state: Json
           status: string
           updated_at: string
         }
@@ -36,6 +37,7 @@ export type Database = {
           lease_expires_at?: string | null
           lease_owner?: string | null
           paused_reason?: string | null
+          state?: Json
           status?: string
           updated_at?: string
         }
@@ -48,6 +50,7 @@ export type Database = {
           lease_expires_at?: string | null
           lease_owner?: string | null
           paused_reason?: string | null
+          state?: Json
           status?: string
           updated_at?: string
         }
