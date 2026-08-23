@@ -35,6 +35,7 @@ import { Route as ApiPublicBriefIntakeRouteImport } from './routes/api/public/br
 import { Route as ApiPublicContactRouteImport } from './routes/api/public/contact'
 import { Route as ApiPublicVapiRouteImport } from './routes/api/public/vapi'
 import { Route as ApiPublicAutomationFollowupsRouteImport } from './routes/api/public/automation/followups'
+import { Route as ApiPublicAutomationGscIndexWatchRouteImport } from './routes/api/public/automation/gsc-index-watch'
 import { Route as ApiPublicAutomationProspectSyncRouteImport } from './routes/api/public/automation/prospect-sync'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
@@ -175,6 +176,12 @@ const ApiPublicAutomationFollowupsRoute =
     path: '/api/public/automation/followups',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicAutomationGscIndexWatchRoute =
+  ApiPublicAutomationGscIndexWatchRouteImport.update({
+    id: '/api/public/automation/gsc-index-watch',
+    path: '/api/public/automation/gsc-index-watch',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicAutomationProspectSyncRoute =
   ApiPublicAutomationProspectSyncRouteImport.update({
     id: '/api/public/automation/prospect-sync',
@@ -220,6 +227,7 @@ export interface FileRoutesByFullPath {
   '/api/public/contact': typeof ApiPublicContactRoute
   '/api/public/vapi': typeof ApiPublicVapiRoute
   '/api/public/automation/followups': typeof ApiPublicAutomationFollowupsRoute
+  '/api/public/automation/gsc-index-watch': typeof ApiPublicAutomationGscIndexWatchRoute
   '/api/public/automation/prospect-sync': typeof ApiPublicAutomationProspectSyncRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -250,6 +258,7 @@ export interface FileRoutesByTo {
   '/api/public/contact': typeof ApiPublicContactRoute
   '/api/public/vapi': typeof ApiPublicVapiRoute
   '/api/public/automation/followups': typeof ApiPublicAutomationFollowupsRoute
+  '/api/public/automation/gsc-index-watch': typeof ApiPublicAutomationGscIndexWatchRoute
   '/api/public/automation/prospect-sync': typeof ApiPublicAutomationProspectSyncRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -282,6 +291,7 @@ export interface FileRoutesById {
   '/api/public/contact': typeof ApiPublicContactRoute
   '/api/public/vapi': typeof ApiPublicVapiRoute
   '/api/public/automation/followups': typeof ApiPublicAutomationFollowupsRoute
+  '/api/public/automation/gsc-index-watch': typeof ApiPublicAutomationGscIndexWatchRoute
   '/api/public/automation/prospect-sync': typeof ApiPublicAutomationProspectSyncRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -314,6 +324,7 @@ export interface FileRouteTypes {
     | '/api/public/contact'
     | '/api/public/vapi'
     | '/api/public/automation/followups'
+    | '/api/public/automation/gsc-index-watch'
     | '/api/public/automation/prospect-sync'
     | '/api/public/payments/webhook'
     | '/lovable/email/transactional/preview'
@@ -344,6 +355,7 @@ export interface FileRouteTypes {
     | '/api/public/contact'
     | '/api/public/vapi'
     | '/api/public/automation/followups'
+    | '/api/public/automation/gsc-index-watch'
     | '/api/public/automation/prospect-sync'
     | '/api/public/payments/webhook'
     | '/lovable/email/transactional/preview'
@@ -375,6 +387,7 @@ export interface FileRouteTypes {
     | '/api/public/contact'
     | '/api/public/vapi'
     | '/api/public/automation/followups'
+    | '/api/public/automation/gsc-index-watch'
     | '/api/public/automation/prospect-sync'
     | '/api/public/payments/webhook'
     | '/lovable/email/transactional/preview'
@@ -405,6 +418,7 @@ export interface RootRouteChildren {
   ApiPublicContactRoute: typeof ApiPublicContactRoute
   ApiPublicVapiRoute: typeof ApiPublicVapiRoute
   ApiPublicAutomationFollowupsRoute: typeof ApiPublicAutomationFollowupsRoute
+  ApiPublicAutomationGscIndexWatchRoute: typeof ApiPublicAutomationGscIndexWatchRoute
   ApiPublicAutomationProspectSyncRoute: typeof ApiPublicAutomationProspectSyncRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
   LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
@@ -594,6 +608,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicAutomationFollowupsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/automation/gsc-index-watch': {
+      id: '/api/public/automation/gsc-index-watch'
+      path: '/api/public/automation/gsc-index-watch'
+      fullPath: '/api/public/automation/gsc-index-watch'
+      preLoaderRoute: typeof ApiPublicAutomationGscIndexWatchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/automation/prospect-sync': {
       id: '/api/public/automation/prospect-sync'
       path: '/api/public/automation/prospect-sync'
@@ -657,6 +678,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicContactRoute: ApiPublicContactRoute,
   ApiPublicVapiRoute: ApiPublicVapiRoute,
   ApiPublicAutomationFollowupsRoute: ApiPublicAutomationFollowupsRoute,
+  ApiPublicAutomationGscIndexWatchRoute: ApiPublicAutomationGscIndexWatchRoute,
   ApiPublicAutomationProspectSyncRoute: ApiPublicAutomationProspectSyncRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
   LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
