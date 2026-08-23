@@ -144,13 +144,17 @@ async function inspectUrl(siteUrl: string, url: string): Promise<InspectionResul
   };
 }
 
-async function notifyOwner(subjectLine: string, details: Record<string, string | undefined>) {
+async function notifyOwner(subjectLine: string, details: Record<string, string | number | undefined>) {
   // Mirror every alert to Slack; email remains the primary channel.
   const { postSlackAlert } = await import("@/lib/slack/notify.server");
   await postSlackAlert(subjectLine, details);
   try {
+    const emailDetails: Record<string, string | undefined> = {};
+    for (const [key, value] of Object.entries(details)) {
+      emailDetails[key] = value === undefined ? undefined : String(value);
+    }
     await sendTemplateEmail("voice-agent-notification", OWNER_EMAIL, {
-      templateData: { subjectLine, details },
+      templateData: { subjectLine, details: emailDetails },
       idempotencyKey: `gsc-watch-${crypto.randomUUID()}`,
     });
   } catch (error) {
