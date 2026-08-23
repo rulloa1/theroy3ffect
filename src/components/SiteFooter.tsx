@@ -9,13 +9,19 @@ const FOOTER_LINKS = [
   { label: "AUDIT", to: "/audit" },
 ];
 
+const GUIDE_LINKS = [
+  { label: "Website audit checklist", to: "/guides/website-audit-checklist" },
+  { label: "Houston website cost", to: "/guides/houston-website-cost" },
+  { label: "Squarespace vs custom", to: "/guides/squarespace-vs-custom-website" },
+];
+
 export function SiteFooter() {
   return (
     <footer className="relative z-20 w-full border-t border-white/10 bg-[#030014] px-5 py-12 md:px-10 md:py-16">
       <div className="mx-auto max-w-7xl">
         <div className="grid gap-10 md:grid-cols-2 md:items-start lg:grid-cols-12">
           {/* Brand / CTA */}
-          <div className="lg:col-span-5">
+          <div className="lg:col-span-4">
             <Link
               to="/"
               className="font-display text-2xl uppercase tracking-tight text-white"
@@ -37,7 +43,7 @@ export function SiteFooter() {
           </div>
 
           {/* Quick links */}
-          <div className="lg:col-span-3 lg:col-start-8">
+          <div className="lg:col-span-2">
             <h3 className="font-mono text-[11px] tracking-widest text-white/40">
               NAVIGATION
             </h3>
@@ -60,6 +66,22 @@ export function SiteFooter() {
             </nav>
           </div>
 
+
+          {/* Guides */}
+          <div className="lg:col-span-3">
+            <h3 className="font-mono text-[11px] tracking-widest text-white/40">GUIDES</h3>
+            <nav className="mt-4 flex flex-col gap-3" aria-label="Guides">
+              {GUIDE_LINKS.map((link) => (
+                <Link
+                  key={link.to}
+                  to={link.to}
+                  className="font-mono text-xs tracking-widest text-white/60 transition-colors hover:text-[#FF3333]"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
+          </div>
 
           {/* Contact */}
           <div className="lg:col-span-3">

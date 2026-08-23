@@ -38,6 +38,31 @@ export const Route = createFileRoute("/")({
       { name: "twitter:image", content: HERO_IMAGE_ABSOLUTE },
     ],
     links: [{ rel: "canonical", href: "https://www.theroyeffect.com/" }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          "@id": "https://www.theroyeffect.com/#website",
+          url: "https://www.theroyeffect.com",
+          name: "The Roy Effect",
+          publisher: { "@id": "https://www.theroyeffect.com/#service" },
+        }),
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebPage",
+          "@id": "https://www.theroyeffect.com/#home",
+          url: "https://www.theroyeffect.com/",
+          name: "Houston Web Design — Creative Director & UI/UX Designer",
+          isPartOf: { "@id": "https://www.theroyeffect.com/#website" },
+          about: { "@id": "https://www.theroyeffect.com/#service" },
+        }),
+      },
+    ],
   }),
   component: Home,
 });

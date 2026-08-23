@@ -25,6 +25,9 @@ import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } fr
 import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticated/account'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as CheckoutReturnRouteImport } from './routes/checkout.return'
+import { Route as GuidesHoustonWebsiteCostRouteImport } from './routes/guides.houston-website-cost'
+import { Route as GuidesSquarespaceVsCustomWebsiteRouteImport } from './routes/guides.squarespace-vs-custom-website'
+import { Route as GuidesWebsiteAuditChecklistRouteImport } from './routes/guides.website-audit-checklist'
 import { Route as ProposalTokenRouteImport } from './routes/proposal.$token'
 import { Route as SiteReportTokenRouteImport } from './routes/site-report.$token'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
@@ -117,6 +120,24 @@ const CheckoutReturnRoute = CheckoutReturnRouteImport.update({
   path: '/checkout/return',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GuidesHoustonWebsiteCostRoute =
+  GuidesHoustonWebsiteCostRouteImport.update({
+    id: '/guides/houston-website-cost',
+    path: '/guides/houston-website-cost',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const GuidesSquarespaceVsCustomWebsiteRoute =
+  GuidesSquarespaceVsCustomWebsiteRouteImport.update({
+    id: '/guides/squarespace-vs-custom-website',
+    path: '/guides/squarespace-vs-custom-website',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const GuidesWebsiteAuditChecklistRoute =
+  GuidesWebsiteAuditChecklistRouteImport.update({
+    id: '/guides/website-audit-checklist',
+    path: '/guides/website-audit-checklist',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ProposalTokenRoute = ProposalTokenRouteImport.update({
   id: '/proposal/$token',
   path: '/proposal/$token',
@@ -189,6 +210,9 @@ export interface FileRoutesByFullPath {
   '/account': typeof AuthenticatedAccountRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/checkout/return': typeof CheckoutReturnRoute
+  '/guides/houston-website-cost': typeof GuidesHoustonWebsiteCostRoute
+  '/guides/squarespace-vs-custom-website': typeof GuidesSquarespaceVsCustomWebsiteRoute
+  '/guides/website-audit-checklist': typeof GuidesWebsiteAuditChecklistRoute
   '/proposal/$token': typeof ProposalTokenRoute
   '/site-report/$token': typeof SiteReportTokenRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
@@ -216,6 +240,9 @@ export interface FileRoutesByTo {
   '/account': typeof AuthenticatedAccountRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/checkout/return': typeof CheckoutReturnRoute
+  '/guides/houston-website-cost': typeof GuidesHoustonWebsiteCostRoute
+  '/guides/squarespace-vs-custom-website': typeof GuidesSquarespaceVsCustomWebsiteRoute
+  '/guides/website-audit-checklist': typeof GuidesWebsiteAuditChecklistRoute
   '/proposal/$token': typeof ProposalTokenRoute
   '/site-report/$token': typeof SiteReportTokenRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
@@ -245,6 +272,9 @@ export interface FileRoutesById {
   '/_authenticated/account': typeof AuthenticatedAccountRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/checkout/return': typeof CheckoutReturnRoute
+  '/guides/houston-website-cost': typeof GuidesHoustonWebsiteCostRoute
+  '/guides/squarespace-vs-custom-website': typeof GuidesSquarespaceVsCustomWebsiteRoute
+  '/guides/website-audit-checklist': typeof GuidesWebsiteAuditChecklistRoute
   '/proposal/$token': typeof ProposalTokenRoute
   '/site-report/$token': typeof SiteReportTokenRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
@@ -274,6 +304,9 @@ export interface FileRouteTypes {
     | '/account'
     | '/admin'
     | '/checkout/return'
+    | '/guides/houston-website-cost'
+    | '/guides/squarespace-vs-custom-website'
+    | '/guides/website-audit-checklist'
     | '/proposal/$token'
     | '/site-report/$token'
     | '/.mcp/invoke-tool/$tool'
@@ -301,6 +334,9 @@ export interface FileRouteTypes {
     | '/account'
     | '/admin'
     | '/checkout/return'
+    | '/guides/houston-website-cost'
+    | '/guides/squarespace-vs-custom-website'
+    | '/guides/website-audit-checklist'
     | '/proposal/$token'
     | '/site-report/$token'
     | '/.mcp/invoke-tool/$tool'
@@ -329,6 +365,9 @@ export interface FileRouteTypes {
     | '/_authenticated/account'
     | '/_authenticated/admin'
     | '/checkout/return'
+    | '/guides/houston-website-cost'
+    | '/guides/squarespace-vs-custom-website'
+    | '/guides/website-audit-checklist'
     | '/proposal/$token'
     | '/site-report/$token'
     | '/.mcp/invoke-tool/$tool'
@@ -356,6 +395,9 @@ export interface RootRouteChildren {
   Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   CheckoutReturnRoute: typeof CheckoutReturnRoute
+  GuidesHoustonWebsiteCostRoute: typeof GuidesHoustonWebsiteCostRoute
+  GuidesSquarespaceVsCustomWebsiteRoute: typeof GuidesSquarespaceVsCustomWebsiteRoute
+  GuidesWebsiteAuditChecklistRoute: typeof GuidesWebsiteAuditChecklistRoute
   ProposalTokenRoute: typeof ProposalTokenRoute
   SiteReportTokenRoute: typeof SiteReportTokenRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
@@ -482,6 +524,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CheckoutReturnRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/guides/houston-website-cost': {
+      id: '/guides/houston-website-cost'
+      path: '/guides/houston-website-cost'
+      fullPath: '/guides/houston-website-cost'
+      preLoaderRoute: typeof GuidesHoustonWebsiteCostRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/guides/squarespace-vs-custom-website': {
+      id: '/guides/squarespace-vs-custom-website'
+      path: '/guides/squarespace-vs-custom-website'
+      fullPath: '/guides/squarespace-vs-custom-website'
+      preLoaderRoute: typeof GuidesSquarespaceVsCustomWebsiteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/guides/website-audit-checklist': {
+      id: '/guides/website-audit-checklist'
+      path: '/guides/website-audit-checklist'
+      fullPath: '/guides/website-audit-checklist'
+      preLoaderRoute: typeof GuidesWebsiteAuditChecklistRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/proposal/$token': {
       id: '/proposal/$token'
       path: '/proposal/$token'
@@ -584,6 +647,9 @@ const rootRouteChildren: RootRouteChildren = {
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
   CheckoutReturnRoute: CheckoutReturnRoute,
+  GuidesHoustonWebsiteCostRoute: GuidesHoustonWebsiteCostRoute,
+  GuidesSquarespaceVsCustomWebsiteRoute: GuidesSquarespaceVsCustomWebsiteRoute,
+  GuidesWebsiteAuditChecklistRoute: GuidesWebsiteAuditChecklistRoute,
   ProposalTokenRoute: ProposalTokenRoute,
   SiteReportTokenRoute: SiteReportTokenRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
