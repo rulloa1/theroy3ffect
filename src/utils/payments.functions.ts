@@ -1,5 +1,11 @@
 import { createServerFn } from "@tanstack/react-start";
 import { DEPOSIT_BALANCE_CENTS } from "@/lib/commerce-catalog";
+import {
+  assertValidPriceId,
+  assertValidPriceIds,
+  assertValidSessionId,
+  clampQuantity,
+} from "@/lib/checkout-validation";
 
 import { type StripeEnv, createStripeClient, getStripeErrorMessage } from "@/lib/stripe.server";
 
@@ -17,12 +23,8 @@ export const createCommissionCheckoutSession = createServerFn({ method: "POST" }
       returnUrl: string;
       environment: StripeEnv;
     }) => {
-      if (!/^[a-zA-Z0-9_-]+$/.test(data.priceId)) throw new Error("Invalid priceId");
-      if (data.addOnPriceIds) {
-        for (const id of data.addOnPriceIds) {
-          if (!/^[a-zA-Z0-9_-]+$/.test(id)) throw new Error("Invalid addOnPriceId");
-        }
-      }
+      assertValidPriceId(data.priceId);
+      if (data.addOnPriceIds) assertValidPriceIds(data.addOnPriceIds);
       return data;
     },
   )
@@ -37,7 +39,7 @@ export const createCommissionCheckoutSession = createServerFn({ method: "POST" }
       if (!stripePrice) throw new Error("Price not found");
 
       const isRecurring = stripePrice.type === "recurring";
-      const quantity = Math.min(Math.max(data.quantity ?? 1, 1), 10);
+      const quantity = clampQuantity(data.quantity);
 
       const productId =
         typeof stripePrice.product === "string" ? stripePrice.product : stripePrice.product.id;
@@ -113,7 +115,7 @@ export type CheckoutSummary =
  */
 export const getCheckoutSessionSummary = createServerFn({ method: "GET" })
   .inputValidator((data: { sessionId: string; environment: StripeEnv }) => {
-    if (!/^cs_[a-zA-Z0-9_]+$/.test(data.sessionId)) throw new Error("Invalid session id");
+    assertValidSessionId(data.sessionId);
     return data;
   })
   .handler(async ({ data }): Promise<CheckoutSummary> => {
