@@ -21,7 +21,7 @@ export function SiteFooter() {
       <div className="mx-auto max-w-7xl">
         <div className="grid gap-10 md:grid-cols-2 md:items-start lg:grid-cols-12">
           {/* Brand / CTA */}
-          <div className="lg:col-span-5">
+          <div className="lg:col-span-4">
             <Link
               to="/"
               className="font-display text-2xl uppercase tracking-tight text-white"
@@ -43,7 +43,7 @@ export function SiteFooter() {
           </div>
 
           {/* Quick links */}
-          <div className="lg:col-span-3 lg:col-start-8">
+          <div className="lg:col-span-2">
             <h3 className="font-mono text-[11px] tracking-widest text-white/40">
               NAVIGATION
             </h3>
