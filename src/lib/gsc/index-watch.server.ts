@@ -221,7 +221,11 @@ export async function runIndexWatch(runner: string): Promise<IndexWatchResult> {
     if (job.last_error !== message) {
       await notifyOwner(
         pause ? "SEO index watch paused" : "SEO index watch failed",
-        { Problem: message, "Next step": "Fix the issue, then resume the job from the next scheduled run." },
+        {
+          Problem: message,
+          "Next step": "Fix the issue, then resume the job from the next scheduled run.",
+          "Detected at": new Date().toISOString(),
+        },
       );
     }
     return {
