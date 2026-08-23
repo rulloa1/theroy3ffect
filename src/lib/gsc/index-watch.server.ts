@@ -268,10 +268,14 @@ export async function runIndexWatch(runner: string): Promise<IndexWatchResult> {
         await notifyOwner(
           rank === 2 ? `SEO win: guide is now indexed` : `SEO progress: guide discovered by Google`,
           {
+            URL: url,
             Page: url.replace(SITE_TARGET, "theroyeffect.com/"),
-            "New status": `${RANK_LABELS[rank]} — ${inspection.coverageState}`,
-            "Previous status": previous ? previous.coverageState : "Unknown",
+            "Previous rank": `${previousRank} — ${RANK_LABELS[previousRank]}`,
+            "Previous state": previous ? previous.coverageState : "Unknown",
+            "New rank": `${rank} — ${RANK_LABELS[rank]}`,
+            "New state": inspection.coverageState || "Unknown",
             "Last crawl": inspection.lastCrawlTime,
+            "Changed at": checkedAt,
           },
         );
       }
