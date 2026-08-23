@@ -39,7 +39,7 @@ export const createCommissionCheckoutSession = createServerFn({ method: "POST" }
       if (!stripePrice) throw new Error("Price not found");
 
       const isRecurring = stripePrice.type === "recurring";
-      const quantity = Math.min(Math.max(data.quantity ?? 1, 1), 10);
+      const quantity = clampQuantity(data.quantity);
 
       const productId =
         typeof stripePrice.product === "string" ? stripePrice.product : stripePrice.product.id;
@@ -115,7 +115,7 @@ export type CheckoutSummary =
  */
 export const getCheckoutSessionSummary = createServerFn({ method: "GET" })
   .inputValidator((data: { sessionId: string; environment: StripeEnv }) => {
-    if (!/^cs_[a-zA-Z0-9_]+$/.test(data.sessionId)) throw new Error("Invalid session id");
+    assertValidSessionId(data.sessionId);
     return data;
   })
   .handler(async ({ data }): Promise<CheckoutSummary> => {
