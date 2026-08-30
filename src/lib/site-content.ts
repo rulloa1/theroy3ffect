@@ -21,6 +21,7 @@ export const SERVICES: ServiceEntry[] = [
       "Logo system + variations",
       "Color palette & typography",
       "Written brand guidelines",
+      "Two revision rounds",
     ],
   },
   {
@@ -34,6 +35,7 @@ export const SERVICES: ServiceEntry[] = [
       "High-fidelity UI design",
       "Responsive mobile → desktop screens",
       "Clickable prototype",
+      "Three revision rounds",
     ],
   },
   {
@@ -84,7 +86,7 @@ export const PROCESS_STEPS: ProcessStep[] = [
   {
     step: "03",
     title: "Design",
-    body: "Full screens designed responsively, mobile through desktop, with real content instead of placeholder text. Two revision rounds are included in every project tier.",
+    body: "Full screens designed responsively, mobile through desktop, with real content instead of placeholder text. Revision rounds are set by your tier — two on a Brand Sprint, three on web design and design + build.",
   },
   {
     step: "04",
