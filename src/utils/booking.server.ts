@@ -81,7 +81,7 @@ export async function upsertLead(payload: Record<string, unknown>, callId: strin
       .limit(1)
       .maybeSingle();
     if (existing?.id) {
-      const update = { ...payload, vapi_call_id: callId };
+      const update: Record<string, unknown> = { ...payload, vapi_call_id: callId };
       const stage = resolveStage(existing.stage, payload["stage"]);
       if (stage === undefined) delete update["stage"];
       else update["stage"] = stage;
