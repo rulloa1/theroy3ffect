@@ -36,6 +36,39 @@ async function admin() {
   return (mod as unknown as { supabaseAdmin: any }).supabaseAdmin;
 }
 
+/**
+ * Lead-stage vocabulary from the approved call-flow state machine, ordered by
+ * pipeline progress. A later tool call must never pull a lead backwards (e.g.
+ * a second `capture_lead` on a caller who already booked a discovery call).
+ */
+export const LEAD_STAGE_ORDER = [
+  "new",
+  "acknowledged",
+  "awaiting_information",
+  "audit_in_progress",
+  "audit_delivered",
+  "discovery_invited",
+  "discovery_scheduled",
+  "qualification_in_progress",
+  "proposal_in_progress",
+  "proposal_sent",
+  "won",
+] as const;
+
+/** Stages outside the linear ladder that any update may set. */
+const TERMINAL_STAGES = new Set(["nurture", "dormant", "not_a_fit", "human_followup_required"]);
+
+export function resolveStage(current: unknown, next: unknown): string | undefined {
+  if (typeof next !== "string") return undefined;
+  if (typeof current !== "string" || current === next) return next;
+  if (TERMINAL_STAGES.has(next) || TERMINAL_STAGES.has(current)) return next;
+  const order = LEAD_STAGE_ORDER as readonly string[];
+  const currentRank = order.indexOf(current);
+  const nextRank = order.indexOf(next);
+  if (currentRank === -1 || nextRank === -1) return next;
+  return nextRank >= currentRank ? next : current;
+}
+
 export async function upsertLead(payload: Record<string, unknown>, callId: string | null) {
   const db = await admin();
   const emailValue = typeof payload["email"] === "string" ? (payload["email"] as string) : null;
@@ -43,12 +76,16 @@ export async function upsertLead(payload: Record<string, unknown>, callId: strin
   if (emailValue) {
     const { data: existing } = await db
       .from("voice_leads")
-      .select("id")
+      .select("id, stage")
       .ilike("email", emailValue)
       .limit(1)
       .maybeSingle();
     if (existing?.id) {
-      await db.from("voice_leads").update({ ...payload, vapi_call_id: callId }).eq("id", existing.id);
+      const update: Record<string, unknown> = { ...payload, vapi_call_id: callId };
+      const stage = resolveStage(existing.stage, payload["stage"]);
+      if (stage === undefined) delete update["stage"];
+      else update["stage"] = stage;
+      await db.from("voice_leads").update(update).eq("id", existing.id);
       return existing.id as string;
     }
   }

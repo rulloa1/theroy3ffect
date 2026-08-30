@@ -39,16 +39,23 @@ async function notifyOwner(subjectLine: string, details: Record<string, string |
   }
 }
 
+/**
+ * Sends one approved follow-up template.
+ * `dedupeKey` must identify the template + lead action so the same approved
+ * message is never sent twice for the same action (follow-up template map,
+ * "Deduplication"). It falls back to a random key only when no stable id exists.
+ */
 async function sendLeadEmail(
   to: string,
   heading: string,
   body: string,
   ctaLabel?: string,
   ctaUrl?: string,
+  dedupeKey?: string,
 ) {
   return sendTemplateEmail("voice-agent-followup", to, {
     templateData: { heading, body, ctaLabel, ctaUrl },
-    idempotencyKey: `voice-followup-${crypto.randomUUID()}`,
+    idempotencyKey: `voice-followup-${dedupeKey ?? crypto.randomUUID()}`,
     replyTo: OWNER_EMAIL,
   });
 }
@@ -129,6 +136,7 @@ export const handlers: Record<ToolName, Handler> = {
         `Thanks${data.full_name ? `, ${data.full_name.split(" ")[0]}` : ""} — Rory will review ${data.website_url} and send your audit shortly.${data.primary_bottleneck ? ` Noted bottleneck: ${data.primary_bottleneck}.` : ""}`,
         "See what the audit covers",
         AUDIT_URL,
+        `audit_acknowledgement-${row.id}`,
       ).catch((e) => console.error("Audit acknowledgement failed:", e));
     }
 
@@ -208,6 +216,7 @@ export const handlers: Record<ToolName, Handler> = {
       `You're set for a 15-minute discovery call on ${spoken} (${BOOKING_TZ}). Please complete the short intake so Rory can prepare.`,
       "Complete your intake",
       QUESTIONNAIRE_URL,
+      `discovery_confirmation-${row.id}`,
     ).catch((e) => console.error("Discovery confirmation failed:", e));
 
     await notifyOwner("Discovery call booked", {
@@ -258,6 +267,7 @@ export const handlers: Record<ToolName, Handler> = {
       chosen.body,
       chosen.ctaLabel,
       chosen.ctaUrl,
+      `${data.template_id}-${data.email.toLowerCase()}`,
     );
     return { status: result.sent ? "sent" : "suppressed", template_id: data.template_id };
   },
@@ -270,6 +280,7 @@ export const handlers: Record<ToolName, Handler> = {
       `${data.first_name ? `Hi ${data.first_name}, ` : ""}please complete this short intake so Rory can prepare for your call.`,
       "Complete your intake",
       QUESTIONNAIRE_URL,
+      `onboarding_questionnaire-${data.email.toLowerCase()}`,
     );
     return { status: result.sent ? "sent" : "suppressed" };
   },
@@ -314,6 +325,9 @@ export const handlers: Record<ToolName, Handler> = {
         data.email,
         "Your request has been sent to The Roy Effect",
         `${data.full_name ? `Hi ${data.full_name.split(" ")[0]}, ` : ""}thanks for reaching out. Your request has been shared with Rory, who will follow up${data.preferred_method ? ` by ${data.preferred_method}` : " shortly"}.`,
+        undefined,
+        undefined,
+        `human_followup_acknowledgement-${row.id}`,
       ).catch((e) => console.error("Follow-up acknowledgement failed:", e));
     }
 
