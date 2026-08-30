@@ -39,16 +39,23 @@ async function notifyOwner(subjectLine: string, details: Record<string, string |
   }
 }
 
+/**
+ * Sends one approved follow-up template.
+ * `dedupeKey` must identify the template + lead action so the same approved
+ * message is never sent twice for the same action (follow-up template map,
+ * "Deduplication"). It falls back to a random key only when no stable id exists.
+ */
 async function sendLeadEmail(
   to: string,
   heading: string,
   body: string,
   ctaLabel?: string,
   ctaUrl?: string,
+  dedupeKey?: string,
 ) {
   return sendTemplateEmail("voice-agent-followup", to, {
     templateData: { heading, body, ctaLabel, ctaUrl },
-    idempotencyKey: `voice-followup-${crypto.randomUUID()}`,
+    idempotencyKey: `voice-followup-${dedupeKey ?? crypto.randomUUID()}`,
     replyTo: OWNER_EMAIL,
   });
 }
