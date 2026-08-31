@@ -13,6 +13,7 @@ import {
   Users,
   X,
   Radar,
+  FolderKanban,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
@@ -48,6 +49,7 @@ import { AdminFinancialsView } from "@/components/admin/AdminFinancialsView";
 import { AdminPipelineView } from "@/components/admin/AdminPipelineView";
 import { AdminAutopilotView } from "@/components/admin/AdminAutopilotView";
 import { AdminProspectsView } from "@/components/admin/AdminProspectsView";
+import { AdminPortalView } from "@/components/admin/AdminPortalView";
 import {
   adminListProspects,
   adminFindProspects,
@@ -119,6 +121,7 @@ type MainView =
   | "INQUIRIES"
   | "PROPOSALS"
   | "PORTFOLIO"
+  | "CLIENTPORTAL"
   | "FINANCIALS";
 
 function AdminPage() {
@@ -797,6 +800,7 @@ function AdminPage() {
               icon: FileCheck,
             },
             { id: "PORTFOLIO", label: "PORTFOLIO MANAGER", icon: Eye },
+            { id: "CLIENTPORTAL", label: "CLIENT PORTAL", icon: FolderKanban },
             { id: "FINANCIALS", label: "FINANCIALS & STATS", icon: DollarSign },
           ].map((tab) => {
             const Icon = tab.icon;
@@ -877,6 +881,8 @@ function AdminPage() {
               date={date}
             />
           )}
+
+          {currentView === "CLIENTPORTAL" && <AdminPortalView />}
 
           {currentView === "PIPELINE" && (
             <AdminPipelineView
