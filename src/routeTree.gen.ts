@@ -24,6 +24,7 @@ import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticated/account'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedPortalRouteImport } from './routes/_authenticated/portal'
 import { Route as CheckoutReturnRouteImport } from './routes/checkout.return'
 import { Route as GuidesHoustonWebsiteCostRouteImport } from './routes/guides.houston-website-cost'
 import { Route as GuidesSquarespaceVsCustomWebsiteRouteImport } from './routes/guides.squarespace-vs-custom-website'
@@ -114,6 +115,11 @@ const AuthenticatedAccountRoute = AuthenticatedAccountRouteImport.update({
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedPortalRoute = AuthenticatedPortalRouteImport.update({
+  id: '/portal',
+  path: '/portal',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const CheckoutReturnRoute = CheckoutReturnRouteImport.update({
@@ -216,6 +222,7 @@ export interface FileRoutesByFullPath {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/account': typeof AuthenticatedAccountRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/portal': typeof AuthenticatedPortalRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/guides/houston-website-cost': typeof GuidesHoustonWebsiteCostRoute
   '/guides/squarespace-vs-custom-website': typeof GuidesSquarespaceVsCustomWebsiteRoute
@@ -247,6 +254,7 @@ export interface FileRoutesByTo {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/account': typeof AuthenticatedAccountRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/portal': typeof AuthenticatedPortalRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/guides/houston-website-cost': typeof GuidesHoustonWebsiteCostRoute
   '/guides/squarespace-vs-custom-website': typeof GuidesSquarespaceVsCustomWebsiteRoute
@@ -280,6 +288,7 @@ export interface FileRoutesById {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/_authenticated/account': typeof AuthenticatedAccountRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
+  '/_authenticated/portal': typeof AuthenticatedPortalRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/guides/houston-website-cost': typeof GuidesHoustonWebsiteCostRoute
   '/guides/squarespace-vs-custom-website': typeof GuidesSquarespaceVsCustomWebsiteRoute
@@ -313,6 +322,7 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/account'
     | '/admin'
+    | '/portal'
     | '/checkout/return'
     | '/guides/houston-website-cost'
     | '/guides/squarespace-vs-custom-website'
@@ -344,6 +354,7 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/account'
     | '/admin'
+    | '/portal'
     | '/checkout/return'
     | '/guides/houston-website-cost'
     | '/guides/squarespace-vs-custom-website'
@@ -376,6 +387,7 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/_authenticated/account'
     | '/_authenticated/admin'
+    | '/_authenticated/portal'
     | '/checkout/return'
     | '/guides/houston-website-cost'
     | '/guides/squarespace-vs-custom-website'
@@ -531,6 +543,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/portal': {
+      id: '/_authenticated/portal'
+      path: '/portal'
+      fullPath: '/portal'
+      preLoaderRoute: typeof AuthenticatedPortalRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/checkout/return': {
       id: '/checkout/return'
       path: '/checkout/return'
@@ -642,11 +661,13 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAccountRoute: typeof AuthenticatedAccountRoute
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+  AuthenticatedPortalRoute: typeof AuthenticatedPortalRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAccountRoute: AuthenticatedAccountRoute,
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+  AuthenticatedPortalRoute: AuthenticatedPortalRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

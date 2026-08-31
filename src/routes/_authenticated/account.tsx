@@ -136,6 +136,13 @@ function AccountPage() {
           </div>
         </div>
 
+        <Link
+          to="/portal"
+          className="mt-6 mr-3 inline-block border border-white/20 px-4 py-2 font-mono text-[11px] tracking-widest text-white transition-colors hover:border-[#FF3333] hover:text-[#FF3333]"
+        >
+          CLIENT PORTAL →
+        </Link>
+
         {data?.isAdmin && (
           <Link
             to="/admin"
