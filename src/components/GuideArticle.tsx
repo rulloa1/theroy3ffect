@@ -2,7 +2,6 @@ import { Link } from "@tanstack/react-router";
 import { ArrowUpRight } from "lucide-react";
 import type { ReactNode } from "react";
 import { Logo } from "@/components/Logo";
-import { SiteFooter } from "@/components/SiteFooter";
 
 interface GuideCta {
   kicker: string;
@@ -113,8 +112,6 @@ export function GuideArticle({
           ))}
         </div>
       </section>
-
-      <SiteFooter />
     </main>
   );
 }
