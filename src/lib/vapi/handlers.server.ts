@@ -230,7 +230,7 @@ export const handlers: Record<ToolName, Handler> = {
     return { status: "scheduled", booking_id: row.id, spoken_time: spoken, time_zone: BOOKING_TZ };
   },
 
-  send_approved_followup: async (args) => {
+  send_approved_followup: async (args, callId) => {
     const data = sendApprovedFollowupSchema.parse(args);
     const first = data.first_name ? `Hi ${data.first_name}, ` : "";
     const copy: Record<string, { heading: string; body: string; ctaLabel?: string; ctaUrl?: string }> = {
@@ -267,12 +267,12 @@ export const handlers: Record<ToolName, Handler> = {
       chosen.body,
       chosen.ctaLabel,
       chosen.ctaUrl,
-      `${data.template_id}-${data.email.toLowerCase()}`,
+      `${data.template_id}-${data.email.toLowerCase()}-${callId ?? crypto.randomUUID()}`,
     );
     return { status: result.sent ? "sent" : "suppressed", template_id: data.template_id };
   },
 
-  send_onboarding_questionnaire: async (args) => {
+  send_onboarding_questionnaire: async (args, callId) => {
     const data = sendOnboardingQuestionnaireSchema.parse(args);
     const result = await sendLeadEmail(
       data.email,
@@ -280,7 +280,7 @@ export const handlers: Record<ToolName, Handler> = {
       `${data.first_name ? `Hi ${data.first_name}, ` : ""}please complete this short intake so Rory can prepare for your call.`,
       "Complete your intake",
       QUESTIONNAIRE_URL,
-      `onboarding_questionnaire-${data.email.toLowerCase()}`,
+      `onboarding_questionnaire-${data.email.toLowerCase()}-${callId ?? crypto.randomUUID()}`,
     );
     return { status: result.sent ? "sent" : "suppressed" };
   },
