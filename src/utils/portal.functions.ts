@@ -101,15 +101,67 @@ function toProject(row: Record<string, unknown>): PortalProject {
 /** Everything the signed-in client can see in their portal. RLS scopes to their own rows. */
 export const getMyPortal = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context }): Promise<{ projects: PortalProject[] }> => {
-    const db = context.supabase as AnyClient;
-    const { data, error } = await db
-      .from("client_projects")
-      .select("*, client_milestones(*)")
-      .order("created_at", { ascending: false });
-    if (error) throw new Error(error.message);
-    return { projects: (data ?? []).map(toProject) };
-  });
+  .handler(
+    async ({
+      context,
+    }): Promise<{ projects: PortalProject[]; invoices: PortalInvoice[]; email: string }> => {
+      const db = context.supabase as AnyClient;
+      const [projectsRes, ordersRes, invoicesRes] = await Promise.all([
+        db.from("client_projects").select("*, client_milestones(*)").order("created_at", {
+          ascending: false,
+        }),
+        db
+          .from("orders")
+          .select(
+            "id, product_name, tier_label, amount_total, currency, payment_status, created_at, is_deposit, balance_due_cents, balance_status",
+          )
+          .order("created_at", { ascending: false })
+          .limit(50),
+        db
+          .from("subscription_invoices")
+          .select(
+            "id, description, amount_due, amount_paid, currency, status, created_at, hosted_invoice_url",
+          )
+          .order("created_at", { ascending: false })
+          .limit(50),
+      ]);
+
+      if (projectsRes.error) throw new Error(projectsRes.error.message);
+
+      const invoices: PortalInvoice[] = [
+        ...((ordersRes.data ?? []) as Record<string, unknown>[]).map((o) => ({
+          id: String(o["id"]),
+          kind: "commission" as const,
+          description: String(o["tier_label"] || o["product_name"] || "Commission"),
+          amount_cents: Number(o["amount_total"] ?? 0),
+          currency: String(o["currency"] ?? "usd"),
+          status: o["is_deposit"] && o["balance_status"] === "due" ? "deposit_paid" : String(o["payment_status"] ?? "paid"),
+          issued_at: String(o["created_at"] ?? ""),
+          hosted_url: null,
+          balance_due_cents:
+            o["balance_status"] === "paid" ? 0 : Number(o["balance_due_cents"] ?? 0),
+        })),
+        ...((invoicesRes.data ?? []) as Record<string, unknown>[]).map((i) => ({
+          id: String(i["id"]),
+          kind: "retainer" as const,
+          description: String(i["description"] || "Retainer invoice"),
+          amount_cents: Number(i["amount_paid"] ?? i["amount_due"] ?? 0),
+          currency: String(i["currency"] ?? "usd"),
+          status: String(i["status"] ?? "open"),
+          issued_at: String(i["created_at"] ?? ""),
+          hosted_url:
+            typeof i["hosted_invoice_url"] === "string" ? i["hosted_invoice_url"] : null,
+          balance_due_cents: 0,
+        })),
+      ].sort((a, b) => b.issued_at.localeCompare(a.issued_at));
+
+      return {
+        projects: (projectsRes.data ?? []).map(toProject),
+        invoices,
+        email: String((context.claims as { email?: string } | undefined)?.email ?? ""),
+      };
+    },
+  );
 
 // ---------- Admin management ----------
 
