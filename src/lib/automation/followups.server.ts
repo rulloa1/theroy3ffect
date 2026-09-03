@@ -1,7 +1,7 @@
 import { streamText } from "ai";
 import {
   AiGatewayBlockedError,
-  createLovableAiGatewayProvider,
+  resolveDraftingProvider,
   statusFromAiError,
 } from "@/lib/ai-gateway.server";
 import { FOLLOWUP_PLAYBOOKS, SITE_URL, type PlaybookKey } from "./playbooks";
