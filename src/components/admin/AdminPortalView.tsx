@@ -34,7 +34,7 @@ function ProjectRow({ project }: { project: PortalProject }) {
   const deleteMilestone = useServerFn(adminDeleteMilestone);
 
   const [busy, setBusy] = useState(false);
-  const [newMilestone, setNewMilestone] = useState({ title: "", note: "", link: "" });
+  const [newMilestone, setNewMilestone] = useState({ title: "", note: "", link: "", due_date: "" });
 
   const refresh = () => queryClient.invalidateQueries({ queryKey: ["admin-portal"] });
 
@@ -97,6 +97,49 @@ function ProjectRow({ project }: { project: PortalProject }) {
         </div>
       </div>
 
+      {/* Schedule + next step (drives the client timeline view) */}
+      <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-white/10 pt-4">
+        <label className="font-mono text-[10px] tracking-widest text-white/40">START</label>
+        <input
+          type="date"
+          defaultValue={project.start_date ?? ""}
+          disabled={busy}
+          onBlur={(e) =>
+            void run(
+              () => updateProject({ data: { id: project.id, start_date: e.target.value } }),
+              "Start date saved",
+            )
+          }
+          className={`${inputCls} max-w-[150px]`}
+        />
+        <label className="font-mono text-[10px] tracking-widest text-white/40">TARGET</label>
+        <input
+          type="date"
+          defaultValue={project.target_date ?? ""}
+          disabled={busy}
+          onBlur={(e) =>
+            void run(
+              () => updateProject({ data: { id: project.id, target_date: e.target.value } }),
+              "Target date saved",
+            )
+          }
+          className={`${inputCls} max-w-[150px]`}
+        />
+        <input
+          type="text"
+          placeholder="Up next for the client…"
+          defaultValue={project.next_step ?? ""}
+          disabled={busy}
+          onBlur={(e) =>
+            void run(
+              () => updateProject({ data: { id: project.id, next_step: e.target.value } }),
+              "Next step saved",
+            )
+          }
+          className={`${inputCls} min-w-[220px] flex-1`}
+        />
+      </div>
+
       {/* Milestones */}
       <div className="mt-4 space-y-2 border-t border-white/10 pt-4">
         {project.milestones.map((m) => (
@@ -116,6 +159,7 @@ function ProjectRow({ project }: { project: PortalProject }) {
                         link: m.link ?? undefined,
                         status: e.target.value as never,
                         position: m.position,
+                        due_date: m.due_date ?? undefined,
                       },
                     }),
                   "Milestone updated",
@@ -171,10 +215,11 @@ function ProjectRow({ project }: { project: PortalProject }) {
                     link: newMilestone.link.trim() || undefined,
                     status: "pending",
                     position: project.milestones.length,
+                    due_date: newMilestone.due_date || undefined,
                   },
                 }),
               "Milestone added",
-            ).then(() => setNewMilestone({ title: "", note: "", link: "" }));
+            ).then(() => setNewMilestone({ title: "", note: "", link: "", due_date: "" }));
           }}
         >
           <input
@@ -197,6 +242,13 @@ function ProjectRow({ project }: { project: PortalProject }) {
             value={newMilestone.link}
             onChange={(e) => setNewMilestone((s) => ({ ...s, link: e.target.value }))}
             className={`${inputCls} max-w-[220px]`}
+          />
+          <input
+            type="date"
+            aria-label="Milestone due date"
+            value={newMilestone.due_date}
+            onChange={(e) => setNewMilestone((s) => ({ ...s, due_date: e.target.value }))}
+            className={`${inputCls} max-w-[150px]`}
           />
           <button
             type="submit"

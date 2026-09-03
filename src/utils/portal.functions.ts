@@ -22,6 +22,8 @@ export interface PortalMilestone {
   link: string | null;
   status: string;
   position: number;
+  due_date: string | null;
+  completed_at: string | null;
   updated_at: string;
 }
 
@@ -32,9 +34,24 @@ export interface PortalProject {
   title: string;
   summary: string | null;
   status: string;
+  start_date: string | null;
+  target_date: string | null;
+  next_step: string | null;
   created_at: string;
   updated_at: string;
   milestones: PortalMilestone[];
+}
+
+export interface PortalInvoice {
+  id: string;
+  kind: "commission" | "retainer";
+  description: string;
+  amount_cents: number;
+  currency: string;
+  status: string;
+  issued_at: string;
+  hosted_url: string | null;
+  balance_due_cents: number;
 }
 
 async function assertAdmin(context: { supabase: unknown; userId: string }) {
@@ -59,6 +76,9 @@ function toProject(row: Record<string, unknown>): PortalProject {
     title: String(row["title"] ?? "Project"),
     summary: typeof row["summary"] === "string" ? row["summary"] : null,
     status: String(row["status"] ?? "onboarding"),
+    start_date: typeof row["start_date"] === "string" ? row["start_date"] : null,
+    target_date: typeof row["target_date"] === "string" ? row["target_date"] : null,
+    next_step: typeof row["next_step"] === "string" ? row["next_step"] : null,
     created_at: String(row["created_at"] ?? ""),
     updated_at: String(row["updated_at"] ?? ""),
     milestones: milestones
@@ -70,6 +90,8 @@ function toProject(row: Record<string, unknown>): PortalProject {
         link: typeof m["link"] === "string" ? m["link"] : null,
         status: String(m["status"] ?? "pending"),
         position: Number(m["position"] ?? 0),
+        due_date: typeof m["due_date"] === "string" ? m["due_date"] : null,
+        completed_at: typeof m["completed_at"] === "string" ? m["completed_at"] : null,
         updated_at: String(m["updated_at"] ?? ""),
       }))
       .sort((a, b) => a.position - b.position || a.updated_at.localeCompare(b.updated_at)),
@@ -79,15 +101,67 @@ function toProject(row: Record<string, unknown>): PortalProject {
 /** Everything the signed-in client can see in their portal. RLS scopes to their own rows. */
 export const getMyPortal = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context }): Promise<{ projects: PortalProject[] }> => {
-    const db = context.supabase as AnyClient;
-    const { data, error } = await db
-      .from("client_projects")
-      .select("*, client_milestones(*)")
-      .order("created_at", { ascending: false });
-    if (error) throw new Error(error.message);
-    return { projects: (data ?? []).map(toProject) };
-  });
+  .handler(
+    async ({
+      context,
+    }): Promise<{ projects: PortalProject[]; invoices: PortalInvoice[]; email: string }> => {
+      const db = context.supabase as AnyClient;
+      const [projectsRes, ordersRes, invoicesRes] = await Promise.all([
+        db.from("client_projects").select("*, client_milestones(*)").order("created_at", {
+          ascending: false,
+        }),
+        db
+          .from("orders")
+          .select(
+            "id, product_name, tier_label, amount_total, currency, payment_status, created_at, is_deposit, balance_due_cents, balance_status",
+          )
+          .order("created_at", { ascending: false })
+          .limit(50),
+        db
+          .from("subscription_invoices")
+          .select(
+            "id, description, amount_due, amount_paid, currency, status, created_at, hosted_invoice_url",
+          )
+          .order("created_at", { ascending: false })
+          .limit(50),
+      ]);
+
+      if (projectsRes.error) throw new Error(projectsRes.error.message);
+
+      const invoices: PortalInvoice[] = [
+        ...((ordersRes.data ?? []) as Record<string, unknown>[]).map((o) => ({
+          id: String(o["id"]),
+          kind: "commission" as const,
+          description: String(o["tier_label"] || o["product_name"] || "Commission"),
+          amount_cents: Number(o["amount_total"] ?? 0),
+          currency: String(o["currency"] ?? "usd"),
+          status: o["is_deposit"] && o["balance_status"] === "due" ? "deposit_paid" : String(o["payment_status"] ?? "paid"),
+          issued_at: String(o["created_at"] ?? ""),
+          hosted_url: null,
+          balance_due_cents:
+            o["balance_status"] === "paid" ? 0 : Number(o["balance_due_cents"] ?? 0),
+        })),
+        ...((invoicesRes.data ?? []) as Record<string, unknown>[]).map((i) => ({
+          id: String(i["id"]),
+          kind: "retainer" as const,
+          description: String(i["description"] || "Retainer invoice"),
+          amount_cents: Number(i["amount_paid"] ?? i["amount_due"] ?? 0),
+          currency: String(i["currency"] ?? "usd"),
+          status: String(i["status"] ?? "open"),
+          issued_at: String(i["created_at"] ?? ""),
+          hosted_url:
+            typeof i["hosted_invoice_url"] === "string" ? i["hosted_invoice_url"] : null,
+          balance_due_cents: 0,
+        })),
+      ].sort((a, b) => b.issued_at.localeCompare(a.issued_at));
+
+      return {
+        projects: (projectsRes.data ?? []).map(toProject),
+        invoices,
+        email: String((context.claims as { email?: string } | undefined)?.email ?? ""),
+      };
+    },
+  );
 
 // ---------- Admin management ----------
 
@@ -109,6 +183,9 @@ const projectInput = z.object({
   title: z.string().trim().min(1).max(160),
   summary: z.string().trim().max(2000).optional(),
   status: z.enum(PROJECT_STATUSES).default("onboarding"),
+  start_date: z.string().trim().regex(/^\d{4}-\d{2}-\d{2}$/).optional().or(z.literal("")),
+  target_date: z.string().trim().regex(/^\d{4}-\d{2}-\d{2}$/).optional().or(z.literal("")),
+  next_step: z.string().trim().max(400).optional(),
 });
 
 export const adminCreatePortalProject = createServerFn({ method: "POST" })
@@ -122,6 +199,9 @@ export const adminCreatePortalProject = createServerFn({ method: "POST" })
       title: data.title,
       summary: data.summary || null,
       status: data.status,
+      start_date: data.start_date || null,
+      target_date: data.target_date || null,
+      next_step: data.next_step || null,
       updated_at: new Date().toISOString(),
     });
     if (error) throw new Error(error.message);
@@ -141,6 +221,9 @@ export const adminUpdatePortalProject = createServerFn({ method: "POST" })
     if (data.title) update["title"] = data.title;
     if (data.summary !== undefined) update["summary"] = data.summary || null;
     if (data.status) update["status"] = data.status;
+    if (data.start_date !== undefined) update["start_date"] = data.start_date || null;
+    if (data.target_date !== undefined) update["target_date"] = data.target_date || null;
+    if (data.next_step !== undefined) update["next_step"] = data.next_step || null;
     const { error } = await db.from("client_projects").update(update).eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
@@ -170,6 +253,7 @@ const milestoneInput = z.object({
     .optional(),
   status: z.enum(MILESTONE_STATUSES).default("pending"),
   position: z.number().int().min(0).max(999).default(0),
+  due_date: z.string().trim().regex(/^\d{4}-\d{2}-\d{2}$/).optional().or(z.literal("")),
 });
 
 export const adminSaveMilestone = createServerFn({ method: "POST" })
@@ -185,6 +269,8 @@ export const adminSaveMilestone = createServerFn({ method: "POST" })
       link: data.link || null,
       status: data.status,
       position: data.position,
+      due_date: data.due_date || null,
+      completed_at: data.status === "done" ? new Date().toISOString() : null,
       updated_at: new Date().toISOString(),
     };
     const { error } = data.id
