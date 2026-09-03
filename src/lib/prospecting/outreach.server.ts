@@ -1,12 +1,11 @@
 import { streamText } from "ai";
 import {
   AiGatewayBlockedError,
-  createLovableAiGatewayProvider,
+  resolveDraftingProvider,
   statusFromAiError,
 } from "@/lib/ai-gateway.server";
 import { getIndustry, type ProspectSignal } from "./industries";
 
-const MODEL = "google/gemini-3-flash-preview";
 export const SITE_URL = "https://www.theroyeffect.com";
 
 const SYSTEM = `You write short cold outreach emails for Rory Ulloa, a Houston-based creative director and no-code developer at The Roy Effect (theroyeffect.com). He designs and builds websites for local businesses.
@@ -67,14 +66,12 @@ export async function generateOutreachDraft(prospect: {
   pain_score: number;
   signals: ProspectSignal[];
 }): Promise<OutreachDraft & { model: string }> {
-  const apiKey = process.env["LOVABLE_API_KEY"];
-  if (!apiKey) throw new Error("Missing LOVABLE_API_KEY");
-  const gateway = createLovableAiGatewayProvider(apiKey);
+  const { provider, model } = resolveDraftingProvider();
   const descriptor = getIndustry(prospect.industry)?.descriptor ?? "local business";
 
   try {
     const result = streamText({
-      model: gateway(MODEL),
+      model: provider(model),
       system: SYSTEM,
       prompt: [
         `Business: ${prospect.business_name} — a Houston ${descriptor}.`,
@@ -92,7 +89,7 @@ export async function generateOutreachDraft(prospect: {
         .join("\n"),
     });
     const text = await result.text;
-    return { ...parseOutreachResponse(text), model: MODEL };
+    return { ...parseOutreachResponse(text), model };
   } catch (error) {
     const status = statusFromAiError(error);
     if (status === 402 || status === 403) {
@@ -155,14 +152,12 @@ export async function generateOutreachVariants(prospect: {
   address: string | null;
   signals: ProspectSignal[];
 }): Promise<OutreachVariant[]> {
-  const apiKey = process.env["LOVABLE_API_KEY"];
-  if (!apiKey) throw new Error("Missing LOVABLE_API_KEY");
-  const gateway = createLovableAiGatewayProvider(apiKey);
+  const { provider, model } = resolveDraftingProvider();
   const descriptor = getIndustry(prospect.industry)?.descriptor ?? "local business";
 
   try {
     const result = streamText({
-      model: gateway(MODEL),
+      model: provider(model),
       system: VARIANT_SYSTEM,
       prompt: [
         `Business: ${prospect.business_name} — a Houston ${descriptor}.`,

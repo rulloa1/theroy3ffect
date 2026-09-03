@@ -1,7 +1,7 @@
 import { streamText } from "ai";
 import {
   AiGatewayBlockedError,
-  createLovableAiGatewayProvider,
+  resolveDraftingProvider,
   statusFromAiError,
 } from "@/lib/ai-gateway.server";
 import { FOLLOWUP_PLAYBOOKS, SITE_URL, type PlaybookKey } from "./playbooks";
@@ -10,7 +10,6 @@ export const JOB_KEY = "followup_autopilot";
 /** Hard cap on drafts generated per run. */
 export const BATCH_SIZE = 6;
 const LEASE_MINUTES = 5;
-const MODEL = "google/gemini-3-flash-preview";
 
 async function admin() {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -228,14 +227,12 @@ export function parseDraftResponse(raw: string): Omit<GeneratedDraft, "model"> {
 
 /** Calls the AI gateway to draft one follow-up. Throws AiGatewayBlockedError on 402/403. */
 export async function generateDraft(candidate: Candidate): Promise<GeneratedDraft> {
-  const apiKey = process.env["LOVABLE_API_KEY"];
-  if (!apiKey) throw new Error("Missing LOVABLE_API_KEY");
+  const { provider, model } = resolveDraftingProvider();
   const play = FOLLOWUP_PLAYBOOKS[candidate.playbook];
-  const gateway = createLovableAiGatewayProvider(apiKey);
 
   try {
     const result = streamText({
-      model: gateway(MODEL),
+      model: provider(model),
       system: SYSTEM,
       prompt: [
         `Situation: ${play.label}.`,
@@ -247,7 +244,7 @@ export async function generateDraft(candidate: Candidate): Promise<GeneratedDraf
       ].join("\n"),
     });
     const text = await result.text;
-    return { ...parseDraftResponse(text), model: MODEL };
+    return { ...parseDraftResponse(text), model };
   } catch (error) {
     const status = statusFromAiError(error);
     if (status === 402 || status === 403) {
