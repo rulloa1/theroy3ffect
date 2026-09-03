@@ -119,6 +119,10 @@ export function SiteFooter() {
             <Link to="/audit" className="transition-colors hover:text-[#FF3333]">
               FREE AUDIT
             </Link>
+            {" — "}
+            <Link to="/portal/login" className="transition-colors hover:text-[#FF3333]">
+              CLIENT PORTAL
+            </Link>
           </p>
         </div>
       </div>
