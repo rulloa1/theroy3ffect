@@ -22,6 +22,8 @@ export interface PortalMilestone {
   link: string | null;
   status: string;
   position: number;
+  due_date: string | null;
+  completed_at: string | null;
   updated_at: string;
 }
 
@@ -32,9 +34,24 @@ export interface PortalProject {
   title: string;
   summary: string | null;
   status: string;
+  start_date: string | null;
+  target_date: string | null;
+  next_step: string | null;
   created_at: string;
   updated_at: string;
   milestones: PortalMilestone[];
+}
+
+export interface PortalInvoice {
+  id: string;
+  kind: "commission" | "retainer";
+  description: string;
+  amount_cents: number;
+  currency: string;
+  status: string;
+  issued_at: string;
+  hosted_url: string | null;
+  balance_due_cents: number;
 }
 
 async function assertAdmin(context: { supabase: unknown; userId: string }) {
@@ -59,6 +76,9 @@ function toProject(row: Record<string, unknown>): PortalProject {
     title: String(row["title"] ?? "Project"),
     summary: typeof row["summary"] === "string" ? row["summary"] : null,
     status: String(row["status"] ?? "onboarding"),
+    start_date: typeof row["start_date"] === "string" ? row["start_date"] : null,
+    target_date: typeof row["target_date"] === "string" ? row["target_date"] : null,
+    next_step: typeof row["next_step"] === "string" ? row["next_step"] : null,
     created_at: String(row["created_at"] ?? ""),
     updated_at: String(row["updated_at"] ?? ""),
     milestones: milestones
@@ -70,6 +90,8 @@ function toProject(row: Record<string, unknown>): PortalProject {
         link: typeof m["link"] === "string" ? m["link"] : null,
         status: String(m["status"] ?? "pending"),
         position: Number(m["position"] ?? 0),
+        due_date: typeof m["due_date"] === "string" ? m["due_date"] : null,
+        completed_at: typeof m["completed_at"] === "string" ? m["completed_at"] : null,
         updated_at: String(m["updated_at"] ?? ""),
       }))
       .sort((a, b) => a.position - b.position || a.updated_at.localeCompare(b.updated_at)),
@@ -109,6 +131,9 @@ const projectInput = z.object({
   title: z.string().trim().min(1).max(160),
   summary: z.string().trim().max(2000).optional(),
   status: z.enum(PROJECT_STATUSES).default("onboarding"),
+  start_date: z.string().trim().regex(/^\d{4}-\d{2}-\d{2}$/).optional().or(z.literal("")),
+  target_date: z.string().trim().regex(/^\d{4}-\d{2}-\d{2}$/).optional().or(z.literal("")),
+  next_step: z.string().trim().max(400).optional(),
 });
 
 export const adminCreatePortalProject = createServerFn({ method: "POST" })
@@ -122,6 +147,9 @@ export const adminCreatePortalProject = createServerFn({ method: "POST" })
       title: data.title,
       summary: data.summary || null,
       status: data.status,
+      start_date: data.start_date || null,
+      target_date: data.target_date || null,
+      next_step: data.next_step || null,
       updated_at: new Date().toISOString(),
     });
     if (error) throw new Error(error.message);
@@ -141,6 +169,9 @@ export const adminUpdatePortalProject = createServerFn({ method: "POST" })
     if (data.title) update["title"] = data.title;
     if (data.summary !== undefined) update["summary"] = data.summary || null;
     if (data.status) update["status"] = data.status;
+    if (data.start_date !== undefined) update["start_date"] = data.start_date || null;
+    if (data.target_date !== undefined) update["target_date"] = data.target_date || null;
+    if (data.next_step !== undefined) update["next_step"] = data.next_step || null;
     const { error } = await db.from("client_projects").update(update).eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
@@ -170,6 +201,7 @@ const milestoneInput = z.object({
     .optional(),
   status: z.enum(MILESTONE_STATUSES).default("pending"),
   position: z.number().int().min(0).max(999).default(0),
+  due_date: z.string().trim().regex(/^\d{4}-\d{2}-\d{2}$/).optional().or(z.literal("")),
 });
 
 export const adminSaveMilestone = createServerFn({ method: "POST" })
@@ -185,6 +217,8 @@ export const adminSaveMilestone = createServerFn({ method: "POST" })
       link: data.link || null,
       status: data.status,
       position: data.position,
+      due_date: data.due_date || null,
+      completed_at: data.status === "done" ? new Date().toISOString() : null,
       updated_at: new Date().toISOString(),
     };
     const { error } = data.id
