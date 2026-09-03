@@ -377,6 +377,18 @@ export const Route = createFileRoute("/api/public/payments/webhook")({
               // settle — wait for async_payment_succeeded before fulfilling.
               if (session.payment_status !== "unpaid") {
                 await handleCheckoutCompleted(stripe, session, env);
+                if (session.metadata?.["purpose"] === "discovery_call") {
+                  const { fulfillPaidDiscoveryBooking } = await import(
+                    "@/lib/booking/discovery-payment.server"
+                  );
+                  await fulfillPaidDiscoveryBooking({
+                    id: session.id,
+                    amountTotal: session.amount_total ?? 0,
+                    currency: session.currency ?? "usd",
+                    email: session.customer_details?.email ?? session.customer_email ?? null,
+                    metadata: (session.metadata ?? {}) as Record<string, string | undefined>,
+                  });
+                }
               }
               break;
             }
