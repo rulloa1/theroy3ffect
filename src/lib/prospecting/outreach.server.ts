@@ -67,14 +67,12 @@ export async function generateOutreachDraft(prospect: {
   pain_score: number;
   signals: ProspectSignal[];
 }): Promise<OutreachDraft & { model: string }> {
-  const apiKey = process.env["LOVABLE_API_KEY"];
-  if (!apiKey) throw new Error("Missing LOVABLE_API_KEY");
-  const gateway = createLovableAiGatewayProvider(apiKey);
+  const { provider, model } = resolveDraftingProvider();
   const descriptor = getIndustry(prospect.industry)?.descriptor ?? "local business";
 
   try {
     const result = streamText({
-      model: gateway(MODEL),
+      model: provider(model),
       system: SYSTEM,
       prompt: [
         `Business: ${prospect.business_name} — a Houston ${descriptor}.`,
@@ -155,14 +153,12 @@ export async function generateOutreachVariants(prospect: {
   address: string | null;
   signals: ProspectSignal[];
 }): Promise<OutreachVariant[]> {
-  const apiKey = process.env["LOVABLE_API_KEY"];
-  if (!apiKey) throw new Error("Missing LOVABLE_API_KEY");
-  const gateway = createLovableAiGatewayProvider(apiKey);
+  const { provider, model } = resolveDraftingProvider();
   const descriptor = getIndustry(prospect.industry)?.descriptor ?? "local business";
 
   try {
     const result = streamText({
-      model: gateway(MODEL),
+      model: provider(model),
       system: VARIANT_SYSTEM,
       prompt: [
         `Business: ${prospect.business_name} — a Houston ${descriptor}.`,

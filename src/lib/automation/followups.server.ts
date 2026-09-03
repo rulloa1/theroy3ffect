@@ -228,14 +228,12 @@ export function parseDraftResponse(raw: string): Omit<GeneratedDraft, "model"> {
 
 /** Calls the AI gateway to draft one follow-up. Throws AiGatewayBlockedError on 402/403. */
 export async function generateDraft(candidate: Candidate): Promise<GeneratedDraft> {
-  const apiKey = process.env["LOVABLE_API_KEY"];
-  if (!apiKey) throw new Error("Missing LOVABLE_API_KEY");
+  const { provider, model } = resolveDraftingProvider();
   const play = FOLLOWUP_PLAYBOOKS[candidate.playbook];
-  const gateway = createLovableAiGatewayProvider(apiKey);
 
   try {
     const result = streamText({
-      model: gateway(MODEL),
+      model: provider(model),
       system: SYSTEM,
       prompt: [
         `Situation: ${play.label}.`,
