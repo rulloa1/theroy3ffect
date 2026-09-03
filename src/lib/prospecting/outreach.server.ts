@@ -90,7 +90,7 @@ export async function generateOutreachDraft(prospect: {
         .join("\n"),
     });
     const text = await result.text;
-    return { ...parseOutreachResponse(text), model: MODEL };
+    return { ...parseOutreachResponse(text), model };
   } catch (error) {
     const status = statusFromAiError(error);
     if (status === 402 || status === 403) {

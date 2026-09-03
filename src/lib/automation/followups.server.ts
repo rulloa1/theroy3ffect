@@ -245,7 +245,7 @@ export async function generateDraft(candidate: Candidate): Promise<GeneratedDraf
       ].join("\n"),
     });
     const text = await result.text;
-    return { ...parseDraftResponse(text), model: MODEL };
+    return { ...parseDraftResponse(text), model };
   } catch (error) {
     const status = statusFromAiError(error);
     if (status === 402 || status === 403) {
