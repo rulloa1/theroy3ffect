@@ -870,46 +870,58 @@ export type Database = {
       }
       voice_bookings: {
         Row: {
+          amount_paid_cents: number
           created_at: string
+          currency: string
           email: string
           full_name: string
           id: string
           lead_id: string | null
           meeting_reference: string | null
+          payment_status: string
           phone: string | null
           slot_end: string
           slot_start: string
           status: string
+          stripe_session_id: string | null
           time_zone: string
           updated_at: string
           vapi_call_id: string | null
         }
         Insert: {
+          amount_paid_cents?: number
           created_at?: string
+          currency?: string
           email: string
           full_name: string
           id?: string
           lead_id?: string | null
           meeting_reference?: string | null
+          payment_status?: string
           phone?: string | null
           slot_end: string
           slot_start: string
           status?: string
+          stripe_session_id?: string | null
           time_zone?: string
           updated_at?: string
           vapi_call_id?: string | null
         }
         Update: {
+          amount_paid_cents?: number
           created_at?: string
+          currency?: string
           email?: string
           full_name?: string
           id?: string
           lead_id?: string | null
           meeting_reference?: string | null
+          payment_status?: string
           phone?: string | null
           slot_end?: string
           slot_start?: string
           status?: string
+          stripe_session_id?: string | null
           time_zone?: string
           updated_at?: string
           vapi_call_id?: string | null
