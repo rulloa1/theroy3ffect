@@ -88,7 +88,7 @@ export function BookingCalendar() {
           setResult({ spoken_time: res.spokenTime, time_zone: res.timeZone });
           window.history.replaceState({}, "", window.location.pathname);
         } else {
-          toast.error(res.message);
+          toast.error((res as { message?: string }).message ?? "Payment could not be confirmed.");
         }
       })
       .catch(() => toast.error("We could not confirm that payment."))
