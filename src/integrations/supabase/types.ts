@@ -58,7 +58,9 @@ export type Database = {
       }
       client_milestones: {
         Row: {
+          completed_at: string | null
           created_at: string
+          due_date: string | null
           id: string
           link: string | null
           note: string | null
@@ -69,7 +71,9 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          completed_at?: string | null
           created_at?: string
+          due_date?: string | null
           id?: string
           link?: string | null
           note?: string | null
@@ -80,7 +84,9 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          completed_at?: string | null
           created_at?: string
+          due_date?: string | null
           id?: string
           link?: string | null
           note?: string | null
@@ -105,8 +111,11 @@ export type Database = {
           client_email: string
           created_at: string
           id: string
+          next_step: string | null
+          start_date: string | null
           status: string
           summary: string | null
+          target_date: string | null
           title: string
           updated_at: string
           user_id: string | null
@@ -115,8 +124,11 @@ export type Database = {
           client_email: string
           created_at?: string
           id?: string
+          next_step?: string | null
+          start_date?: string | null
           status?: string
           summary?: string | null
+          target_date?: string | null
           title: string
           updated_at?: string
           user_id?: string | null
@@ -125,8 +137,11 @@ export type Database = {
           client_email?: string
           created_at?: string
           id?: string
+          next_step?: string | null
+          start_date?: string | null
           status?: string
           summary?: string | null
+          target_date?: string | null
           title?: string
           updated_at?: string
           user_id?: string | null
