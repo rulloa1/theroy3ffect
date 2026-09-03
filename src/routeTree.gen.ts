@@ -29,6 +29,7 @@ import { Route as CheckoutReturnRouteImport } from './routes/checkout.return'
 import { Route as GuidesHoustonWebsiteCostRouteImport } from './routes/guides.houston-website-cost'
 import { Route as GuidesSquarespaceVsCustomWebsiteRouteImport } from './routes/guides.squarespace-vs-custom-website'
 import { Route as GuidesWebsiteAuditChecklistRouteImport } from './routes/guides.website-audit-checklist'
+import { Route as PortalLoginRouteImport } from './routes/portal.login'
 import { Route as ProposalTokenRouteImport } from './routes/proposal.$token'
 import { Route as SiteReportTokenRouteImport } from './routes/site-report.$token'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
@@ -145,6 +146,11 @@ const GuidesWebsiteAuditChecklistRoute =
     path: '/guides/website-audit-checklist',
     getParentRoute: () => rootRouteImport,
   } as any)
+const PortalLoginRoute = PortalLoginRouteImport.update({
+  id: '/portal/login',
+  path: '/portal/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProposalTokenRoute = ProposalTokenRouteImport.update({
   id: '/proposal/$token',
   path: '/proposal/$token',
@@ -227,6 +233,7 @@ export interface FileRoutesByFullPath {
   '/guides/houston-website-cost': typeof GuidesHoustonWebsiteCostRoute
   '/guides/squarespace-vs-custom-website': typeof GuidesSquarespaceVsCustomWebsiteRoute
   '/guides/website-audit-checklist': typeof GuidesWebsiteAuditChecklistRoute
+  '/portal/login': typeof PortalLoginRoute
   '/proposal/$token': typeof ProposalTokenRoute
   '/site-report/$token': typeof SiteReportTokenRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
@@ -259,6 +266,7 @@ export interface FileRoutesByTo {
   '/guides/houston-website-cost': typeof GuidesHoustonWebsiteCostRoute
   '/guides/squarespace-vs-custom-website': typeof GuidesSquarespaceVsCustomWebsiteRoute
   '/guides/website-audit-checklist': typeof GuidesWebsiteAuditChecklistRoute
+  '/portal/login': typeof PortalLoginRoute
   '/proposal/$token': typeof ProposalTokenRoute
   '/site-report/$token': typeof SiteReportTokenRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
@@ -293,6 +301,7 @@ export interface FileRoutesById {
   '/guides/houston-website-cost': typeof GuidesHoustonWebsiteCostRoute
   '/guides/squarespace-vs-custom-website': typeof GuidesSquarespaceVsCustomWebsiteRoute
   '/guides/website-audit-checklist': typeof GuidesWebsiteAuditChecklistRoute
+  '/portal/login': typeof PortalLoginRoute
   '/proposal/$token': typeof ProposalTokenRoute
   '/site-report/$token': typeof SiteReportTokenRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
@@ -327,6 +336,7 @@ export interface FileRouteTypes {
     | '/guides/houston-website-cost'
     | '/guides/squarespace-vs-custom-website'
     | '/guides/website-audit-checklist'
+    | '/portal/login'
     | '/proposal/$token'
     | '/site-report/$token'
     | '/.mcp/invoke-tool/$tool'
@@ -359,6 +369,7 @@ export interface FileRouteTypes {
     | '/guides/houston-website-cost'
     | '/guides/squarespace-vs-custom-website'
     | '/guides/website-audit-checklist'
+    | '/portal/login'
     | '/proposal/$token'
     | '/site-report/$token'
     | '/.mcp/invoke-tool/$tool'
@@ -392,6 +403,7 @@ export interface FileRouteTypes {
     | '/guides/houston-website-cost'
     | '/guides/squarespace-vs-custom-website'
     | '/guides/website-audit-checklist'
+    | '/portal/login'
     | '/proposal/$token'
     | '/site-report/$token'
     | '/.mcp/invoke-tool/$tool'
@@ -423,6 +435,7 @@ export interface RootRouteChildren {
   GuidesHoustonWebsiteCostRoute: typeof GuidesHoustonWebsiteCostRoute
   GuidesSquarespaceVsCustomWebsiteRoute: typeof GuidesSquarespaceVsCustomWebsiteRoute
   GuidesWebsiteAuditChecklistRoute: typeof GuidesWebsiteAuditChecklistRoute
+  PortalLoginRoute: typeof PortalLoginRoute
   ProposalTokenRoute: typeof ProposalTokenRoute
   SiteReportTokenRoute: typeof SiteReportTokenRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
@@ -578,6 +591,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GuidesWebsiteAuditChecklistRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/portal/login': {
+      id: '/portal/login'
+      path: '/portal/login'
+      fullPath: '/portal/login'
+      preLoaderRoute: typeof PortalLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/proposal/$token': {
       id: '/proposal/$token'
       path: '/proposal/$token'
@@ -692,6 +712,7 @@ const rootRouteChildren: RootRouteChildren = {
   GuidesHoustonWebsiteCostRoute: GuidesHoustonWebsiteCostRoute,
   GuidesSquarespaceVsCustomWebsiteRoute: GuidesSquarespaceVsCustomWebsiteRoute,
   GuidesWebsiteAuditChecklistRoute: GuidesWebsiteAuditChecklistRoute,
+  PortalLoginRoute: PortalLoginRoute,
   ProposalTokenRoute: ProposalTokenRoute,
   SiteReportTokenRoute: SiteReportTokenRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
