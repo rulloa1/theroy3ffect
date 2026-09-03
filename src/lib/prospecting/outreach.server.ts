@@ -6,7 +6,6 @@ import {
 } from "@/lib/ai-gateway.server";
 import { getIndustry, type ProspectSignal } from "./industries";
 
-const MODEL = "google/gemini-3-flash-preview";
 export const SITE_URL = "https://www.theroyeffect.com";
 
 const SYSTEM = `You write short cold outreach emails for Rory Ulloa, a Houston-based creative director and no-code developer at The Roy Effect (theroyeffect.com). He designs and builds websites for local businesses.

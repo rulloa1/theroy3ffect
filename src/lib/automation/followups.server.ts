@@ -10,7 +10,6 @@ export const JOB_KEY = "followup_autopilot";
 /** Hard cap on drafts generated per run. */
 export const BATCH_SIZE = 6;
 const LEASE_MINUTES = 5;
-const MODEL = "google/gemini-3-flash-preview";
 
 async function admin() {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
