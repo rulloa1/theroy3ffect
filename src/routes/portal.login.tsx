@@ -51,6 +51,21 @@ function PortalLoginPage() {
     if (!loading && user) void navigate({ to: "/portal", replace: true });
   }, [user, loading, navigate]);
 
+  // Surface OAuth failures: the provider redirects back here with error params.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const hash = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+    const description =
+      params.get("error_description") ??
+      hash.get("error_description") ??
+      params.get("error") ??
+      hash.get("error");
+    if (description) {
+      toast.error(decodeURIComponent(description.replace(/\+/g, " ")));
+      window.history.replaceState(null, "", window.location.pathname);
+    }
+  }, []);
+
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     const parsed = schema.safeParse({ email, password });
