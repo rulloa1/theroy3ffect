@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -12,7 +12,15 @@ import {
   Loader2,
   LogOut,
 } from "lucide-react";
+import { EmbeddedCheckout, EmbeddedCheckoutProvider } from "@stripe/react-stripe-js";
+import { toast } from "sonner";
+import { Toaster } from "@/components/ui/sonner";
 import { Logo } from "@/components/Logo";
+import { getStripe, getStripeEnvironment } from "@/lib/stripe";
+import {
+  confirmBalancePayment,
+  createBalanceCheckoutSession,
+} from "@/utils/payments.functions";
 import { supabase } from "@/integrations/supabase/client";
 import {
   getMyPortal,
@@ -195,7 +203,13 @@ function Timeline({ project }: { project: PortalProject }) {
   );
 }
 
-function Invoices({ invoices }: { invoices: PortalInvoice[] }) {
+function Invoices({
+  invoices,
+  onPayBalance,
+}: {
+  invoices: PortalInvoice[];
+  onPayBalance: (orderId: string) => void;
+}) {
   if (invoices.length === 0) {
     return (
       <p className="font-mono text-xs text-white/40">
@@ -243,6 +257,15 @@ function Invoices({ invoices }: { invoices: PortalInvoice[] }) {
             <span className="font-mono text-sm text-white">
               {money(inv.amount_cents, inv.currency)}
             </span>
+            {inv.kind === "commission" && inv.balance_due_cents > 0 && (
+              <button
+                type="button"
+                onClick={() => onPayBalance(inv.id)}
+                className="inline-flex items-center gap-1.5 border border-[#FF3333] bg-[#FF3333]/10 px-3 py-1.5 font-mono text-[10px] tracking-widest text-[#FF3333] transition-colors hover:bg-[#FF3333] hover:text-black"
+              >
+                PAY {money(inv.balance_due_cents, inv.currency)}
+              </button>
+            )}
             {inv.hosted_url && (
               <a
                 href={inv.hosted_url}
@@ -415,7 +438,9 @@ function PortalPage() {
                   <p className="font-mono text-xs text-white/40">No timeline yet.</p>
                 ))}
 
-              {tab === "invoices" && <Invoices invoices={invoices} />}
+              {tab === "invoices" && (
+                <Invoices invoices={invoices} onPayBalance={setPayingOrderId} />
+              )}
             </div>
           </>
         )}
