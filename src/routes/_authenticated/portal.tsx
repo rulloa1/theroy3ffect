@@ -297,11 +297,50 @@ function PortalPage() {
   const queryClient = useQueryClient();
   const [tab, setTab] = useState<Tab>("overview");
   const [activeProjectId, setActiveProjectId] = useState<string | null>(null);
+  const [payingOrderId, setPayingOrderId] = useState<string | null>(null);
+  const startBalanceCheckout = useServerFn(createBalanceCheckoutSession);
+  const confirmBalance = useServerFn(confirmBalancePayment);
 
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ["client-portal"],
     queryFn: () => fetchPortal(),
   });
+
+  const fetchClientSecret = useCallback(async (): Promise<string> => {
+    if (!payingOrderId) throw new Error("No invoice selected");
+    const res = await startBalanceCheckout({
+      data: {
+        orderId: payingOrderId,
+        returnUrl: `${window.location.origin}/portal?balance_session={CHECKOUT_SESSION_ID}`,
+        environment: getStripeEnvironment(),
+      },
+    });
+    if ("error" in res) throw new Error(res.error);
+    if (!res.clientSecret) throw new Error("Checkout could not be started");
+    return res.clientSecret;
+  }, [payingOrderId, startBalanceCheckout]);
+
+  // Confirm settlement when Stripe returns the client to the portal.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const sessionId = params.get("balance_session");
+    if (!sessionId) return;
+    window.history.replaceState({}, "", "/portal");
+    void (async () => {
+      const res = await confirmBalance({
+        data: { sessionId, environment: getStripeEnvironment() },
+      });
+      if (res.paid) {
+        toast.success("Balance paid — thank you!");
+        await refetch();
+      } else if (res.error) {
+        toast.error(res.error);
+      } else {
+        toast.message("Payment is processing. We'll update your invoice once it settles.");
+      }
+      setTab("invoices");
+    })();
+  }, [confirmBalance, refetch]);
 
   const projects = data?.projects ?? [];
   const invoices = data?.invoices ?? [];
@@ -316,6 +355,31 @@ function PortalPage() {
     await supabase.auth.signOut();
     void navigate({ to: "/portal/login", replace: true });
   };
+
+  if (payingOrderId) {
+    return (
+      <main className="min-h-screen bg-[#030014] px-5 py-16 md:px-10">
+        <Toaster />
+        <div className="mx-auto max-w-3xl">
+          <Logo variant="compact" size="md" href="/" className="mb-6" />
+          <div className="mb-6 flex items-center justify-between gap-4">
+            <h1 className="font-display text-2xl uppercase text-white">PAY REMAINING BALANCE</h1>
+            <button
+              type="button"
+              onClick={() => setPayingOrderId(null)}
+              className="border border-white/20 px-3 py-1.5 font-mono text-[10px] tracking-widest text-white/70 hover:border-white/50"
+            >
+              CANCEL
+            </button>
+          </div>
+          <EmbeddedCheckoutProvider stripe={getStripe()} options={{ fetchClientSecret }}>
+            <EmbeddedCheckout />
+          </EmbeddedCheckoutProvider>
+        </div>
+      </main>
+    );
+  }
+
 
   return (
     <main className="min-h-screen bg-[#030014] px-5 py-16 md:px-10">
