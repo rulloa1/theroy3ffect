@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { requireAutomationToken } from "@/lib/http/public-endpoint";
 
 /**
  * Scheduled entry point for the prospect → CRM sync.
@@ -9,15 +10,8 @@ export const Route = createFileRoute("/api/public/automation/prospect-sync")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const provided = request.headers.get("x-automation-token") ?? "";
-        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const db = supabaseAdmin as any;
-
-        const { data: expected } = await db.rpc("automation_cron_token");
-        if (!expected || provided.length !== String(expected).length || provided !== expected) {
-          return new Response("Unauthorized", { status: 401 });
-        }
+        const denied = await requireAutomationToken(request);
+        if (denied) return denied;
 
         try {
           const { syncProspectCrm } = await import("@/lib/prospecting/crm.server");
