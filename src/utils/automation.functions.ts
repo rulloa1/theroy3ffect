@@ -1,20 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-
-async function assertAdmin(context: {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  supabase: any;
-  userId: string;
-}) {
-  const { data } = await context.supabase
-    .from("user_roles")
-    .select("role")
-    .eq("user_id", context.userId)
-    .eq("role", "admin")
-    .maybeSingle();
-  if (!data) throw new Error("Forbidden");
-}
+import { assertAdmin } from "@/utils/require-admin";
 
 export interface FollowupDraft {
   id: string;

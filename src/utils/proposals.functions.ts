@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { assertAdmin } from "@/utils/require-admin";
 
 export interface ProjectProposal {
   id: string;
@@ -32,6 +33,7 @@ export const DEFAULT_TERMS = `1. SCOPE & DELIVERABLES: The Roy Effect ("Studio")
 export const adminListProposals = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<ProjectProposal[]> => {
+    await assertAdmin(context);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data, error } = await supabaseAdmin
       .from("project_proposals")
@@ -68,8 +70,10 @@ export const adminCreateProposal = createServerFn({ method: "POST" })
   )
   .handler(
     async ({
+      context,
       data: input,
     }): Promise<{ success: boolean; proposal?: ProjectProposal; error?: string }> => {
+      await assertAdmin(context);
       const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
       // Full 32-char hex token (128-bit) — unguessable share link secret.
       // Must stay >= 20 chars to satisfy the public shareTokenSchema validator.
@@ -110,7 +114,8 @@ export const adminCreateProposal = createServerFn({ method: "POST" })
 export const adminDeleteProposal = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: { id: string }) => input)
-  .handler(async ({ data: input }): Promise<{ success: boolean; error?: string }> => {
+  .handler(async ({ context, data: input }): Promise<{ success: boolean; error?: string }> => {
+    await assertAdmin(context);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await supabaseAdmin.from("project_proposals").delete().eq("id", input.id);
     if (error) return { success: false, error: error.message };

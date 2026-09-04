@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { assertAdmin } from "@/utils/require-admin";
 
 /** New portal tables are not yet in the generated Database types. */
 type AnyClient = { from: (table: string) => any };
@@ -52,17 +53,6 @@ export interface PortalInvoice {
   issued_at: string;
   hosted_url: string | null;
   balance_due_cents: number;
-}
-
-async function assertAdmin(context: { supabase: unknown; userId: string }) {
-  const db = context.supabase as AnyClient;
-  const { data } = await db
-    .from("user_roles")
-    .select("role")
-    .eq("user_id", context.userId)
-    .eq("role", "admin")
-    .maybeSingle();
-  if (!data) throw new Error("Forbidden");
 }
 
 function toProject(row: Record<string, unknown>): PortalProject {

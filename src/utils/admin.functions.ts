@@ -1,31 +1,9 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { assertAdmin } from "@/utils/require-admin";
 import { type StripeEnv, createStripeClient, getStripeErrorMessage } from "@/lib/stripe.server";
 
 const env = (value: unknown): StripeEnv => (value === "live" ? "live" : "sandbox");
-
-async function assertAdmin(context: {
-  supabase: {
-    from: (table: string) => {
-      select: (cols: string) => {
-        eq: (col: string, val: unknown) => {
-          eq: (col: string, val: unknown) => {
-            maybeSingle: () => Promise<{ data: unknown }>;
-          };
-        };
-      };
-    };
-  };
-  userId: string;
-}) {
-  const { data } = await context.supabase
-    .from("user_roles")
-    .select("role")
-    .eq("user_id", context.userId)
-    .eq("role", "admin")
-    .maybeSingle();
-  if (!data) throw new Error("Forbidden");
-}
 
 export interface AdminBrief {
   id: string;
