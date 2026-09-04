@@ -383,6 +383,7 @@ function PortalPage() {
 
   return (
     <main className="min-h-screen bg-[#030014] px-5 py-16 md:px-10">
+      <Toaster />
       <div className="mx-auto max-w-5xl">
         <Logo variant="compact" size="md" href="/" className="mb-6" />
         <div className="flex flex-wrap items-end justify-between gap-4">
