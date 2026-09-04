@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { DEPOSIT_BALANCE_CENTS } from "@/lib/commerce-catalog";
 import {
   assertValidPriceId,
