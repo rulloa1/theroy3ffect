@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -12,7 +12,15 @@ import {
   Loader2,
   LogOut,
 } from "lucide-react";
+import { EmbeddedCheckout, EmbeddedCheckoutProvider } from "@stripe/react-stripe-js";
+import { toast } from "sonner";
+import { Toaster } from "@/components/ui/sonner";
 import { Logo } from "@/components/Logo";
+import { getStripe, getStripeEnvironment } from "@/lib/stripe";
+import {
+  confirmBalancePayment,
+  createBalanceCheckoutSession,
+} from "@/utils/payments.functions";
 import { supabase } from "@/integrations/supabase/client";
 import {
   getMyPortal,
@@ -195,7 +203,13 @@ function Timeline({ project }: { project: PortalProject }) {
   );
 }
 
-function Invoices({ invoices }: { invoices: PortalInvoice[] }) {
+function Invoices({
+  invoices,
+  onPayBalance,
+}: {
+  invoices: PortalInvoice[];
+  onPayBalance: (orderId: string) => void;
+}) {
   if (invoices.length === 0) {
     return (
       <p className="font-mono text-xs text-white/40">
@@ -243,6 +257,15 @@ function Invoices({ invoices }: { invoices: PortalInvoice[] }) {
             <span className="font-mono text-sm text-white">
               {money(inv.amount_cents, inv.currency)}
             </span>
+            {inv.kind === "commission" && inv.balance_due_cents > 0 && (
+              <button
+                type="button"
+                onClick={() => onPayBalance(inv.id)}
+                className="inline-flex items-center gap-1.5 border border-[#FF3333] bg-[#FF3333]/10 px-3 py-1.5 font-mono text-[10px] tracking-widest text-[#FF3333] transition-colors hover:bg-[#FF3333] hover:text-black"
+              >
+                PAY {money(inv.balance_due_cents, inv.currency)}
+              </button>
+            )}
             {inv.hosted_url && (
               <a
                 href={inv.hosted_url}
@@ -274,11 +297,50 @@ function PortalPage() {
   const queryClient = useQueryClient();
   const [tab, setTab] = useState<Tab>("overview");
   const [activeProjectId, setActiveProjectId] = useState<string | null>(null);
+  const [payingOrderId, setPayingOrderId] = useState<string | null>(null);
+  const startBalanceCheckout = useServerFn(createBalanceCheckoutSession);
+  const confirmBalance = useServerFn(confirmBalancePayment);
 
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ["client-portal"],
     queryFn: () => fetchPortal(),
   });
+
+  const fetchClientSecret = useCallback(async (): Promise<string> => {
+    if (!payingOrderId) throw new Error("No invoice selected");
+    const res = await startBalanceCheckout({
+      data: {
+        orderId: payingOrderId,
+        returnUrl: `${window.location.origin}/portal?balance_session={CHECKOUT_SESSION_ID}`,
+        environment: getStripeEnvironment(),
+      },
+    });
+    if ("error" in res) throw new Error(res.error);
+    if (!res.clientSecret) throw new Error("Checkout could not be started");
+    return res.clientSecret;
+  }, [payingOrderId, startBalanceCheckout]);
+
+  // Confirm settlement when Stripe returns the client to the portal.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const sessionId = params.get("balance_session");
+    if (!sessionId) return;
+    window.history.replaceState({}, "", "/portal");
+    void (async () => {
+      const res = await confirmBalance({
+        data: { sessionId, environment: getStripeEnvironment() },
+      });
+      if (res.paid) {
+        toast.success("Balance paid — thank you!");
+        await refetch();
+      } else if (res.error) {
+        toast.error(res.error);
+      } else {
+        toast.message("Payment is processing. We'll update your invoice once it settles.");
+      }
+      setTab("invoices");
+    })();
+  }, [confirmBalance, refetch]);
 
   const projects = data?.projects ?? [];
   const invoices = data?.invoices ?? [];
@@ -294,8 +356,34 @@ function PortalPage() {
     void navigate({ to: "/portal/login", replace: true });
   };
 
+  if (payingOrderId) {
+    return (
+      <main className="min-h-screen bg-[#030014] px-5 py-16 md:px-10">
+        <Toaster />
+        <div className="mx-auto max-w-3xl">
+          <Logo variant="compact" size="md" href="/" className="mb-6" />
+          <div className="mb-6 flex items-center justify-between gap-4">
+            <h1 className="font-display text-2xl uppercase text-white">PAY REMAINING BALANCE</h1>
+            <button
+              type="button"
+              onClick={() => setPayingOrderId(null)}
+              className="border border-white/20 px-3 py-1.5 font-mono text-[10px] tracking-widest text-white/70 hover:border-white/50"
+            >
+              CANCEL
+            </button>
+          </div>
+          <EmbeddedCheckoutProvider stripe={getStripe()} options={{ fetchClientSecret }}>
+            <EmbeddedCheckout />
+          </EmbeddedCheckoutProvider>
+        </div>
+      </main>
+    );
+  }
+
+
   return (
     <main className="min-h-screen bg-[#030014] px-5 py-16 md:px-10">
+      <Toaster />
       <div className="mx-auto max-w-5xl">
         <Logo variant="compact" size="md" href="/" className="mb-6" />
         <div className="flex flex-wrap items-end justify-between gap-4">
@@ -415,7 +503,9 @@ function PortalPage() {
                   <p className="font-mono text-xs text-white/40">No timeline yet.</p>
                 ))}
 
-              {tab === "invoices" && <Invoices invoices={invoices} />}
+              {tab === "invoices" && (
+                <Invoices invoices={invoices} onPayBalance={setPayingOrderId} />
+              )}
             </div>
           </>
         )}

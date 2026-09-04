@@ -113,7 +113,7 @@ export const getMyPortal = createServerFn({ method: "GET" })
         db
           .from("orders")
           .select(
-            "id, product_name, tier_label, amount_total, currency, payment_status, created_at, is_deposit, balance_due_cents, balance_status",
+            "id, product_name, tier_label, amount_total, currency, payment_status, created_at, is_deposit, balance_due_cents, balance_status, balance_paid_cents",
           )
           .order("created_at", { ascending: false })
           .limit(50),
@@ -129,18 +129,27 @@ export const getMyPortal = createServerFn({ method: "GET" })
       if (projectsRes.error) throw new Error(projectsRes.error.message);
 
       const invoices: PortalInvoice[] = [
-        ...((ordersRes.data ?? []) as Record<string, unknown>[]).map((o) => ({
-          id: String(o["id"]),
-          kind: "commission" as const,
-          description: String(o["tier_label"] || o["product_name"] || "Commission"),
-          amount_cents: Number(o["amount_total"] ?? 0),
-          currency: String(o["currency"] ?? "usd"),
-          status: o["is_deposit"] && o["balance_status"] === "due" ? "deposit_paid" : String(o["payment_status"] ?? "paid"),
-          issued_at: String(o["created_at"] ?? ""),
-          hosted_url: null,
-          balance_due_cents:
-            o["balance_status"] === "paid" ? 0 : Number(o["balance_due_cents"] ?? 0),
-        })),
+        ...((ordersRes.data ?? []) as Record<string, unknown>[]).map((o) => {
+          const balancePaid = o["balance_status"] === "paid";
+          const balanceDue = Number(o["balance_due_cents"] ?? 0);
+          return {
+            id: String(o["id"]),
+            kind: "commission" as const,
+            description: String(o["tier_label"] || o["product_name"] || "Commission"),
+            amount_cents:
+              Number(o["amount_total"] ?? 0) +
+              (balancePaid ? Number(o["balance_paid_cents"] ?? balanceDue) : 0),
+            currency: String(o["currency"] ?? "usd"),
+            status: o["is_deposit"]
+              ? balancePaid
+                ? "paid_in_full"
+                : "deposit_paid"
+              : String(o["payment_status"] ?? "paid"),
+            issued_at: String(o["created_at"] ?? ""),
+            hosted_url: null,
+            balance_due_cents: balancePaid ? 0 : balanceDue,
+          };
+        }),
         ...((invoicesRes.data ?? []) as Record<string, unknown>[]).map((i) => ({
           id: String(i["id"]),
           kind: "retainer" as const,

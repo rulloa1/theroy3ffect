@@ -376,8 +376,20 @@ export const Route = createFileRoute("/api/public/payments/webhook")({
               // Delayed methods (SEPA, boleto...) stay "unpaid" until they
               // settle — wait for async_payment_succeeded before fulfilling.
               if (session.payment_status !== "unpaid") {
+                const purpose = session.metadata?.["purpose"];
+                if (purpose === "commission_balance") {
+                  const { settleCommissionBalance } = await import(
+                    "@/lib/booking/balance-payment.server"
+                  );
+                  await settleCommissionBalance({
+                    sessionId: session.id,
+                    amountTotal: session.amount_total ?? 0,
+                    metadata: (session.metadata ?? {}) as Record<string, string | undefined>,
+                  });
+                  break;
+                }
                 await handleCheckoutCompleted(stripe, session, env);
-                if (session.metadata?.["purpose"] === "discovery_call") {
+                if (purpose === "discovery_call") {
                   const { fulfillPaidDiscoveryBooking } = await import(
                     "@/lib/booking/discovery-payment.server"
                   );
