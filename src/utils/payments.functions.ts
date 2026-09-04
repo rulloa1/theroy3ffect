@@ -19,7 +19,6 @@ export const createCommissionCheckoutSession = createServerFn({ method: "POST" }
       quantity?: number | undefined;
       tierLabel?: string | undefined;
       customerEmail?: string | undefined;
-      userId?: string | undefined;
       returnUrl: string;
       environment: StripeEnv;
     }) => {
@@ -31,6 +30,11 @@ export const createCommissionCheckoutSession = createServerFn({ method: "POST" }
   .handler(async ({ data }): Promise<CheckoutSessionResult> => {
     try {
       const stripe = createStripeClient(data.environment);
+
+      // Taken from the caller's verified token, never from the request body:
+      // this id decides which account the resulting order is filed under.
+      const { getOptionalUserId } = await import("@/lib/auth/current-user.server");
+      const userId = await getOptionalUserId();
 
       const requestedKeys = [data.priceId, ...(data.addOnPriceIds ?? [])];
       const prices = await stripe.prices.list({ lookup_keys: requestedKeys });
@@ -69,7 +73,7 @@ export const createCommissionCheckoutSession = createServerFn({ method: "POST" }
           ? { addon_price_keys: data.addOnPriceIds.join(",") }
           : {}),
         ...(data.tierLabel ? { tier_label: data.tierLabel } : {}),
-        ...(data.userId ? { user_id: data.userId } : {}),
+        ...(userId ? { user_id: userId } : {}),
       };
 
       const session = await stripe.checkout.sessions.create({
