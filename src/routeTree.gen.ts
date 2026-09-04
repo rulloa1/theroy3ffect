@@ -16,6 +16,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as BookRouteImport } from './routes/book'
 import { Route as BriefRouteImport } from './routes/brief'
 import { Route as CaseStudyRouteImport } from './routes/case-study'
+import { Route as ClientsRouteImport } from './routes/clients'
 import { Route as McpRouteImport } from './routes/mcp'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as ServicesRouteImport } from './routes/services'
@@ -74,6 +75,11 @@ const BriefRoute = BriefRouteImport.update({
 const CaseStudyRoute = CaseStudyRouteImport.update({
   id: '/case-study',
   path: '/case-study',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ClientsRoute = ClientsRouteImport.update({
+  id: '/clients',
+  path: '/clients',
   getParentRoute: () => rootRouteImport,
 } as any)
 const McpRoute = McpRouteImport.update({
@@ -220,6 +226,7 @@ export interface FileRoutesByFullPath {
   '/book': typeof BookRoute
   '/brief': typeof BriefRoute
   '/case-study': typeof CaseStudyRoute
+  '/clients': typeof ClientsRoute
   '/mcp': typeof McpRoute
   '/pricing': typeof PricingRoute
   '/services': typeof ServicesRoute
@@ -253,6 +260,7 @@ export interface FileRoutesByTo {
   '/book': typeof BookRoute
   '/brief': typeof BriefRoute
   '/case-study': typeof CaseStudyRoute
+  '/clients': typeof ClientsRoute
   '/mcp': typeof McpRoute
   '/pricing': typeof PricingRoute
   '/services': typeof ServicesRoute
@@ -288,6 +296,7 @@ export interface FileRoutesById {
   '/book': typeof BookRoute
   '/brief': typeof BriefRoute
   '/case-study': typeof CaseStudyRoute
+  '/clients': typeof ClientsRoute
   '/mcp': typeof McpRoute
   '/pricing': typeof PricingRoute
   '/services': typeof ServicesRoute
@@ -323,6 +332,7 @@ export interface FileRouteTypes {
     | '/book'
     | '/brief'
     | '/case-study'
+    | '/clients'
     | '/mcp'
     | '/pricing'
     | '/services'
@@ -356,6 +366,7 @@ export interface FileRouteTypes {
     | '/book'
     | '/brief'
     | '/case-study'
+    | '/clients'
     | '/mcp'
     | '/pricing'
     | '/services'
@@ -390,6 +401,7 @@ export interface FileRouteTypes {
     | '/book'
     | '/brief'
     | '/case-study'
+    | '/clients'
     | '/mcp'
     | '/pricing'
     | '/services'
@@ -425,6 +437,7 @@ export interface RootRouteChildren {
   BookRoute: typeof BookRoute
   BriefRoute: typeof BriefRoute
   CaseStudyRoute: typeof CaseStudyRoute
+  ClientsRoute: typeof ClientsRoute
   McpRoute: typeof McpRoute
   PricingRoute: typeof PricingRoute
   ServicesRoute: typeof ServicesRoute
@@ -498,6 +511,13 @@ declare module '@tanstack/react-router' {
       path: '/case-study'
       fullPath: '/case-study'
       preLoaderRoute: typeof CaseStudyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/clients': {
+      id: '/clients'
+      path: '/clients'
+      fullPath: '/clients'
+      preLoaderRoute: typeof ClientsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/mcp': {
@@ -701,6 +721,7 @@ const rootRouteChildren: RootRouteChildren = {
   BookRoute: BookRoute,
   BriefRoute: BriefRoute,
   CaseStudyRoute: CaseStudyRoute,
+  ClientsRoute: ClientsRoute,
   McpRoute: McpRoute,
   PricingRoute: PricingRoute,
   ServicesRoute: ServicesRoute,
