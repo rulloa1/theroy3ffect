@@ -259,6 +259,9 @@ export type Database = {
           balance_due_cents: number
           balance_invoice_id: string | null
           balance_invoice_url: string | null
+          balance_paid_at: string | null
+          balance_paid_cents: number
+          balance_session_id: string | null
           balance_status: string
           created_at: string
           currency: string
@@ -287,6 +290,9 @@ export type Database = {
           balance_due_cents?: number
           balance_invoice_id?: string | null
           balance_invoice_url?: string | null
+          balance_paid_at?: string | null
+          balance_paid_cents?: number
+          balance_session_id?: string | null
           balance_status?: string
           created_at?: string
           currency?: string
@@ -315,6 +321,9 @@ export type Database = {
           balance_due_cents?: number
           balance_invoice_id?: string | null
           balance_invoice_url?: string | null
+          balance_paid_at?: string | null
+          balance_paid_cents?: number
+          balance_session_id?: string | null
           balance_status?: string
           created_at?: string
           currency?: string
