@@ -1,17 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-
-const json = (body: unknown, status = 200) =>
-  new Response(JSON.stringify(body), {
-    status,
-    headers: { "Content-Type": "application/json" },
-  });
-
-function timingSafeEqual(a: string, b: string) {
-  if (a.length !== b.length) return false;
-  let diff = 0;
-  for (let i = 0; i < a.length; i += 1) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
-  return diff === 0;
-}
+import { json, timingSafeEqual } from "@/lib/http/public-endpoint";
 
 interface VapiToolCall {
   id?: string;

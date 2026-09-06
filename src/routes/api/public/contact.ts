@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 import { sendTemplateEmail } from "@/lib/email-templates/send-email";
+import { json } from "@/lib/http/public-endpoint";
 
 const OWNER_EMAIL = "rory@theroyeffect.com";
 
@@ -10,12 +11,6 @@ const briefSchema = z.object({
   projectType: z.string().trim().max(60).optional().default(""),
   message: z.string().trim().min(10, "Tell me a bit more about the project").max(2000),
 });
-
-const json = (body: unknown, status = 200) =>
-  new Response(JSON.stringify(body), {
-    status,
-    headers: { "Content-Type": "application/json" },
-  });
 
 export const Route = createFileRoute("/api/public/contact")({
   server: {

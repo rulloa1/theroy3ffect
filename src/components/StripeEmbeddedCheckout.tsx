@@ -29,8 +29,9 @@ export function StripeEmbeddedCheckout({
         addOnPriceIds,
         quantity,
         tierLabel,
+        // No user id here on purpose — the server reads it from the caller's
+        // verified token, so the browser cannot name a different account.
         customerEmail: customerEmail || user?.email || undefined,
-        userId: user?.id,
         returnUrl:
           returnUrl || `${window.location.origin}/checkout/return?session_id={CHECKOUT_SESSION_ID}`,
         environment: getStripeEnvironment(),
