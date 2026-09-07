@@ -289,3 +289,126 @@ export const adminDeleteMilestone = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
+// ---------- Client profile & onboarding ----------
+
+export const CONTACT_METHODS = ["email", "phone", "text", "slack"] as const;
+
+export interface ClientProfile {
+  id: string;
+  email: string | null;
+  full_name: string | null;
+  company: string | null;
+  phone: string | null;
+  website: string | null;
+  city: string | null;
+  time_zone: string | null;
+  preferred_contact: string;
+  notes: string | null;
+  onboarding_completed_at: string | null;
+}
+
+const PROFILE_COLUMNS =
+  "id, email, full_name, company, phone, website, city, time_zone, preferred_contact, notes, onboarding_completed_at";
+
+function toProfile(row: Record<string, unknown> | null, fallbackEmail: string): ClientProfile {
+  const str = (key: string) => (typeof row?.[key] === "string" ? (row[key] as string) : null);
+  return {
+    id: String(row?.["id"] ?? ""),
+    email: str("email") ?? fallbackEmail ?? null,
+    full_name: str("full_name"),
+    company: str("company"),
+    phone: str("phone"),
+    website: str("website"),
+    city: str("city"),
+    time_zone: str("time_zone"),
+    preferred_contact: str("preferred_contact") ?? "email",
+    notes: str("notes"),
+    onboarding_completed_at: str("onboarding_completed_at"),
+  };
+}
+
+/** The signed-in client's own contact details. */
+export const getMyProfile = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<{ profile: ClientProfile }> => {
+    const db = context.supabase as AnyClient;
+    const email = String((context.claims as { email?: string } | undefined)?.email ?? "");
+    const { data, error } = await db
+      .from("profiles")
+      .select(PROFILE_COLUMNS)
+      .eq("id", context.userId)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    return { profile: toProfile(data as Record<string, unknown> | null, email) };
+  });
+
+const profileInput = z.object({
+  full_name: z.string().trim().min(1, "Your name is required").max(120),
+  company: z.string().trim().max(160).optional().or(z.literal("")),
+  phone: z.string().trim().max(40).optional().or(z.literal("")),
+  website: z.string().trim().max(255).optional().or(z.literal("")),
+  city: z.string().trim().max(120).optional().or(z.literal("")),
+  time_zone: z.string().trim().max(60).optional().or(z.literal("")),
+  preferred_contact: z.enum(CONTACT_METHODS).default("email"),
+  notes: z.string().trim().max(2000).optional().or(z.literal("")),
+  complete_onboarding: z.boolean().optional(),
+});
+
+/** Save the signed-in client's contact details (and mark onboarding done). */
+export const saveMyProfile = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) => profileInput.parse(input))
+  .handler(async ({ data, context }): Promise<{ profile: ClientProfile }> => {
+    const db = context.supabase as AnyClient;
+    const email = String((context.claims as { email?: string } | undefined)?.email ?? "");
+    const existing = await db
+      .from("profiles")
+      .select("onboarding_completed_at")
+      .eq("id", context.userId)
+      .maybeSingle();
+    const alreadyDone =
+      typeof existing.data?.["onboarding_completed_at"] === "string"
+        ? (existing.data["onboarding_completed_at"] as string)
+        : null;
+
+    const patch = {
+      full_name: data.full_name,
+      company: data.company || null,
+      phone: data.phone || null,
+      website: data.website || null,
+      city: data.city || null,
+      time_zone: data.time_zone || null,
+      preferred_contact: data.preferred_contact,
+      notes: data.notes || null,
+      onboarding_completed_at:
+        alreadyDone ?? (data.complete_onboarding ? new Date().toISOString() : null),
+      updated_at: new Date().toISOString(),
+    };
+
+    const { data: saved, error } = await db
+      .from("profiles")
+      .update(patch)
+      .eq("id", context.userId)
+      .select(PROFILE_COLUMNS)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    return { profile: toProfile(saved as Record<string, unknown> | null, email) };
+  });
+
+/** Admin: contact details for every client with a portal project. */
+export const adminListClientProfiles = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<{ profiles: ClientProfile[] }> => {
+    await assertAdmin(context);
+    const db = context.supabase as AnyClient;
+    const { data, error } = await db
+      .from("profiles")
+      .select(PROFILE_COLUMNS)
+      .order("created_at", { ascending: false })
+      .limit(200);
+    if (error) throw new Error(error.message);
+    return {
+      profiles: ((data ?? []) as Record<string, unknown>[]).map((r) => toProfile(r, "")),
+    };
+  });
