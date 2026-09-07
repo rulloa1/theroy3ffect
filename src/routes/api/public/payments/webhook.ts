@@ -193,7 +193,15 @@ async function handleInvoice(invoice: Stripe.Invoice, env: StripeEnv) {
   // Deposit balance invoices carry the order id in metadata.
   const orderId = invoice.metadata?.["order_id"];
   if (orderId && invoice.status === "paid") {
-    await supabaseAdmin.from("orders").update({ balance_status: "paid" }).eq("id", orderId);
+    await supabaseAdmin
+      .from("orders")
+      .update({
+        balance_status: "paid",
+        balance_paid_at: new Date().toISOString(),
+        balance_paid_cents: invoice.amount_paid ?? 0,
+      })
+      .eq("id", orderId)
+      .neq("balance_status", "paid");
   }
 
   if (invoice.status !== "paid" && email) {
