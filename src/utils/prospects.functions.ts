@@ -91,8 +91,19 @@ export const adminDraftOutreach = createServerFn({ method: "POST" })
     if (error || !prospect) throw new Error("Prospect not found");
 
     const { generateOutreachDraft } = await import("@/lib/prospecting/outreach.server");
+    const { fetchClientContextByEmail, clientContextForPrompt } = await import(
+      "@/lib/automation/client-context.server"
+    );
     try {
-      const draft = await generateOutreachDraft(prospect as Prospect);
+      // If this prospect is already a client, ground the draft in their real projects.
+      const clientCtx = prospect.contact_email
+        ? clientContextForPrompt(
+            (await fetchClientContextByEmail(db, [prospect.contact_email])).get(
+              prospect.contact_email.trim().toLowerCase(),
+            ),
+          )
+        : null;
+      const draft = await generateOutreachDraft(prospect as Prospect, clientCtx);
       await db
         .from("prospects")
         .update({
