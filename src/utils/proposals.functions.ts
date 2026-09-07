@@ -66,6 +66,8 @@ export const adminCreateProposal = createServerFn({ method: "POST" })
       totalPriceCents: number;
       depositCents?: number;
       terms?: string;
+      /** Save as a draft (default) or publish immediately as sent. */
+      status?: "draft" | "sent";
     }) => input,
   )
   .handler(
