@@ -192,7 +192,7 @@ export async function findCandidates(limit = BATCH_SIZE): Promise<Candidate[]> {
     const serialized = clientContextForPrompt(
       clientCtx.get(candidate.recipientEmail.trim().toLowerCase()),
     );
-    if (serialized) candidate.context.clientRelationship = serialized;
+    if (serialized) candidate.context["clientRelationship"] = serialized;
   }
   return fresh;
 }
