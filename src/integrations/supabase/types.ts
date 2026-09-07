@@ -350,31 +350,52 @@ export type Database = {
       }
       profiles: {
         Row: {
+          city: string | null
           company: string | null
           created_at: string
           email: string | null
           full_name: string | null
           id: string
+          notes: string | null
+          onboarding_completed_at: string | null
+          phone: string | null
+          preferred_contact: string
           stripe_customer_id: string | null
+          time_zone: string | null
           updated_at: string
+          website: string | null
         }
         Insert: {
+          city?: string | null
           company?: string | null
           created_at?: string
           email?: string | null
           full_name?: string | null
           id: string
+          notes?: string | null
+          onboarding_completed_at?: string | null
+          phone?: string | null
+          preferred_contact?: string
           stripe_customer_id?: string | null
+          time_zone?: string | null
           updated_at?: string
+          website?: string | null
         }
         Update: {
+          city?: string | null
           company?: string | null
           created_at?: string
           email?: string | null
           full_name?: string | null
           id?: string
+          notes?: string | null
+          onboarding_completed_at?: string | null
+          phone?: string | null
+          preferred_contact?: string
           stripe_customer_id?: string | null
+          time_zone?: string | null
           updated_at?: string
+          website?: string | null
         }
         Relationships: []
       }
