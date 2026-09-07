@@ -98,7 +98,7 @@ export const adminCreateProposal = createServerFn({ method: "POST" })
           deposit_cents: deposit,
           balance_cents: balance,
           terms: input.terms || DEFAULT_TERMS,
-          status: "sent",
+          status: input.status === "sent" ? "sent" : "draft",
         })
         .select("*")
         .single();
