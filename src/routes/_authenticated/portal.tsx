@@ -7,6 +7,7 @@ import {
   CheckCircle2,
   Circle,
   ExternalLink,
+  FileSignature,
   FileText,
   LayoutDashboard,
   Loader2,
@@ -24,6 +25,7 @@ import {
   createBalanceCheckoutSession,
 } from "@/utils/payments.functions";
 import { supabase } from "@/integrations/supabase/client";
+import { getMyProposals, type ProjectProposal } from "@/utils/proposals.functions";
 import {
   getMyPortal,
   getMyProfile,
@@ -286,11 +288,68 @@ function Invoices({
   );
 }
 
-type Tab = "overview" | "timeline" | "invoices" | "profile";
+function Proposals({ proposals }: { proposals: ProjectProposal[] }) {
+  if (proposals.length === 0) {
+    return (
+      <p className="font-mono text-xs text-white/40">
+        No proposals yet. When Rory sends you a scope agreement it will appear here to review and
+        sign.
+      </p>
+    );
+  }
+
+  return (
+    <div className="divide-y divide-white/10 border border-white/10">
+      {proposals.map((p) => {
+        const signed = p.status === "signed";
+        return (
+          <div key={p.id} className="space-y-3 p-5">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <p className="font-display text-lg uppercase text-white">{p.project_title}</p>
+                <p className="mt-1 font-mono text-[11px] text-white/40">
+                  {date(p.created_at)} · TIMELINE {p.timeline_weeks.toUpperCase()}
+                </p>
+              </div>
+              <span
+                className={`px-2 py-0.5 font-mono text-[9px] font-bold uppercase tracking-widest ${
+                  signed ? "bg-emerald-500 text-black" : "bg-[#FF3333] text-black"
+                }`}
+              >
+                {signed ? "SIGNED" : "AWAITING SIGNATURE"}
+              </span>
+            </div>
+
+            <p className="whitespace-pre-line font-mono text-xs text-white/60">
+              {p.scope_deliverables}
+            </p>
+
+            <p className="font-mono text-xs text-white">
+              Total {money(p.total_price_cents, "usd")} · Deposit to start{" "}
+              {money(p.deposit_cents, "usd")}
+            </p>
+
+            <a
+              href={`/proposal/${p.share_token}`}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1.5 border border-[#FF3333] bg-[#FF3333]/10 px-3 py-1.5 font-mono text-[10px] tracking-widest text-[#FF3333] transition-colors hover:bg-[#FF3333] hover:text-black"
+            >
+              {signed ? "VIEW AGREEMENT" : "REVIEW & SIGN"} <ExternalLink className="size-3" />
+            </a>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+type Tab = "overview" | "timeline" | "proposals" | "invoices" | "profile";
 
 const TABS: { key: Tab; label: string; icon: typeof LayoutDashboard }[] = [
   { key: "overview", label: "OVERVIEW", icon: LayoutDashboard },
   { key: "timeline", label: "TIMELINE", icon: CalendarDays },
+  { key: "proposals", label: "PROPOSALS", icon: FileSignature },
   { key: "invoices", label: "INVOICES", icon: FileText },
   { key: "profile", label: "MY DETAILS", icon: UserRound },
 ];
@@ -308,6 +367,12 @@ function PortalPage() {
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ["client-portal"],
     queryFn: () => fetchPortal(),
+  });
+
+  const fetchProposals = useServerFn(getMyProposals);
+  const { data: proposalsData } = useQuery({
+    queryKey: ["client-proposals"],
+    queryFn: () => fetchProposals(),
   });
 
   const fetchProfile = useServerFn(getMyProfile);
@@ -530,6 +595,8 @@ function PortalPage() {
                 ) : (
                   <p className="font-mono text-xs text-white/40">No timeline yet.</p>
                 ))}
+
+              {tab === "proposals" && <Proposals proposals={proposalsData ?? []} />}
 
               {tab === "invoices" && (
                 <Invoices invoices={invoices} onPayBalance={setPayingOrderId} />
