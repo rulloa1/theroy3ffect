@@ -9,6 +9,7 @@ import {
 } from "@/lib/checkout-validation";
 
 import { type StripeEnv, createStripeClient, getStripeErrorMessage } from "@/lib/stripe.server";
+import type Stripe from "stripe";
 
 type CheckoutSessionResult = { clientSecret: string } | { error: string };
 
@@ -205,11 +206,10 @@ export const createBalanceCheckoutSession = createServerFn({ method: "POST" })
       const label = String(order["tier_label"] || order["product_name"] || "Commission");
       const email = order["customer_email"] as string | null;
 
-      const session = await stripe.checkout.sessions.create({
+      const baseParams = {
         mode: "payment",
         ui_mode: "embedded_page",
         return_url: data.returnUrl,
-        automatic_tax: { enabled: true },
         billing_address_collection: "required",
         line_items: [
           {
@@ -225,13 +225,30 @@ export const createBalanceCheckoutSession = createServerFn({ method: "POST" })
           ? { customer: order["stripe_customer_id"] as string }
           : { customer_creation: "always", ...(email ? { customer_email: email } : {}) }),
         payment_intent_data: { description: `${label} balance` },
+        invoice_creation: {
+          enabled: true,
+          invoice_data: { metadata: { order_id: String(order["id"]) } },
+        },
         metadata: {
           purpose: "commission_balance",
           order_id: String(order["id"]),
           user_id: context.userId,
           balance_due_cents: String(balance),
         },
-      });
+      } satisfies Stripe.Checkout.SessionCreateParams;
+
+      // Automatic tax needs a head-office address configured on the Stripe
+      // account; fall back to no tax collection when it isn't set up yet.
+      let session: Stripe.Checkout.Session;
+      try {
+        session = await stripe.checkout.sessions.create({
+          ...baseParams,
+          automatic_tax: { enabled: true },
+        });
+      } catch (taxError) {
+        if (!/automatic tax|valid head office/i.test(getStripeErrorMessage(taxError))) throw taxError;
+        session = await stripe.checkout.sessions.create(baseParams);
+      }
 
       return { clientSecret: session.client_secret ?? "" };
     } catch (error) {
