@@ -11,11 +11,13 @@ import {
   LayoutDashboard,
   Loader2,
   LogOut,
+  UserRound,
 } from "lucide-react";
 import { EmbeddedCheckout, EmbeddedCheckoutProvider } from "@stripe/react-stripe-js";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 import { Logo } from "@/components/Logo";
+import { ClientProfileForm } from "@/components/portal/ClientProfileForm";
 import { getStripe, getStripeEnvironment } from "@/lib/stripe";
 import {
   confirmBalancePayment,
@@ -283,12 +285,13 @@ function Invoices({
   );
 }
 
-type Tab = "overview" | "timeline" | "invoices";
+type Tab = "overview" | "timeline" | "invoices" | "profile";
 
 const TABS: { key: Tab; label: string; icon: typeof LayoutDashboard }[] = [
   { key: "overview", label: "OVERVIEW", icon: LayoutDashboard },
   { key: "timeline", label: "TIMELINE", icon: CalendarDays },
   { key: "invoices", label: "INVOICES", icon: FileText },
+  { key: "profile", label: "MY DETAILS", icon: UserRound },
 ];
 
 function PortalPage() {
@@ -506,6 +509,8 @@ function PortalPage() {
               {tab === "invoices" && (
                 <Invoices invoices={invoices} onPayBalance={setPayingOrderId} />
               )}
+
+              {tab === "profile" && <ClientProfileForm email={data.email} />}
             </div>
           </>
         )}
