@@ -5,6 +5,10 @@ import {
   statusFromAiError,
 } from "@/lib/ai-gateway.server";
 import { FOLLOWUP_PLAYBOOKS, SITE_URL, type PlaybookKey } from "./playbooks";
+import {
+  clientContextForPrompt,
+  fetchClientContextByEmail,
+} from "./client-context.server";
 
 export const JOB_KEY = "followup_autopilot";
 /** Hard cap on drafts generated per run. */
@@ -176,7 +180,21 @@ export async function findCandidates(limit = BATCH_SIZE): Promise<Candidate[]> {
       out.map((c) => c.triggerKey),
     );
   const seen = new Set((existing ?? []).map((r: { trigger_key: string }) => r.trigger_key));
-  return out.filter((c) => !seen.has(c.triggerKey)).slice(0, limit);
+  const fresh = out.filter((c) => !seen.has(c.triggerKey)).slice(0, limit);
+
+  // Enrich each recipient with their real project / proposal records so drafts
+  // reference the client's own engagement, not a generic template.
+  const clientCtx = await fetchClientContextByEmail(
+    db,
+    fresh.map((c) => c.recipientEmail),
+  );
+  for (const candidate of fresh) {
+    const serialized = clientContextForPrompt(
+      clientCtx.get(candidate.recipientEmail.trim().toLowerCase()),
+    );
+    if (serialized) candidate.context.clientRelationship = serialized;
+  }
+  return fresh;
 }
 
 const SYSTEM = `You write follow-up emails for Rory Ulloa, creative director and no-code developer at The Roy Effect (theroyeffect.com), a Houston-based studio building brands and websites.
@@ -240,6 +258,7 @@ export async function generateDraft(candidate: Candidate): Promise<GeneratedDraf
         `Recipient name: ${candidate.recipientName}`,
         `Known details (JSON, may contain nulls — ignore nulls):`,
         JSON.stringify(candidate.context),
+        `If a "clientRelationship" field is present it contains this client's real projects, milestones, and proposals with us — ground the email in those specifics (reference the project by name, the current status, or the proposal on the table). Never invent project details beyond what is given.`,
         `Write the subject line (under 60 characters, no colon-heavy clickbait), the email body, and a one-sentence rationale explaining to Rory why this send makes sense now.`,
       ].join("\n"),
     });
