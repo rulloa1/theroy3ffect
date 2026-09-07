@@ -26,6 +26,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import {
   getMyPortal,
+  getMyProfile,
   type PortalInvoice,
   type PortalProject,
 } from "@/utils/portal.functions";
@@ -309,6 +310,14 @@ function PortalPage() {
     queryFn: () => fetchPortal(),
   });
 
+  const fetchProfile = useServerFn(getMyProfile);
+  const { data: profileData } = useQuery({
+    queryKey: ["client-profile"],
+    queryFn: () => fetchProfile(),
+  });
+  const needsOnboarding =
+    Boolean(profileData) && !profileData?.profile.onboarding_completed_at;
+
   const fetchClientSecret = useCallback(async (): Promise<string> => {
     if (!payingOrderId) throw new Error("No invoice selected");
     const res = await startBalanceCheckout({
@@ -439,6 +448,22 @@ function PortalPage() {
 
         {data && (
           <>
+            {needsOnboarding && tab !== "profile" && (
+              <div className="mt-8 flex flex-wrap items-center justify-between gap-4 border border-[#FF3333]/40 bg-[#FF3333]/5 p-5">
+                <p className="font-mono text-xs text-white/70">
+                  Finish onboarding so I have your contact details and can reach you the way you
+                  prefer.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setTab("profile")}
+                  className="bg-[#FF3333] px-4 py-2 font-mono text-[11px] tracking-widest text-black transition-opacity hover:opacity-90"
+                >
+                  COMPLETE MY DETAILS →
+                </button>
+              </div>
+            )}
+
             <nav className="mt-10 flex flex-wrap gap-2 border-b border-white/10 pb-3">
               {TABS.map(({ key, label, icon: Icon }) => (
                 <button
