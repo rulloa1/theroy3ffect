@@ -233,3 +233,117 @@ export const downloadSignedProposalPdf = createServerFn({ method: "POST" })
       }
     },
   );
+
+const SITE_URL = "https://www.theroyeffect.com";
+
+const updateInput = z.object({
+  id: z.string().uuid(),
+  clientName: z.string().trim().min(1).max(160),
+  clientEmail: z.string().trim().email().max(255),
+  clientCompany: z.string().trim().max(160).optional(),
+  projectTitle: z.string().trim().min(1).max(200),
+  scopeDeliverables: z.string().trim().min(1).max(8000),
+  timelineWeeks: z.string().trim().min(1).max(120),
+  totalPriceCents: z.number().int().min(0).max(100_000_000),
+  depositCents: z.number().int().min(0).max(100_000_000).optional(),
+  terms: z.string().trim().min(1).max(20000),
+});
+
+/** Update a draft/sent proposal's scope, timeline and pricing */
+export const adminUpdateProposal = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) => updateInput.parse(input))
+  .handler(async ({ context, data }): Promise<{ success: boolean; error?: string }> => {
+    await assertAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const deposit = data.depositCents ?? Math.round(data.totalPriceCents * 0.5);
+    const { error } = await supabaseAdmin
+      .from("project_proposals")
+      .update({
+        client_name: data.clientName,
+        client_email: data.clientEmail.toLowerCase(),
+        client_company: data.clientCompany || null,
+        project_title: data.projectTitle,
+        scope_deliverables: data.scopeDeliverables,
+        timeline_weeks: data.timelineWeeks,
+        total_price_cents: data.totalPriceCents,
+        deposit_cents: deposit,
+        balance_cents: data.totalPriceCents - deposit,
+        terms: data.terms,
+      })
+      .eq("id", data.id)
+      .neq("status", "signed");
+
+    if (error) return { success: false, error: error.message };
+    return { success: true };
+  });
+
+/** Publish a proposal to the client: mark sent and email the secure link */
+export const adminSendProposal = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) => ({ id: z.string().uuid().parse((input as { id: string })?.id) }))
+  .handler(
+    async ({ context, data }): Promise<{ success: boolean; emailed?: boolean; error?: string }> => {
+      await assertAdmin(context);
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      const { data: proposal, error } = await supabaseAdmin
+        .from("project_proposals")
+        .select("*")
+        .eq("id", data.id)
+        .maybeSingle();
+
+      if (error || !proposal) return { success: false, error: "Proposal not found" };
+
+      if (proposal.status === "draft") {
+        await supabaseAdmin
+          .from("project_proposals")
+          .update({ status: "sent" })
+          .eq("id", data.id)
+          .eq("status", "draft");
+      }
+
+      let emailed = false;
+      try {
+        const { sendTemplateEmail } = await import("@/lib/email-templates/send-email");
+        const res = await sendTemplateEmail("proposal-ready", proposal.client_email, {
+          templateData: {
+            client_name: proposal.client_name,
+            project_title: proposal.project_title,
+            timeline_weeks: proposal.timeline_weeks,
+            total_price: `$${(proposal.total_price_cents / 100).toLocaleString("en-US")}`,
+            deposit_price: `$${(proposal.deposit_cents / 100).toLocaleString("en-US")}`,
+            proposal_url: `${SITE_URL}/proposal/${proposal.share_token}`,
+            portal_url: `${SITE_URL}/portal`,
+          },
+          idempotencyKey: `proposal-sent-${proposal.id}`,
+          replyTo: "rory@theroyeffect.com",
+        });
+        emailed = res.sent;
+      } catch (err) {
+        console.error("adminSendProposal email error:", err);
+      }
+
+      return { success: true, emailed };
+    },
+  );
+
+/** Proposals visible to the signed-in client in their portal */
+export const getMyProposals = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<ProjectProposal[]> => {
+    const email = (context.claims as { email?: string } | undefined)?.email;
+    if (!email) return [];
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data, error } = await supabaseAdmin
+      .from("project_proposals")
+      .select("*")
+      .ilike("client_email", email)
+      .in("status", ["sent", "viewed", "signed"])
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("getMyProposals error:", error.message);
+      return [];
+    }
+    return (data ?? []) as unknown as ProjectProposal[];
+  });
