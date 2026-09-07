@@ -57,15 +57,18 @@ export function parseOutreachResponse(raw: string): OutreachDraft {
   };
 }
 
-export async function generateOutreachDraft(prospect: {
-  business_name: string;
-  industry: string;
-  website: string | null;
-  has_website: boolean;
-  address: string | null;
-  pain_score: number;
-  signals: ProspectSignal[];
-}): Promise<OutreachDraft & { model: string }> {
+export async function generateOutreachDraft(
+  prospect: {
+    business_name: string;
+    industry: string;
+    website: string | null;
+    has_website: boolean;
+    address: string | null;
+    pain_score: number;
+    signals: ProspectSignal[];
+  },
+  clientContext?: string | null,
+): Promise<OutreachDraft & { model: string }> {
   const { provider, model } = resolveDraftingProvider();
   const descriptor = getIndustry(prospect.industry)?.descriptor ?? "local business";
 
@@ -83,6 +86,9 @@ export async function generateOutreachDraft(prospect: {
           .sort((a, b) => b.weight - a.weight)
           .map((s) => `- ${s.label}: ${s.detail}`)
           .join("\n") || "- No specific issues recorded.",
+        clientContext
+          ? `This business already has a relationship with us — their real projects/proposals (JSON): ${clientContext}. Reference that existing relationship naturally instead of writing a purely cold email. Never invent project details beyond what is given.`
+          : "",
         `Write the subject line (under 55 characters, plain and specific, no clickbait), the email body, and a one-sentence rationale for Rory explaining why this business is worth contacting now.`,
       ]
         .filter(Boolean)
