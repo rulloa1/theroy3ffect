@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { toast } from "sonner";
+import { SmsConsent } from "@/components/SmsConsent";
 import { z } from "zod";
 import { Logo } from "@/components/Logo";
 import { Toaster } from "@/components/ui/sonner";
@@ -103,6 +104,8 @@ function BriefPage() {
       : "",
     budget: scopeEstimate ? `$${Number(scopeEstimate).toLocaleString()}` : "",
   }));
+  const [smsService, setSmsService] = useState(false);
+  const [smsMarketing, setSmsMarketing] = useState(false);
   const [sending, setSending] = useState(false);
   const [done, setDone] = useState(false);
   const [lastSaved, setLastSaved] = useState<string | null>(null);
@@ -186,7 +189,12 @@ function BriefPage() {
       const response = await fetch("/api/public/brief-intake", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...result.data, sessionId: sessionId ?? "" }),
+        body: JSON.stringify({
+          ...result.data,
+          sessionId: sessionId ?? "",
+          smsService,
+          smsMarketing,
+        }),
       });
       const data = (await response.json()) as { ok?: boolean; error?: string };
       if (!response.ok || !data.ok) {
@@ -463,6 +471,16 @@ function BriefPage() {
                 />
               </div>
             </>
+          )}
+
+          {step === STEPS.length - 1 && (
+            <SmsConsent
+              smsService={smsService}
+              smsMarketing={smsMarketing}
+              onChange={(field, value) =>
+                field === "smsService" ? setSmsService(value) : setSmsMarketing(value)
+              }
+            />
           )}
 
           <div className="flex items-center justify-between gap-4 pt-4">

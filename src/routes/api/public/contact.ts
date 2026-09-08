@@ -10,6 +10,8 @@ const briefSchema = z.object({
   email: z.string().trim().email("Enter a valid email").max(255),
   projectType: z.string().trim().max(60).optional().default(""),
   message: z.string().trim().min(10, "Tell me a bit more about the project").max(2000),
+  smsService: z.boolean().optional().default(false),
+  smsMarketing: z.boolean().optional().default(false),
 });
 
 export const Route = createFileRoute("/api/public/contact")({
@@ -28,7 +30,7 @@ export const Route = createFileRoute("/api/public/contact")({
           return json({ error: parsed.error.issues[0]?.message ?? "Invalid submission" }, 400);
         }
 
-        const { name, email, projectType, message } = parsed.data;
+        const { name, email, projectType, message, smsService, smsMarketing } = parsed.data;
         const submissionId = crypto.randomUUID();
 
         // Persist to database so inquiries are visible in Studio Admin dashboard
@@ -41,6 +43,9 @@ export const Route = createFileRoute("/api/public/contact")({
             project_type: projectType || null,
             message,
             status: "unread",
+            sms_service_consent: smsService,
+            sms_marketing_consent: smsMarketing,
+            consent_captured_at: new Date().toISOString(),
           });
         } catch (dbError) {
           console.error("Contact inquiry DB insert error (non-fatal):", dbError);

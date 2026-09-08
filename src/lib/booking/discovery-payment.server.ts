@@ -140,6 +140,9 @@ export async function fulfillPaidDiscoveryBooking(
     .update({
       stripe_session_id: session.id,
       payment_status: "paid",
+      sms_service_consent: meta["sms_service_consent"] === "true",
+      sms_marketing_consent: meta["sms_marketing_consent"] === "true",
+      consent_captured_at: new Date().toISOString(),
       amount_paid_cents: session.amountTotal,
       currency: session.currency,
     })

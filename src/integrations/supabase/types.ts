@@ -150,30 +150,39 @@ export type Database = {
       }
       contact_inquiries: {
         Row: {
+          consent_captured_at: string | null
           created_at: string
           email: string
           id: string
           message: string
           name: string
           project_type: string | null
+          sms_marketing_consent: boolean
+          sms_service_consent: boolean
           status: string
         }
         Insert: {
+          consent_captured_at?: string | null
           created_at?: string
           email: string
           id?: string
           message: string
           name: string
           project_type?: string | null
+          sms_marketing_consent?: boolean
+          sms_service_consent?: boolean
           status?: string
         }
         Update: {
+          consent_captured_at?: string | null
           created_at?: string
           email?: string
           id?: string
           message?: string
           name?: string
           project_type?: string | null
+          sms_marketing_consent?: boolean
+          sms_service_consent?: boolean
           status?: string
         }
         Relationships: []
@@ -404,6 +413,7 @@ export type Database = {
           audience: string | null
           budget: string | null
           company: string | null
+          consent_captured_at: string | null
           created_at: string
           deliverables: string | null
           email: string
@@ -417,6 +427,8 @@ export type Database = {
           project_status: string
           project_type: string
           references_links: string | null
+          sms_marketing_consent: boolean
+          sms_service_consent: boolean
           stripe_session_id: string | null
           timeline: string | null
           user_id: string | null
@@ -425,6 +437,7 @@ export type Database = {
           audience?: string | null
           budget?: string | null
           company?: string | null
+          consent_captured_at?: string | null
           created_at?: string
           deliverables?: string | null
           email: string
@@ -438,6 +451,8 @@ export type Database = {
           project_status?: string
           project_type: string
           references_links?: string | null
+          sms_marketing_consent?: boolean
+          sms_service_consent?: boolean
           stripe_session_id?: string | null
           timeline?: string | null
           user_id?: string | null
@@ -446,6 +461,7 @@ export type Database = {
           audience?: string | null
           budget?: string | null
           company?: string | null
+          consent_captured_at?: string | null
           created_at?: string
           deliverables?: string | null
           email?: string
@@ -459,6 +475,8 @@ export type Database = {
           project_status?: string
           project_type?: string
           references_links?: string | null
+          sms_marketing_consent?: boolean
+          sms_service_consent?: boolean
           stripe_session_id?: string | null
           timeline?: string | null
           user_id?: string | null
@@ -916,6 +934,7 @@ export type Database = {
       voice_bookings: {
         Row: {
           amount_paid_cents: number
+          consent_captured_at: string | null
           created_at: string
           currency: string
           email: string
@@ -927,6 +946,8 @@ export type Database = {
           phone: string | null
           slot_end: string
           slot_start: string
+          sms_marketing_consent: boolean
+          sms_service_consent: boolean
           status: string
           stripe_session_id: string | null
           time_zone: string
@@ -935,6 +956,7 @@ export type Database = {
         }
         Insert: {
           amount_paid_cents?: number
+          consent_captured_at?: string | null
           created_at?: string
           currency?: string
           email: string
@@ -946,6 +968,8 @@ export type Database = {
           phone?: string | null
           slot_end: string
           slot_start: string
+          sms_marketing_consent?: boolean
+          sms_service_consent?: boolean
           status?: string
           stripe_session_id?: string | null
           time_zone?: string
@@ -954,6 +978,7 @@ export type Database = {
         }
         Update: {
           amount_paid_cents?: number
+          consent_captured_at?: string | null
           created_at?: string
           currency?: string
           email?: string
@@ -965,6 +990,8 @@ export type Database = {
           phone?: string | null
           slot_end?: string
           slot_start?: string
+          sms_marketing_consent?: boolean
+          sms_service_consent?: boolean
           status?: string
           stripe_session_id?: string | null
           time_zone?: string
