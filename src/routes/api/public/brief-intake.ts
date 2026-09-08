@@ -125,6 +125,9 @@ export const Route = createFileRoute("/api/public/brief-intake")({
             budget: d.budget || null,
             timeline: d.timeline || null,
             extra: d.extra || null,
+            sms_service_consent: d.smsService,
+            sms_marketing_consent: d.smsMarketing,
+            consent_captured_at: new Date().toISOString(),
           });
           if (error) console.error("Brief insert failed:", error.message);
         } catch (dbError) {
