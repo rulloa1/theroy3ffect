@@ -34,6 +34,7 @@ import { Route as PortalLoginRouteImport } from './routes/portal.login'
 import { Route as ProposalTokenRouteImport } from './routes/proposal.$token'
 import { Route as SiteReportTokenRouteImport } from './routes/site-report.$token'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
+import { Route as AuthenticatedProjectsProjectIdRouteImport } from './routes/_authenticated/projects.$projectId'
 import { Route as ApiPublicBriefIntakeRouteImport } from './routes/api/public/brief-intake'
 import { Route as ApiPublicContactRouteImport } from './routes/api/public/contact'
 import { Route as ApiPublicVapiRouteImport } from './routes/api/public/vapi'
@@ -173,6 +174,12 @@ const Char91DotmcpChar93InvokeToolToolRoute =
     path: '/.mcp/invoke-tool/$tool',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AuthenticatedProjectsProjectIdRoute =
+  AuthenticatedProjectsProjectIdRouteImport.update({
+    id: '/projects/$projectId',
+    path: '/projects/$projectId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const ApiPublicBriefIntakeRoute = ApiPublicBriefIntakeRouteImport.update({
   id: '/api/public/brief-intake',
   path: '/api/public/brief-intake',
@@ -244,6 +251,7 @@ export interface FileRoutesByFullPath {
   '/proposal/$token': typeof ProposalTokenRoute
   '/site-report/$token': typeof SiteReportTokenRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/projects/$projectId': typeof AuthenticatedProjectsProjectIdRoute
   '/api/public/brief-intake': typeof ApiPublicBriefIntakeRoute
   '/api/public/contact': typeof ApiPublicContactRoute
   '/api/public/vapi': typeof ApiPublicVapiRoute
@@ -278,6 +286,7 @@ export interface FileRoutesByTo {
   '/proposal/$token': typeof ProposalTokenRoute
   '/site-report/$token': typeof SiteReportTokenRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/projects/$projectId': typeof AuthenticatedProjectsProjectIdRoute
   '/api/public/brief-intake': typeof ApiPublicBriefIntakeRoute
   '/api/public/contact': typeof ApiPublicContactRoute
   '/api/public/vapi': typeof ApiPublicVapiRoute
@@ -314,6 +323,7 @@ export interface FileRoutesById {
   '/proposal/$token': typeof ProposalTokenRoute
   '/site-report/$token': typeof SiteReportTokenRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/_authenticated/projects/$projectId': typeof AuthenticatedProjectsProjectIdRoute
   '/api/public/brief-intake': typeof ApiPublicBriefIntakeRoute
   '/api/public/contact': typeof ApiPublicContactRoute
   '/api/public/vapi': typeof ApiPublicVapiRoute
@@ -350,6 +360,7 @@ export interface FileRouteTypes {
     | '/proposal/$token'
     | '/site-report/$token'
     | '/.mcp/invoke-tool/$tool'
+    | '/projects/$projectId'
     | '/api/public/brief-intake'
     | '/api/public/contact'
     | '/api/public/vapi'
@@ -384,6 +395,7 @@ export interface FileRouteTypes {
     | '/proposal/$token'
     | '/site-report/$token'
     | '/.mcp/invoke-tool/$tool'
+    | '/projects/$projectId'
     | '/api/public/brief-intake'
     | '/api/public/contact'
     | '/api/public/vapi'
@@ -419,6 +431,7 @@ export interface FileRouteTypes {
     | '/proposal/$token'
     | '/site-report/$token'
     | '/.mcp/invoke-tool/$tool'
+    | '/_authenticated/projects/$projectId'
     | '/api/public/brief-intake'
     | '/api/public/contact'
     | '/api/public/vapi'
@@ -639,6 +652,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char91DotmcpChar93InvokeToolToolRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/projects/$projectId': {
+      id: '/_authenticated/projects/$projectId'
+      path: '/projects/$projectId'
+      fullPath: '/projects/$projectId'
+      preLoaderRoute: typeof AuthenticatedProjectsProjectIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/api/public/brief-intake': {
       id: '/api/public/brief-intake'
       path: '/api/public/brief-intake'
@@ -702,12 +722,14 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAccountRoute: typeof AuthenticatedAccountRoute
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedPortalRoute: typeof AuthenticatedPortalRoute
+  AuthenticatedProjectsProjectIdRoute: typeof AuthenticatedProjectsProjectIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAccountRoute: AuthenticatedAccountRoute,
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedPortalRoute: AuthenticatedPortalRoute,
+  AuthenticatedProjectsProjectIdRoute: AuthenticatedProjectsProjectIdRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
