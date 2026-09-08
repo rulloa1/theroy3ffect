@@ -329,14 +329,41 @@ function Proposals({ proposals }: { proposals: ProjectProposal[] }) {
               {money(p.deposit_cents, "usd")}
             </p>
 
-            <a
-              href={`/proposal/${p.share_token}`}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-1.5 border border-[#FF3333] bg-[#FF3333]/10 px-3 py-1.5 font-mono text-[10px] tracking-widest text-[#FF3333] transition-colors hover:bg-[#FF3333] hover:text-black"
-            >
-              {signed ? "VIEW AGREEMENT" : "REVIEW & SIGN"} <ExternalLink className="size-3" />
-            </a>
+            <div className="flex flex-wrap gap-2">
+              <a
+                href={`/proposal/${p.share_token}`}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1.5 border border-[#FF3333] bg-[#FF3333]/10 px-3 py-1.5 font-mono text-[10px] tracking-widest text-[#FF3333] transition-colors hover:bg-[#FF3333] hover:text-black"
+              >
+                {signed ? "VIEW AGREEMENT" : "REVIEW & SIGN"} <ExternalLink className="size-3" />
+              </a>
+
+              <button
+                type="button"
+                onClick={async () => {
+                  try {
+                    const { downloadSignedProposalPdf } = await import(
+                      "@/utils/proposals.functions"
+                    );
+                    const res = await downloadSignedProposalPdf({
+                      data: { token: p.share_token },
+                    });
+                    if (!res.success || !res.pdfBase64) throw new Error(res.error || "Failed");
+                    const link = document.createElement("a");
+                    link.href = `data:application/pdf;base64,${res.pdfBase64}`;
+                    link.download = res.filename || "proposal.pdf";
+                    link.click();
+                    toast.success("Proposal PDF downloaded");
+                  } catch {
+                    toast.error("Could not download the PDF");
+                  }
+                }}
+                className="inline-flex items-center gap-1.5 border border-white/15 px-3 py-1.5 font-mono text-[10px] tracking-widest text-white transition-colors hover:border-[#FF3333]"
+              >
+                DOWNLOAD PDF ↓
+              </button>
+            </div>
           </div>
         );
       })}
