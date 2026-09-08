@@ -170,9 +170,10 @@ export async function buildSignedProposalPdf(data: ProposalPdfData): Promise<Uin
   };
 
   // Document title block
-  drawLines("PROJECT SCOPE AGREEMENT", bold, 22, INK, 28);
-  page.drawRectangle({ x: MARGIN, y: y + 6, width: 46, height: 2.5, color: CRIMSON });
-  y -= 16;
+  drawLines("PROJECT SCOPE AGREEMENT", bold, 22, INK, 30);
+  y -= 4;
+  page.drawRectangle({ x: MARGIN, y, width: 46, height: 2.5, color: CRIMSON });
+  y -= 18;
   drawLines(
     `Prepared for ${data.clientName}${data.clientCompany ? `, ${data.clientCompany}` : ""}  ·  ${generatedOn}  ·  Ref ${data.shareToken.slice(0, 12)}`,
     regular,
