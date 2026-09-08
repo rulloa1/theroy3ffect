@@ -132,7 +132,7 @@ export function AdminProposalsView({
                       </button>
                     )}
 
-                    {prop.status === "draft" && (
+                    {!isSigned && (
                       <button
                         disabled={sendingId === prop.id}
                         onClick={async () => {

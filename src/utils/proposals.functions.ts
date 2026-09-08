@@ -320,7 +320,9 @@ export const adminSendProposal = createServerFn({ method: "POST" })
             proposal_url: `${SITE_URL}/proposal/${proposal.share_token}`,
             portal_url: `${SITE_URL}/portal`,
           },
-          idempotencyKey: `proposal-sent-${proposal.id}`,
+          // Bucketed per minute so an edited proposal can be re-sent, while
+          // accidental double-clicks within the same minute stay deduped.
+          idempotencyKey: `proposal-sent-${proposal.id}-${Math.floor(Date.now() / 60_000)}`,
           replyTo: "rory@theroyeffect.com",
         });
         emailed = res.sent;
