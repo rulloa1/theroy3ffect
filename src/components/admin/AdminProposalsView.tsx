@@ -24,6 +24,7 @@ export function AdminProposalsView({
 }: AdminProposalsViewProps) {
   const [copiedToken, setCopiedToken] = useState<string | null>(null);
   const [sendingId, setSendingId] = useState<string | null>(null);
+  const [pdfId, setPdfId] = useState<string | null>(null);
 
   const copyProposalLink = (token: string) => {
     const link = `${window.location.origin}/proposal/${token}`;
