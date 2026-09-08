@@ -144,8 +144,9 @@ export const getPublicProposal = createServerFn({ method: "GET" })
 
     if (error || !data) return null;
 
-    // If currently draft or sent, update to viewed
-    if (data.status === "draft" || data.status === "sent") {
+    // Only a published proposal becomes "viewed". Drafts stay drafts so an
+    // admin preview never publishes an unfinished proposal to the client.
+    if (data.status === "sent") {
       await supabaseAdmin
         .from("project_proposals")
         .update({ status: "viewed" })
@@ -294,12 +295,16 @@ export const adminSendProposal = createServerFn({ method: "POST" })
 
       if (error || !proposal) return { success: false, error: "Proposal not found" };
 
-      if (proposal.status === "draft") {
+      if (proposal.status === "signed") {
+        return { success: false, error: "This proposal is already signed." };
+      }
+
+      if (proposal.status !== "sent") {
         await supabaseAdmin
           .from("project_proposals")
           .update({ status: "sent" })
           .eq("id", data.id)
-          .eq("status", "draft");
+          .neq("status", "signed");
       }
 
       let emailed = false;
