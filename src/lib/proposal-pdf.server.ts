@@ -51,7 +51,9 @@ const money = (cents: number) =>
 
 export async function buildSignedProposalPdf(data: ProposalPdfData): Promise<Uint8Array> {
   const pdf = await PDFDocument.create();
-  pdf.setTitle(`Signed Proposal — ${data.projectTitle} — ${data.clientName}`);
+  pdf.setTitle(
+    `${data.clientSignedAt ? "Signed Proposal" : "Proposal"} — ${data.projectTitle} — ${data.clientName}`,
+  );
   pdf.setAuthor("The Roy Effect");
 
   const bold = await pdf.embedFont(StandardFonts.HelveticaBold);
