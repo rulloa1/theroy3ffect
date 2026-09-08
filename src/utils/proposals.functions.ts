@@ -124,6 +124,60 @@ export const adminDeleteProposal = createServerFn({ method: "POST" })
     return { success: true };
   });
 
+/** Admin-only: export any proposal (signed or draft) as a polished PDF */
+export const adminDownloadProposalPdf = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { id: string }) => ({ id: z.string().uuid().parse(input?.id) }))
+  .handler(
+    async ({
+      context,
+      data: input,
+    }): Promise<{ success: boolean; pdfBase64?: string; filename?: string; error?: string }> => {
+      await assertAdmin(context);
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      const { data: proposal, error } = await supabaseAdmin
+        .from("project_proposals")
+        .select("*")
+        .eq("id", input.id)
+        .maybeSingle();
+
+      if (error || !proposal) return { success: false, error: "Proposal not found" };
+
+      try {
+        const { buildSignedProposalPdf } = await import("@/lib/proposal-pdf.server");
+        const pdfBytes = await buildSignedProposalPdf({
+          clientName: proposal.client_name,
+          clientEmail: proposal.client_email,
+          clientCompany: proposal.client_company,
+          projectTitle: proposal.project_title,
+          scopeDeliverables: proposal.scope_deliverables,
+          timelineWeeks: proposal.timeline_weeks,
+          totalPriceCents: proposal.total_price_cents,
+          depositCents: proposal.deposit_cents,
+          balanceCents: proposal.balance_cents,
+          terms: proposal.terms,
+          clientSignatureName: proposal.client_signature_name,
+          clientSignedAt: proposal.client_signed_at,
+          shareToken: proposal.share_token,
+        });
+
+        const safeTitle = proposal.project_title
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .slice(0, 30);
+
+        return {
+          success: true,
+          pdfBase64: Buffer.from(pdfBytes).toString("base64"),
+          filename: `proposal-${safeTitle}-${proposal.share_token.slice(0, 6)}.pdf`,
+        };
+      } catch (err) {
+        console.error("adminDownloadProposalPdf error:", err);
+        return { success: false, error: "Could not generate PDF" };
+      }
+    },
+  );
+
 const shareTokenSchema = z
   .string()
   .trim()

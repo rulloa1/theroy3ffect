@@ -51,7 +51,9 @@ const money = (cents: number) =>
 
 export async function buildSignedProposalPdf(data: ProposalPdfData): Promise<Uint8Array> {
   const pdf = await PDFDocument.create();
-  pdf.setTitle(`Signed Proposal — ${data.projectTitle} — ${data.clientName}`);
+  pdf.setTitle(
+    `${data.clientSignedAt ? "Signed Proposal" : "Proposal"} — ${data.projectTitle} — ${data.clientName}`,
+  );
   pdf.setAuthor("The Roy Effect");
 
   const bold = await pdf.embedFont(StandardFonts.HelveticaBold);
@@ -126,7 +128,8 @@ export async function buildSignedProposalPdf(data: ProposalPdfData): Promise<Uin
   );
   section("Payment & Scope Terms", data.terms);
 
-  // Digital Signature Block
+  // Signature Block — accepted vs. awaiting signature
+  const isSigned = Boolean(data.clientSignedAt);
   ensure(70);
   y -= 10;
   page.drawRectangle({
@@ -134,26 +137,38 @@ export async function buildSignedProposalPdf(data: ProposalPdfData): Promise<Uin
     y: y - 55,
     width: maxWidth + 20,
     height: 60,
-    color: rgb(0.95, 0.98, 0.95),
-    borderColor: EMERALD,
+    color: isSigned ? rgb(0.95, 0.98, 0.95) : rgb(0.98, 0.98, 0.99),
+    borderColor: isSigned ? EMERALD : rgb(0.8, 0.8, 0.84),
     borderWidth: 1,
   });
 
-  drawLines("DIGITAL SIGNATURE & ACCEPTANCE", bold, 9, EMERALD, 14);
-  drawLines(
-    `Signed by: ${data.clientSignatureName || data.clientName} (${data.clientEmail})`,
-    bold,
-    11,
-    INK,
-    16,
-  );
-  drawLines(
-    `Timestamp: ${data.clientSignedAt ? new Date(data.clientSignedAt).toUTCString() : "Signed online"}`,
-    regular,
-    9,
-    MUTED,
-    14,
-  );
+  if (isSigned) {
+    drawLines("DIGITAL SIGNATURE & ACCEPTANCE", bold, 9, EMERALD, 14);
+    drawLines(
+      `Signed by: ${data.clientSignatureName || data.clientName} (${data.clientEmail})`,
+      bold,
+      11,
+      INK,
+      16,
+    );
+    drawLines(
+      `Timestamp: ${new Date(data.clientSignedAt as string).toUTCString()}`,
+      regular,
+      9,
+      MUTED,
+      14,
+    );
+  } else {
+    drawLines("ACCEPTANCE", bold, 9, MUTED, 14);
+    drawLines(`Awaiting digital signature from ${data.clientName}`, bold, 11, INK, 16);
+    drawLines(
+      `Sign online at theroyeffect.com/proposal/${data.shareToken}`,
+      regular,
+      9,
+      MUTED,
+      14,
+    );
+  }
   y -= 25;
 
   page.drawLine({
