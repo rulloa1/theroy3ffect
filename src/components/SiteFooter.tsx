@@ -7,6 +7,8 @@ const FOOTER_LINKS = [
   { label: "BOOK", to: "/book" },
   { label: "CASE STUDY", to: "/case-study" },
   { label: "AUDIT", to: "/audit" },
+  { label: "PRIVACY", to: "/privacy" },
+  { label: "TERMS", to: "/terms" },
 ];
 
 const GUIDE_LINKS = [

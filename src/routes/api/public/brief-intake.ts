@@ -18,6 +18,8 @@ const schema = z.object({
   budget: z.string().trim().max(60).optional().default(""),
   timeline: z.string().trim().max(60).optional().default(""),
   extra: z.string().trim().max(2000).optional().default(""),
+  smsService: z.boolean().optional().default(false),
+  smsMarketing: z.boolean().optional().default(false),
 });
 
 export const Route = createFileRoute("/api/public/brief-intake")({
