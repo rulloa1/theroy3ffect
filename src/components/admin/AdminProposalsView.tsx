@@ -146,7 +146,11 @@ export function AdminProposalsView({
                         className="inline-flex items-center gap-1.5 bg-[#FF3333] px-2.5 py-1.5 font-mono text-[10px] font-bold tracking-widest text-black disabled:opacity-50"
                       >
                         <Send className="size-3" />
-                        {sendingId === prop.id ? "SENDING…" : "SEND TO CLIENT"}
+                        {sendingId === prop.id
+                          ? "SENDING…"
+                          : prop.status === "draft"
+                            ? "SEND TO CLIENT"
+                            : "RESEND TO CLIENT"}
                       </button>
                     )}
 
