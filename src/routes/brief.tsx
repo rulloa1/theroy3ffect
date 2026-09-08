@@ -473,6 +473,16 @@ function BriefPage() {
             </>
           )}
 
+          {step === STEPS.length - 1 && (
+            <SmsConsent
+              smsService={smsService}
+              smsMarketing={smsMarketing}
+              onChange={(field, value) =>
+                field === "smsService" ? setSmsService(value) : setSmsMarketing(value)
+              }
+            />
+          )}
+
           <div className="flex items-center justify-between gap-4 pt-4">
             <button
               type="button"
