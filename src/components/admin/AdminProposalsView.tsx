@@ -154,6 +154,34 @@ export function AdminProposalsView({
                       </button>
                     )}
 
+                    <button
+                      disabled={pdfId === prop.id}
+                      onClick={async () => {
+                        setPdfId(prop.id);
+                        try {
+                          const { adminDownloadProposalPdf } = await import(
+                            "@/utils/proposals.functions"
+                          );
+                          const res = await adminDownloadProposalPdf({ data: { id: prop.id } });
+                          if (!res.success || !res.pdfBase64)
+                            throw new Error(res.error || "Failed");
+                          const link = document.createElement("a");
+                          link.href = `data:application/pdf;base64,${res.pdfBase64}`;
+                          link.download = res.filename || "proposal.pdf";
+                          link.click();
+                          toast.success("Proposal PDF downloaded");
+                        } catch {
+                          toast.error("Could not generate the PDF");
+                        } finally {
+                          setPdfId(null);
+                        }
+                      }}
+                      className="inline-flex items-center gap-1.5 border border-white/15 px-2.5 py-1.5 font-mono text-[10px] tracking-widest text-white hover:border-[#FF3333] disabled:opacity-50"
+                    >
+                      <Download className="size-3 text-[#FF3333]" />
+                      {pdfId === prop.id ? "BUILDING…" : "PDF"}
+                    </button>
+
                     <a
                       href={`/proposal/${prop.share_token}`}
                       target="_blank"
