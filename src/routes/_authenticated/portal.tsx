@@ -608,7 +608,18 @@ function PortalPage() {
                     </Link>
                   </div>
                 ) : (
-                  projects.map((p) => <ProjectSummary key={p.id} project={p} />)
+                  projects.map((p) => (
+                    <div key={p.id} className="space-y-3">
+                      <ProjectSummary project={p} />
+                      <Link
+                        to="/projects/$projectId"
+                        params={{ projectId: p.id }}
+                        className="inline-flex items-center gap-1.5 border border-white/15 px-3 py-1.5 font-mono text-[10px] tracking-widest text-white transition-colors hover:border-[#FF3333] hover:text-[#FF3333]"
+                      >
+                        OPEN PROJECT PAGE →
+                      </Link>
+                    </div>
+                  ))
                 ))}
 
               {tab === "timeline" &&
