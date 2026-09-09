@@ -1,5 +1,7 @@
 /** Bridges approved prospects into the voice_leads CRM pipeline. */
 
+import { escapeLikePattern } from "@/lib/sql-like";
+
 async function admin() {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -37,7 +39,7 @@ export async function ensureLeadForProspect(prospect: ProspectLike): Promise<str
     const { data: existing } = await db
       .from("voice_leads")
       .select("id")
-      .ilike("email", email)
+      .ilike("email", escapeLikePattern(email))
       .maybeSingle();
     if (existing?.id) {
       await db.from("prospects").update({ lead_id: existing.id }).eq("id", prospect.id);
@@ -74,9 +76,16 @@ export async function syncLeadStage(leadId: string | null, prospectStatus: strin
   const stage = STAGE_FOR_STATUS[prospectStatus];
   if (!leadId || !stage) return;
   const db = await admin();
-  const { data: lead } = await db.from("voice_leads").select("stage").eq("id", leadId).maybeSingle();
+  const { data: lead } = await db
+    .from("voice_leads")
+    .select("stage")
+    .eq("id", leadId)
+    .maybeSingle();
   if (lead?.stage === "won" && stage !== "won") return;
-  await db.from("voice_leads").update({ stage, updated_at: new Date().toISOString() }).eq("id", leadId);
+  await db
+    .from("voice_leads")
+    .update({ stage, updated_at: new Date().toISOString() })
+    .eq("id", leadId);
 }
 
 export interface CrmSyncResult {
@@ -162,7 +171,9 @@ export async function syncProspectCrm(): Promise<CrmSyncResult> {
     const email = p.contact_email?.toLowerCase() ?? null;
     const patch: Record<string, unknown> = {};
 
-    const bookedAt = (p.lead_id ? bookingByLead.get(p.lead_id) : undefined) ?? (email ? bookingByEmail.get(email) : undefined);
+    const bookedAt =
+      (p.lead_id ? bookingByLead.get(p.lead_id) : undefined) ??
+      (email ? bookingByEmail.get(email) : undefined);
     if (bookedAt && !p.booked_at) {
       patch["booked_at"] = bookedAt;
       if (["contacted", "replied"].includes(p.status)) patch["status"] = "meeting";

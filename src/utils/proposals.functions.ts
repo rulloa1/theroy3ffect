@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { assertAdmin } from "@/utils/require-admin";
+import { escapeLikePattern } from "@/lib/sql-like";
 
 export interface ProjectProposal {
   id: string;
@@ -161,7 +162,9 @@ export const signPublicProposal = createServerFn({ method: "POST" })
   }))
   .handler(async ({ data: input }): Promise<{ success: boolean; error?: string }> => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { error } = await supabaseAdmin
+    // Only a published proposal can be signed: `.neq("status", "signed")` alone
+    // let a leaked draft or archived token become a binding agreement.
+    const { data, error } = await supabaseAdmin
       .from("project_proposals")
       .update({
         status: "signed",
@@ -169,16 +172,22 @@ export const signPublicProposal = createServerFn({ method: "POST" })
         client_signed_at: new Date().toISOString(),
       })
       .eq("share_token", input.token)
-      .neq("status", "signed");
+      .in("status", ["sent", "viewed"])
+      .select("id");
 
     if (error) {
       console.error("signPublicProposal error:", error.message);
       return { success: false, error: "Could not sign this proposal." };
     }
 
+    // No row matched: already signed, or not published. Reporting success here
+    // told a second signer their name was recorded when it was discarded.
+    if (!data || data.length === 0) {
+      return { success: false, error: "This proposal is no longer awaiting a signature." };
+    }
+
     return { success: true };
   });
-
 
 /** Public server function to generate & return downloadable PDF bytes for a proposal */
 export const downloadSignedProposalPdf = createServerFn({ method: "POST" })
@@ -231,3 +240,129 @@ export const downloadSignedProposalPdf = createServerFn({ method: "POST" })
       }
     },
   );
+
+
+const SITE_URL = "https://www.theroyeffect.com";
+
+const updateInput = z.object({
+  id: z.string().uuid(),
+  clientName: z.string().trim().min(1).max(160),
+  clientEmail: z.string().trim().email().max(255),
+  clientCompany: z.string().trim().max(160).optional(),
+  projectTitle: z.string().trim().min(1).max(200),
+  scopeDeliverables: z.string().trim().min(1).max(8000),
+  timelineWeeks: z.string().trim().min(1).max(120),
+  totalPriceCents: z.number().int().min(0).max(100_000_000),
+  depositCents: z.number().int().min(0).max(100_000_000).optional(),
+  terms: z.string().trim().min(1).max(20000),
+});
+
+/** Update a draft/sent proposal's scope, timeline and pricing */
+export const adminUpdateProposal = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) => updateInput.parse(input))
+  .handler(async ({ context, data }): Promise<{ success: boolean; error?: string }> => {
+    await assertAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const deposit = data.depositCents ?? Math.round(data.totalPriceCents * 0.5);
+    const { error } = await supabaseAdmin
+      .from("project_proposals")
+      .update({
+        client_name: data.clientName,
+        client_email: data.clientEmail.toLowerCase(),
+        client_company: data.clientCompany || null,
+        project_title: data.projectTitle,
+        scope_deliverables: data.scopeDeliverables,
+        timeline_weeks: data.timelineWeeks,
+        total_price_cents: data.totalPriceCents,
+        deposit_cents: deposit,
+        balance_cents: data.totalPriceCents - deposit,
+        terms: data.terms,
+      })
+      .eq("id", data.id)
+      .neq("status", "signed");
+
+    if (error) return { success: false, error: error.message };
+    return { success: true };
+  });
+
+/** Publish a proposal to the client: mark sent and email the secure link */
+export const adminSendProposal = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) => ({
+    id: z
+      .string()
+      .uuid()
+      .parse((input as { id: string })?.id),
+  }))
+  .handler(
+    async ({ context, data }): Promise<{ success: boolean; emailed?: boolean; error?: string }> => {
+      await assertAdmin(context);
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      const { data: proposal, error } = await supabaseAdmin
+        .from("project_proposals")
+        .select("*")
+        .eq("id", data.id)
+        .maybeSingle();
+
+      if (error || !proposal) return { success: false, error: "Proposal not found" };
+
+      if (proposal.status === "signed") {
+        return { success: false, error: "This proposal is already signed." };
+      }
+
+      if (proposal.status !== "sent") {
+        await supabaseAdmin
+          .from("project_proposals")
+          .update({ status: "sent" })
+          .eq("id", data.id)
+          .neq("status", "signed");
+      }
+
+      let emailed = false;
+      try {
+        const { sendTemplateEmail } = await import("@/lib/email-templates/send-email");
+        const res = await sendTemplateEmail("proposal-ready", proposal.client_email, {
+          templateData: {
+            client_name: proposal.client_name,
+            project_title: proposal.project_title,
+            timeline_weeks: proposal.timeline_weeks,
+            total_price: `$${(proposal.total_price_cents / 100).toLocaleString("en-US")}`,
+            deposit_price: `$${(proposal.deposit_cents / 100).toLocaleString("en-US")}`,
+            proposal_url: `${SITE_URL}/proposal/${proposal.share_token}`,
+            portal_url: `${SITE_URL}/portal`,
+          },
+          // Bucketed per minute so an edited proposal can be re-sent, while
+          // accidental double-clicks within the same minute stay deduped.
+          idempotencyKey: `proposal-sent-${proposal.id}-${Math.floor(Date.now() / 60_000)}`,
+          replyTo: "rory@theroyeffect.com",
+        });
+        emailed = res.sent;
+      } catch (err) {
+        console.error("adminSendProposal email error:", err);
+      }
+
+      return { success: true, emailed };
+    },
+  );
+
+/** Proposals visible to the signed-in client in their portal */
+export const getMyProposals = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<ProjectProposal[]> => {
+    const email = (context.claims as { email?: string } | undefined)?.email;
+    if (!email) return [];
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data, error } = await supabaseAdmin
+      .from("project_proposals")
+      .select("*")
+      .ilike("client_email", escapeLikePattern(email))
+      .in("status", ["sent", "viewed", "signed"])
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("getMyProposals error:", error.message);
+      return [];
+    }
+    return (data ?? []) as unknown as ProjectProposal[];
+  });

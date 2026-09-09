@@ -1,5 +1,5 @@
-import { EmbeddedCheckoutProvider, EmbeddedCheckout } from "@stripe/react-stripe-js";
-import { getStripe, getStripeEnvironment } from "@/lib/stripe";
+import { getStripeEnvironment } from "@/lib/stripe";
+import { EmbeddedCheckoutFrame } from "@/components/EmbeddedCheckoutFrame";
 import { useAuth } from "@/hooks/useAuth";
 import { createCommissionCheckoutSession } from "@/utils/payments.functions";
 
@@ -44,9 +44,7 @@ export function StripeEmbeddedCheckout({
 
   return (
     <div id="checkout">
-      <EmbeddedCheckoutProvider stripe={getStripe()} options={{ fetchClientSecret }}>
-        <EmbeddedCheckout />
-      </EmbeddedCheckoutProvider>
+      <EmbeddedCheckoutFrame fetchClientSecret={fetchClientSecret} />
     </div>
   );
 }

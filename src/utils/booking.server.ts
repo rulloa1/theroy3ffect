@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { sendTemplateEmail } from "@/lib/email-templates/send-email";
+import { escapeLikePattern } from "@/lib/sql-like";
 
 export const OWNER_EMAIL = "rory@theroyeffect.com";
 export const SITE = "https://www.theroyeffect.com";
@@ -77,7 +78,7 @@ export async function upsertLead(payload: Record<string, unknown>, callId: strin
     const { data: existing } = await db
       .from("voice_leads")
       .select("id, stage")
-      .ilike("email", emailValue)
+      .ilike("email", escapeLikePattern(emailValue))
       .limit(1)
       .maybeSingle();
     if (existing?.id) {
@@ -122,7 +123,9 @@ export async function getAvailableSlots(count = 3) {
     .gte("slot_start", new Date(now).toISOString())
     .eq("status", "scheduled");
 
-  const taken = new Set((booked ?? []).map((b: { slot_start: string }) => new Date(b.slot_start).toISOString()));
+  const taken = new Set(
+    (booked ?? []).map((b: { slot_start: string }) => new Date(b.slot_start).toISOString()),
+  );
   return candidates.filter((c) => !taken.has(c.toISOString())).slice(0, count * 3);
 }
 

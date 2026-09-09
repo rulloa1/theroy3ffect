@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { assertAdmin } from "@/utils/require-admin";
+import { escapeLikePattern } from "@/lib/sql-like";
 
 export const LEAD_STAGES = [
   "new",
@@ -125,7 +126,7 @@ export const adminGetLeadDetail = createServerFn({ method: "GET" })
         ? db
             .from("voice_bookings")
             .select("*")
-            .ilike("email", lead.email)
+            .ilike("email", escapeLikePattern(lead.email))
             .order("slot_start", { ascending: false })
         : Promise.resolve({ data: [] }),
       db.from("voice_audit_requests").select("*").eq("lead_id", lead.id),
@@ -177,7 +178,6 @@ export const adminGetLeadDetail = createServerFn({ method: "GET" })
       logs,
     };
   });
-
 
 export const adminListPipeline = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
