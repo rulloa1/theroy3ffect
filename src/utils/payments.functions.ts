@@ -217,7 +217,11 @@ export const createBalanceCheckoutSession = createServerFn({ method: "POST" })
             price_data: {
               currency: String(order["currency"] ?? "usd"),
               unit_amount: balance,
-              product_data: { name: `${label} — remaining balance` },
+              product_data: {
+                name: `${label} — remaining balance`,
+                // Stripe tax code: General - Services (design/build services).
+                tax_code: "txcd_20030000",
+              },
             },
           },
         ],
