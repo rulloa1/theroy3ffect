@@ -987,6 +987,14 @@ function AdminPage() {
             />
           )}
 
+          {currentView === "CHATS" && (
+            <AdminChatsView
+              conversations={chatsData?.conversations ?? []}
+              onUpdateStatus={setChatStatus}
+              date={date}
+            />
+          )}
+
           {currentView === "PROPOSALS" && (
             <AdminProposalsView
               proposals={proposalsData ?? []}
