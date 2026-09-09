@@ -136,6 +136,8 @@ function AdminPage() {
   const sendInvoice = useServerFn(adminSendBalanceInvoice);
   const updateMilestone = useServerFn(adminUpdateProjectMilestone);
   const listInquiries = useServerFn(adminListInquiries);
+  const listChats = useServerFn(adminListChats);
+  const updateChatStatus = useServerFn(adminUpdateChatStatus);
   const updateInquiry = useServerFn(adminUpdateInquiryStatus);
   const listPortfolio = useServerFn(adminListPortfolioProjects);
   const upsertPortfolio = useServerFn(adminUpsertPortfolioProject);
