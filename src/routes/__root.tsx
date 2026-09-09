@@ -230,6 +230,12 @@ function RootShell({ children }: { children: ReactNode }) {
       <body>
         {children}
         <Scripts />
+        <script
+          src="https://widgets.leadconnectorhq.com/loader.js"
+          data-resources-url="https://widgets.leadconnectorhq.com/chat-widget/loader.js"
+          data-widget-id="6aa0be0d4d65227e4e8be214"
+          data-source="WEB_USER"
+        />
       </body>
     </html>
   );
