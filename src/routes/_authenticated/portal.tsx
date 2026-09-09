@@ -330,14 +330,13 @@ function Proposals({ proposals }: { proposals: ProjectProposal[] }) {
             </p>
 
             <div className="flex flex-wrap gap-2">
-              <a
-                href={`/proposal/${p.share_token}`}
-                target="_blank"
-                rel="noreferrer"
+              <Link
+                to="/proposals/$proposalId"
+                params={{ proposalId: p.id }}
                 className="inline-flex items-center gap-1.5 border border-[#FF3333] bg-[#FF3333]/10 px-3 py-1.5 font-mono text-[10px] tracking-widest text-[#FF3333] transition-colors hover:bg-[#FF3333] hover:text-black"
               >
                 {signed ? "VIEW AGREEMENT" : "REVIEW & SIGN"} <ExternalLink className="size-3" />
-              </a>
+              </Link>
 
               <button
                 type="button"
