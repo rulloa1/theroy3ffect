@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -16,6 +16,8 @@ import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 import { Logo } from "@/components/Logo";
 import { getPublicProposal, signPublicProposal } from "@/utils/proposals.functions";
+import { confirmProposalDeposit, createProposalDepositCheckout } from "@/utils/payments.functions";
+import { EmbeddedCheckoutFrame } from "@/components/EmbeddedCheckoutFrame";
 
 export const Route = createFileRoute("/proposal/$token")({
   head: () => ({
@@ -52,6 +54,38 @@ function ProposalPage() {
   const [signatureName, setSignatureName] = useState("");
   const [agreed, setAgreed] = useState(false);
   const [isSigning, setIsSigning] = useState(false);
+  const [payingDeposit, setPayingDeposit] = useState(false);
+
+  const startDepositCheckout = useServerFn(createProposalDepositCheckout);
+  const confirmDeposit = useServerFn(confirmProposalDeposit);
+
+  const fetchClientSecret = useCallback(async (): Promise<string> => {
+    const res = await startDepositCheckout({ data: { token } });
+    if ("error" in res) throw new Error(res.error);
+    if (!res.clientSecret) throw new Error("Checkout could not be started");
+    return res.clientSecret;
+  }, [startDepositCheckout, token]);
+
+  // Stripe sends the client back here with the session id, so the deposit is
+  // recorded even if the webhook is slow or has not landed.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const sessionId = params.get("deposit_session");
+    if (!sessionId) return;
+    window.history.replaceState({}, "", window.location.pathname);
+    void (async () => {
+      const res = await confirmDeposit({ data: { sessionId } });
+      if (res.paid) {
+        toast.success("Kickoff deposit received — thank you!");
+        await queryClient.invalidateQueries({ queryKey: ["proposal", token] });
+      } else if (res.error) {
+        toast.error(res.error);
+      } else {
+        toast.message("Payment is processing. This page will update once it settles.");
+      }
+      setPayingDeposit(false);
+    })();
+  }, [confirmDeposit, queryClient, token]);
 
   const handleSign = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -110,6 +144,7 @@ function ProposalPage() {
   }
 
   const isSigned = proposal.status === "signed";
+  const depositPaid = Boolean(proposal.deposit_paid_at);
   const formattedTotal = new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
@@ -309,14 +344,46 @@ function ProposalPage() {
                 </p>
               </div>
 
-              <div className="flex flex-wrap gap-4 pt-2">
-                <Link
-                  to="/"
-                  className="bg-[#E51924] px-6 py-3 font-mono text-xs font-bold tracking-widest text-white hover:bg-[#FF3333]"
-                >
-                  PROCEED TO KICKOFF DEPOSIT →
-                </Link>
-              </div>
+              {depositPaid ? (
+                <div className="border border-[#DFBA73]/40 bg-[#DFBA73]/5 p-4">
+                  <p className="font-mono text-[10px] tracking-widest text-[#DFBA73]">
+                    KICKOFF DEPOSIT PAID
+                  </p>
+                  <p className="mt-1 font-mono text-xs text-white/60">
+                    {formattedDeposit} received
+                    {proposal.deposit_paid_at
+                      ? ` on ${new Date(proposal.deposit_paid_at).toLocaleDateString()}`
+                      : ""}
+                    . The remaining {formattedBalance} is invoiced at delivery.
+                  </p>
+                </div>
+              ) : payingDeposit ? (
+                <div className="space-y-4 pt-2">
+                  <div className="flex items-center justify-between gap-4">
+                    <p className="font-mono text-[10px] tracking-widest text-[#DFBA73]">
+                      KICKOFF DEPOSIT · {formattedDeposit}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setPayingDeposit(false)}
+                      className="border border-white/20 px-3 py-1.5 font-mono text-[10px] tracking-widest text-white/70 hover:border-white/50"
+                    >
+                      CANCEL
+                    </button>
+                  </div>
+                  <EmbeddedCheckoutFrame fetchClientSecret={fetchClientSecret} />
+                </div>
+              ) : (
+                <div className="flex flex-wrap gap-4 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setPayingDeposit(true)}
+                    className="bg-[#E51924] px-6 py-3 font-mono text-xs font-bold tracking-widest text-white hover:bg-[#FF3333]"
+                  >
+                    PAY KICKOFF DEPOSIT · {formattedDeposit} →
+                  </button>
+                </div>
+              )}
             </div>
           ) : (
             <form onSubmit={handleSign} className="mt-6 space-y-6">

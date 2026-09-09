@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 import { json, timingSafeEqual } from "@/lib/http/public-endpoint";
+import { escapeLikePattern } from "@/lib/sql-like";
 
 /**
  * Inbound webhook for the LeadConnector (HighLevel) chat widget.
@@ -100,8 +101,7 @@ export const Route = createFileRoute("/api/public/leadconnector")({
             p.contact_id,
             email ?? undefined,
             phone ?? undefined,
-          ) ??
-          crypto.randomUUID();
+          ) ?? crypto.randomUUID();
         const externalMessageId = firstString(p.messageId, p.message_id);
         const sentAt = (() => {
           const raw = firstString(p.dateAdded);
@@ -153,7 +153,9 @@ export const Route = createFileRoute("/api/public/leadconnector")({
                 last_message_at: sentAt,
                 last_message_preview: body.slice(0, 240),
                 unread_count:
-                  direction === "inbound" ? (existing?.unread_count ?? 0) + 1 : (existing?.unread_count ?? 0),
+                  direction === "inbound"
+                    ? (existing?.unread_count ?? 0) + 1
+                    : (existing?.unread_count ?? 0),
                 updated_at: new Date().toISOString(),
               })
               .eq("id", conversationId);
@@ -177,11 +179,14 @@ export const Route = createFileRoute("/api/public/leadconnector")({
           // 3. Link/create a CRM lead so chat visitors land in the pipeline
           if (!leadId && direction === "inbound") {
             let matched: { id: string } | null = null;
-            if (email) {
+            // `*` is a PostgREST wildcard that cannot be escaped, and this
+            // payload only validates the field as a string, so anything that
+            // isn't a plain address is not used for matching at all.
+            if (email && /^[^@\s*%_\\]+@[^@\s*%_\\]+\.[^@\s*%_\\]+$/.test(email)) {
               const { data } = await db
                 .from("voice_leads")
                 .select("id")
-                .ilike("email", email)
+                .ilike("email", escapeLikePattern(email))
                 .limit(1)
                 .maybeSingle();
               matched = data ?? null;
@@ -215,7 +220,10 @@ export const Route = createFileRoute("/api/public/leadconnector")({
               leadId = newLead?.id ?? null;
             }
             if (leadId) {
-              await db.from("chat_conversations").update({ lead_id: leadId }).eq("id", conversationId);
+              await db
+                .from("chat_conversations")
+                .update({ lead_id: leadId })
+                .eq("id", conversationId);
             }
           }
 

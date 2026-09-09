@@ -48,3 +48,70 @@ export async function requireAutomationToken(request: Request): Promise<Response
   }
   return null;
 }
+
+export interface RateLimitRule {
+  /** Requests allowed per window. */
+  limit: number;
+  /** Window length in seconds. */
+  windowSeconds: number;
+}
+
+/**
+ * The caller's IP as the edge reports it. Cloudflare sits in front of this app,
+ * so `cf-connecting-ip` is the trustworthy one; the rest are fallbacks for
+ * local runs. Only the first hop of `x-forwarded-for` is meaningful, and even
+ * that is client-supplied, which is why it comes last.
+ */
+export function clientIp(request: Request): string {
+  const forwarded = request.headers.get("x-forwarded-for") ?? "";
+  // `"".split(",")[0].trim()` is "" — not nullish — so this needs `||`, not `??`,
+  // or every header-less request shares one bucket and locks the endpoint.
+  const firstHop = forwarded.split(",")[0]?.trim();
+  return (
+    request.headers.get("cf-connecting-ip") ??
+    request.headers.get("x-real-ip") ??
+    (firstHop || "unknown")
+  );
+}
+
+/**
+ * Throttle an unauthenticated endpoint. Returns `null` when the request may
+ * proceed, or the `Response` to return when it may not.
+ *
+ * `scope` names the counter; pass an IP-scoped rule to slow one abuser down and
+ * a shared rule (scope without an IP) to cap the endpoint's total cost.
+ *
+ * Deliberately fails open: if the limiter itself errors, a real enquiry still
+ * gets through. A missed limit costs an email; a dropped lead costs a client.
+ */
+export async function requireRateLimit(
+  scope: string,
+  rule: RateLimitRule,
+): Promise<Response | null> {
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const db = supabaseAdmin as any;
+
+    const { data, error } = await db.rpc("rate_limit_hit", {
+      p_bucket: scope,
+      p_limit: rule.limit,
+      p_window_seconds: rule.windowSeconds,
+    });
+
+    if (error) {
+      console.error("Rate limit check failed (allowing request):", error.message);
+      return null;
+    }
+
+    if (data === false) {
+      return json({ error: "Too many requests. Please try again later." }, 429);
+    }
+    return null;
+  } catch (err) {
+    // supabaseAdmin throws when its env vars are missing, and the whole point
+    // of this helper is that it never costs a real enquiry.
+    console.error("Rate limit check threw (allowing request):", err);
+    return null;
+  }
+}

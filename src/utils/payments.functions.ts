@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { DEPOSIT_BALANCE_CENTS } from "@/lib/commerce-catalog";
 import {
@@ -8,11 +9,13 @@ import {
   clampQuantity,
 } from "@/lib/checkout-validation";
 
+import { SITE_URL } from "@/lib/site";
 import {
   type StripeEnv,
   createCheckoutSessionWithTaxFallback,
   createStripeClient,
   getStripeErrorMessage,
+  resolvePaymentsEnv,
 } from "@/lib/stripe.server";
 import type Stripe from "stripe";
 
@@ -271,6 +274,130 @@ export const confirmBalancePayment = createServerFn({ method: "POST" })
         amountTotal: session.amount_total ?? 0,
         metadata: (session.metadata ?? {}) as Record<string, string | undefined>,
       });
+      return { paid: true };
+    } catch (error) {
+      return { paid: false, error: getStripeErrorMessage(error) };
+    }
+  });
+
+/** Same shape the public proposal page validates before it hits the database. */
+const proposalShareToken = z
+  .string()
+  .trim()
+  .min(20)
+  .max(128)
+  .regex(/^[A-Za-z0-9_-]+$/);
+
+/**
+ * Kickoff deposit for a signed proposal, priced from the proposal itself.
+ *
+ * Public and token-gated, like the rest of the proposal page: the client who
+ * holds the link has no account. The return URL is built here rather than
+ * accepted from the caller, so a crafted link cannot start a real checkout on
+ * this Stripe account and hand the result to somewhere else.
+ */
+export const createProposalDepositCheckout = createServerFn({ method: "POST" })
+  .inputValidator((data: { token: string }) => ({
+    token: proposalShareToken.parse(data?.token),
+  }))
+  .handler(async ({ data }): Promise<CheckoutSessionResult> => {
+    try {
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      const { data: proposal } = await supabaseAdmin
+        .from("project_proposals")
+        .select(
+          "id, share_token, status, client_name, client_email, project_title, deposit_cents, balance_cents, deposit_paid_at",
+        )
+        .eq("share_token", data.token)
+        .maybeSingle();
+
+      if (!proposal) return { error: "This proposal could not be found" };
+      if (proposal.status !== "signed") {
+        return { error: "Sign the agreement before paying the kickoff deposit" };
+      }
+      if (proposal.deposit_paid_at) {
+        return { error: "The kickoff deposit for this proposal is already paid" };
+      }
+
+      const deposit = Number(proposal.deposit_cents ?? 0);
+      if (deposit <= 0) return { error: "This proposal has no kickoff deposit to collect" };
+
+      const balance = Number(proposal.balance_cents ?? 0);
+      const title = String(proposal.project_title ?? "Project");
+      const email = proposal.client_email as string | null;
+      const stripe = createStripeClient(resolvePaymentsEnv());
+
+      const session = await createCheckoutSessionWithTaxFallback(stripe, {
+        mode: "payment",
+        ui_mode: "embedded_page",
+        return_url: `${SITE_URL}/proposal/${proposal.share_token}?deposit_session={CHECKOUT_SESSION_ID}`,
+        billing_address_collection: "required",
+        line_items: [
+          {
+            quantity: 1,
+            price_data: {
+              currency: "usd",
+              unit_amount: deposit,
+              product_data: { name: `${title} — kickoff deposit` },
+            },
+          },
+        ],
+        customer_creation: "always",
+        ...(email ? { customer_email: email } : {}),
+        payment_intent_data: { description: `${title} kickoff deposit` },
+        metadata: {
+          purpose: "proposal_deposit",
+          proposal_id: String(proposal.id),
+          // Recorded on the order so the balance shows up in the client portal.
+          is_deposit: "true",
+          balance_due_cents: String(balance),
+          tier_label: title,
+        },
+      });
+
+      return { clientSecret: session.client_secret ?? "" };
+    } catch (error) {
+      return { error: getStripeErrorMessage(error) };
+    }
+  });
+
+/** Confirms the kickoff deposit on return, so it doesn't depend on the webhook alone. */
+export const confirmProposalDeposit = createServerFn({ method: "POST" })
+  .inputValidator((data: { sessionId: string }) => {
+    assertValidSessionId(data.sessionId);
+    return { sessionId: data.sessionId };
+  })
+  .handler(async ({ data }): Promise<{ paid: boolean; error?: string }> => {
+    try {
+      const env = resolvePaymentsEnv();
+      const stripe = createStripeClient(env);
+      const session = await stripe.checkout.sessions.retrieve(data.sessionId);
+      if (session.metadata?.["purpose"] !== "proposal_deposit") {
+        return { paid: false, error: "That payment was not a proposal deposit" };
+      }
+      // Belt and braces on top of the server-resolved environment: a test-mode
+      // session must never settle a live deposit.
+      if (session.livemode !== (env === "live")) {
+        return { paid: false, error: "That payment was not made in this environment" };
+      }
+      if (session.payment_status === "unpaid") return { paid: false };
+
+      const { fulfillProposalDeposit } = await import("@/lib/proposals/deposit.server");
+      const result = await fulfillProposalDeposit({
+        id: session.id,
+        amountTotal: session.amount_total ?? 0,
+        metadata: (session.metadata ?? {}) as Record<string, string | undefined>,
+      });
+
+      if (result.status === "invalid") {
+        return { paid: false, error: "That payment could not be matched to a proposal" };
+      }
+      if (result.status === "error") {
+        return {
+          paid: false,
+          error: "The payment landed but recording it failed — Rory has been alerted",
+        };
+      }
       return { paid: true };
     } catch (error) {
       return { paid: false, error: getStripeErrorMessage(error) };

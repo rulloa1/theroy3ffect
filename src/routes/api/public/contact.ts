@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 import { sendTemplateEmail } from "@/lib/email-templates/send-email";
-import { json } from "@/lib/http/public-endpoint";
+import { clientIp, json, requireRateLimit } from "@/lib/http/public-endpoint";
 
 const OWNER_EMAIL = "rory@theroyeffect.com";
 
@@ -18,6 +18,13 @@ export const Route = createFileRoute("/api/public/contact")({
   server: {
     handlers: {
       POST: async ({ request }) => {
+        // Unauthenticated, and it sends mail on every call — throttle per IP.
+        const throttled = await requireRateLimit(`contact:${clientIp(request)}`, {
+          limit: 5,
+          windowSeconds: 3600,
+        });
+        if (throttled) return throttled;
+
         let payload: unknown;
         try {
           payload = await request.json();

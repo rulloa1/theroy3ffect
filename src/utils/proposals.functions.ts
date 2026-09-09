@@ -21,6 +21,9 @@ export interface ProjectProposal {
   status: "draft" | "sent" | "viewed" | "signed" | "archived";
   client_signed_at?: string | null;
   client_signature_name?: string | null;
+  deposit_paid_at?: string | null;
+  deposit_paid_cents?: number | null;
+  deposit_session_id?: string | null;
   created_at: string;
 }
 
@@ -436,7 +439,7 @@ async function loadOwnProposal(claims: unknown, id: string) {
     .from("project_proposals")
     .select("*")
     .eq("id", id)
-    .ilike("client_email", email)
+    .ilike("client_email", escapeLikePattern(email))
     .in("status", ["sent", "viewed", "signed"])
     .maybeSingle();
 

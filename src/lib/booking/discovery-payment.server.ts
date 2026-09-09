@@ -127,27 +127,44 @@ export async function fulfillPaidDiscoveryBooking(
     return { status: "invalid", message: "Booking details were missing from the payment." };
   }
 
-  const booking = await bookDiscoverySlot({
-    full_name: fullName,
-    email,
-    ...(meta["phone"] ? { phone: meta["phone"] } : {}),
-    slot_start: slotStart,
-    time_zone: meta["time_zone"] || BOOKING_TZ,
-    ...(meta["notes"] ? { notes: meta["notes"] } : {}),
-  });
+  let booking: Awaited<ReturnType<typeof bookDiscoverySlot>>;
+  try {
+    booking = await bookDiscoverySlot(
+      {
+        full_name: fullName,
+        email,
+        ...(meta["phone"] ? { phone: meta["phone"] } : {}),
+        slot_start: slotStart,
+        time_zone: meta["time_zone"] || BOOKING_TZ,
+        ...(meta["notes"] ? { notes: meta["notes"] } : {}),
+      },
+      {
+        stripe_session_id: session.id,
+        amount_paid_cents: session.amountTotal,
+        currency: session.currency,
+        sms_service_consent: meta["sms_service_consent"] === "true",
+        sms_marketing_consent: meta["sms_marketing_consent"] === "true",
+      },
+    );
+  } catch (err) {
+    // Returning instead of throwing keeps the webhook from retrying for three
+    // days on something no retry can fix — a taken slot, or a time that is no
+    // longer on offer. The message above says a refund is owed.
+    const message = err instanceof Error ? err.message : "Booking failed";
+    console.error(`Discovery fulfilment failed for session ${session.id}: ${message}`);
+    return { status: "invalid", message };
+  }
 
-  await db
-    .from("voice_bookings")
-    .update({
-      stripe_session_id: session.id,
-      payment_status: "paid",
-      sms_service_consent: meta["sms_service_consent"] === "true",
-      sms_marketing_consent: meta["sms_marketing_consent"] === "true",
-      consent_captured_at: new Date().toISOString(),
-      amount_paid_cents: session.amountTotal,
-      currency: session.currency,
-    })
-    .eq("id", booking.booking_id);
+  // The other fulfilment path (webhook or return page) got there first and has
+  // already sent the confirmation emails and synced the portal.
+  if (booking.already_booked) {
+    return {
+      status: "already_booked",
+      bookingId: booking.booking_id,
+      spokenTime: booking.spoken_time,
+      timeZone: booking.time_zone,
+    };
+  }
 
   const amountLabel = new Intl.NumberFormat("en-US", {
     style: "currency",

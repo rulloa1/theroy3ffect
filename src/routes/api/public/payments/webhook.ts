@@ -441,6 +441,14 @@ export const Route = createFileRoute("/api/public/payments/webhook")({
                   break;
                 }
                 await handleCheckoutCompleted(stripe, session, env);
+                if (purpose === "proposal_deposit") {
+                  const { fulfillProposalDeposit } = await import("@/lib/proposals/deposit.server");
+                  await fulfillProposalDeposit({
+                    id: session.id,
+                    amountTotal: session.amount_total ?? 0,
+                    metadata: (session.metadata ?? {}) as Record<string, string | undefined>,
+                  });
+                }
                 if (purpose === "discovery_call") {
                   const { fulfillPaidDiscoveryBooking } =
                     await import("@/lib/booking/discovery-payment.server");

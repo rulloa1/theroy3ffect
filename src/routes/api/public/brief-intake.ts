@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 import { sendTemplateEmail } from "@/lib/email-templates/send-email";
-import { json } from "@/lib/http/public-endpoint";
+import { clientIp, json, requireRateLimit } from "@/lib/http/public-endpoint";
 
 const OWNER_EMAIL = "rory@theroyeffect.com";
 
@@ -26,6 +26,15 @@ export const Route = createFileRoute("/api/public/brief-intake")({
   server: {
     handlers: {
       POST: async ({ request }) => {
+        // Every call renders a PDF, stores it and sends two emails, so this is
+        // capped per IP and again across all callers to bound the total cost.
+        const throttled =
+          (await requireRateLimit(`brief-intake:${clientIp(request)}`, {
+            limit: 5,
+            windowSeconds: 3600,
+          })) ?? (await requireRateLimit("brief-intake:all", { limit: 200, windowSeconds: 3600 }));
+        if (throttled) return throttled;
+
         let payload: unknown;
         try {
           payload = await request.json();

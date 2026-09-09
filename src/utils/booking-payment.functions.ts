@@ -37,6 +37,12 @@ export const createDiscoveryCheckoutSession = createServerFn({ method: "POST" })
       if (Number.isNaN(start.getTime()) || start.getTime() < Date.now()) {
         return { error: "That time is no longer available." };
       }
+      // Checked here as well as at fulfilment: taking $49 for a time that
+      // cannot be booked leaves the client paid up with no call.
+      const { isOfferedSlot } = await import("@/utils/booking.server");
+      if (!isOfferedSlot(start)) {
+        return { error: "That time isn't one of the slots on offer." };
+      }
 
       const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
       const { data: clash } = await supabaseAdmin
