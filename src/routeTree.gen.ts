@@ -40,6 +40,7 @@ import { Route as AuthenticatedProjectsProjectIdRouteImport } from './routes/_au
 import { Route as AuthenticatedProposalsProposalIdRouteImport } from './routes/_authenticated/proposals.$proposalId'
 import { Route as ApiPublicBriefIntakeRouteImport } from './routes/api/public/brief-intake'
 import { Route as ApiPublicContactRouteImport } from './routes/api/public/contact'
+import { Route as ApiPublicLeadconnectorRouteImport } from './routes/api/public/leadconnector'
 import { Route as ApiPublicVapiRouteImport } from './routes/api/public/vapi'
 import { Route as ApiPublicAutomationFollowupsRouteImport } from './routes/api/public/automation/followups'
 import { Route as ApiPublicAutomationGscIndexWatchRouteImport } from './routes/api/public/automation/gsc-index-watch'
@@ -209,6 +210,11 @@ const ApiPublicContactRoute = ApiPublicContactRouteImport.update({
   path: '/api/public/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicLeadconnectorRoute = ApiPublicLeadconnectorRouteImport.update({
+  id: '/api/public/leadconnector',
+  path: '/api/public/leadconnector',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicVapiRoute = ApiPublicVapiRouteImport.update({
   id: '/api/public/vapi',
   path: '/api/public/vapi',
@@ -276,6 +282,7 @@ export interface FileRoutesByFullPath {
   '/proposals/$proposalId': typeof AuthenticatedProposalsProposalIdRoute
   '/api/public/brief-intake': typeof ApiPublicBriefIntakeRoute
   '/api/public/contact': typeof ApiPublicContactRoute
+  '/api/public/leadconnector': typeof ApiPublicLeadconnectorRoute
   '/api/public/vapi': typeof ApiPublicVapiRoute
   '/api/public/automation/followups': typeof ApiPublicAutomationFollowupsRoute
   '/api/public/automation/gsc-index-watch': typeof ApiPublicAutomationGscIndexWatchRoute
@@ -314,6 +321,7 @@ export interface FileRoutesByTo {
   '/proposals/$proposalId': typeof AuthenticatedProposalsProposalIdRoute
   '/api/public/brief-intake': typeof ApiPublicBriefIntakeRoute
   '/api/public/contact': typeof ApiPublicContactRoute
+  '/api/public/leadconnector': typeof ApiPublicLeadconnectorRoute
   '/api/public/vapi': typeof ApiPublicVapiRoute
   '/api/public/automation/followups': typeof ApiPublicAutomationFollowupsRoute
   '/api/public/automation/gsc-index-watch': typeof ApiPublicAutomationGscIndexWatchRoute
@@ -354,6 +362,7 @@ export interface FileRoutesById {
   '/_authenticated/proposals/$proposalId': typeof AuthenticatedProposalsProposalIdRoute
   '/api/public/brief-intake': typeof ApiPublicBriefIntakeRoute
   '/api/public/contact': typeof ApiPublicContactRoute
+  '/api/public/leadconnector': typeof ApiPublicLeadconnectorRoute
   '/api/public/vapi': typeof ApiPublicVapiRoute
   '/api/public/automation/followups': typeof ApiPublicAutomationFollowupsRoute
   '/api/public/automation/gsc-index-watch': typeof ApiPublicAutomationGscIndexWatchRoute
@@ -394,6 +403,7 @@ export interface FileRouteTypes {
     | '/proposals/$proposalId'
     | '/api/public/brief-intake'
     | '/api/public/contact'
+    | '/api/public/leadconnector'
     | '/api/public/vapi'
     | '/api/public/automation/followups'
     | '/api/public/automation/gsc-index-watch'
@@ -432,6 +442,7 @@ export interface FileRouteTypes {
     | '/proposals/$proposalId'
     | '/api/public/brief-intake'
     | '/api/public/contact'
+    | '/api/public/leadconnector'
     | '/api/public/vapi'
     | '/api/public/automation/followups'
     | '/api/public/automation/gsc-index-watch'
@@ -471,6 +482,7 @@ export interface FileRouteTypes {
     | '/_authenticated/proposals/$proposalId'
     | '/api/public/brief-intake'
     | '/api/public/contact'
+    | '/api/public/leadconnector'
     | '/api/public/vapi'
     | '/api/public/automation/followups'
     | '/api/public/automation/gsc-index-watch'
@@ -506,6 +518,7 @@ export interface RootRouteChildren {
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
   ApiPublicBriefIntakeRoute: typeof ApiPublicBriefIntakeRoute
   ApiPublicContactRoute: typeof ApiPublicContactRoute
+  ApiPublicLeadconnectorRoute: typeof ApiPublicLeadconnectorRoute
   ApiPublicVapiRoute: typeof ApiPublicVapiRoute
   ApiPublicAutomationFollowupsRoute: typeof ApiPublicAutomationFollowupsRoute
   ApiPublicAutomationGscIndexWatchRoute: typeof ApiPublicAutomationGscIndexWatchRoute
@@ -733,6 +746,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicContactRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/leadconnector': {
+      id: '/api/public/leadconnector'
+      path: '/api/public/leadconnector'
+      fullPath: '/api/public/leadconnector'
+      preLoaderRoute: typeof ApiPublicLeadconnectorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/vapi': {
       id: '/api/public/vapi'
       path: '/api/public/vapi'
@@ -825,6 +845,7 @@ const rootRouteChildren: RootRouteChildren = {
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
   ApiPublicBriefIntakeRoute: ApiPublicBriefIntakeRoute,
   ApiPublicContactRoute: ApiPublicContactRoute,
+  ApiPublicLeadconnectorRoute: ApiPublicLeadconnectorRoute,
   ApiPublicVapiRoute: ApiPublicVapiRoute,
   ApiPublicAutomationFollowupsRoute: ApiPublicAutomationFollowupsRoute,
   ApiPublicAutomationGscIndexWatchRoute: ApiPublicAutomationGscIndexWatchRoute,

@@ -45,6 +45,8 @@ import {
 
 import { AdminProjectsView, type FilterTab } from "@/components/admin/AdminProjectsView";
 import { AdminInquiriesView } from "@/components/admin/AdminInquiriesView";
+import { AdminChatsView } from "@/components/admin/AdminChatsView";
+import { adminListChats, adminUpdateChatStatus } from "@/utils/chats.functions";
 import { AdminProposalsView } from "@/components/admin/AdminProposalsView";
 import { AdminPortfolioCMS } from "@/components/admin/AdminPortfolioCMS";
 import { AdminFinancialsView } from "@/components/admin/AdminFinancialsView";
@@ -121,6 +123,7 @@ type MainView =
   | "AUTOPILOT"
   | "PROSPECTS"
   | "INQUIRIES"
+  | "CHATS"
   | "PROPOSALS"
   | "PORTFOLIO"
   | "CLIENTPORTAL"
@@ -134,6 +137,8 @@ function AdminPage() {
   const sendInvoice = useServerFn(adminSendBalanceInvoice);
   const updateMilestone = useServerFn(adminUpdateProjectMilestone);
   const listInquiries = useServerFn(adminListInquiries);
+  const listChats = useServerFn(adminListChats);
+  const updateChatStatus = useServerFn(adminUpdateChatStatus);
   const updateInquiry = useServerFn(adminUpdateInquiryStatus);
   const listPortfolio = useServerFn(adminListPortfolioProjects);
   const upsertPortfolio = useServerFn(adminUpsertPortfolioProject);
@@ -240,6 +245,22 @@ function AdminPage() {
     queryFn: () => listInquiries(),
     retry: false,
   });
+
+  const { data: chatsData } = useQuery({
+    queryKey: ["admin-chats"],
+    queryFn: () => listChats(),
+    retry: false,
+    refetchInterval: 60_000,
+  });
+
+  const setChatStatus = async (conversationId: string, status: "new" | "handled") => {
+    try {
+      await updateChatStatus({ data: { conversationId, status } });
+      await queryClient.invalidateQueries({ queryKey: ["admin-chats"] });
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not update chat");
+    }
+  };
 
   const { data: proposalsData } = useQuery({
     queryKey: ["admin-proposals"],
@@ -853,6 +874,11 @@ function AdminPage() {
               icon: MessageSquare,
             },
             {
+              id: "CHATS",
+              label: `WEBSITE CHAT (${(chatsData?.conversations ?? []).filter((c) => c.unread_count > 0).length})`,
+              icon: MessageSquare,
+            },
+            {
               id: "PROPOSALS",
               label: `PROPOSALS & CONTRACTS (${(proposalsData ?? []).length})`,
               icon: FileCheck,
@@ -958,6 +984,14 @@ function AdminPage() {
               briefs={ordersData?.briefs ?? []}
               onUpdateInquiryStatus={toggleInquiryStatus}
               onViewBrief={(b) => setSelectedBrief(b)}
+              date={date}
+            />
+          )}
+
+          {currentView === "CHATS" && (
+            <AdminChatsView
+              conversations={chatsData?.conversations ?? []}
+              onUpdateStatus={setChatStatus}
               date={date}
             />
           )}
