@@ -503,8 +503,8 @@ export const downloadMyProposalPdf = createServerFn({ method: "POST" })
           depositCents: p.deposit_cents,
           balanceCents: p.balance_cents,
           terms: p.terms,
-          clientSignatureName: p.client_signature_name,
-          clientSignedAt: p.client_signed_at,
+          clientSignatureName: p.client_signature_name ?? null,
+          clientSignedAt: p.client_signed_at ?? null,
           shareToken: p.share_token,
         });
         const safeTitle = p.project_title
