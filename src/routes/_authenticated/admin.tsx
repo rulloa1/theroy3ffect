@@ -873,6 +873,11 @@ function AdminPage() {
               icon: MessageSquare,
             },
             {
+              id: "CHATS",
+              label: `WEBSITE CHAT (${(chatsData?.conversations ?? []).filter((c) => c.unread_count > 0).length})`,
+              icon: MessageSquare,
+            },
+            {
               id: "PROPOSALS",
               label: `PROPOSALS & CONTRACTS (${(proposalsData ?? []).length})`,
               icon: FileCheck,
