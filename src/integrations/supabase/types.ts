@@ -56,6 +56,103 @@ export type Database = {
         }
         Relationships: []
       }
+      chat_conversations: {
+        Row: {
+          contact_email: string | null
+          contact_name: string | null
+          contact_phone: string | null
+          created_at: string
+          external_id: string | null
+          id: string
+          last_message_at: string
+          last_message_preview: string | null
+          lead_id: string | null
+          source: string
+          status: string
+          unread_count: number
+          updated_at: string
+        }
+        Insert: {
+          contact_email?: string | null
+          contact_name?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          external_id?: string | null
+          id?: string
+          last_message_at?: string
+          last_message_preview?: string | null
+          lead_id?: string | null
+          source?: string
+          status?: string
+          unread_count?: number
+          updated_at?: string
+        }
+        Update: {
+          contact_email?: string | null
+          contact_name?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          external_id?: string | null
+          id?: string
+          last_message_at?: string
+          last_message_preview?: string | null
+          lead_id?: string | null
+          source?: string
+          status?: string
+          unread_count?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_conversations_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "voice_leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chat_messages: {
+        Row: {
+          body: string
+          conversation_id: string
+          created_at: string
+          direction: string
+          external_id: string | null
+          id: string
+          message_type: string | null
+          sent_at: string
+        }
+        Insert: {
+          body?: string
+          conversation_id: string
+          created_at?: string
+          direction: string
+          external_id?: string | null
+          id?: string
+          message_type?: string | null
+          sent_at?: string
+        }
+        Update: {
+          body?: string
+          conversation_id?: string
+          created_at?: string
+          direction?: string
+          external_id?: string | null
+          id?: string
+          message_type?: string | null
+          sent_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "chat_conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       client_milestones: {
         Row: {
           completed_at: string | null
