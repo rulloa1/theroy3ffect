@@ -6,3 +6,7 @@
 - [ ] Blocked: VITE_FIREBASE_API_KEY still empty — need the key from Rory
 - [ ] Live smoke test on theroyeffect.com: portal login -> book discovery -> pay $49 -> milestone updates
 - [x] A2P 10DLC compliance: src/lib/legal-identity.ts, /privacy, /terms, SmsConsent component, wire into /audit /book /brief + endpoints + DB columns, footer links, sitemap, publish
+- [x] Portal proposal signing page (/proposals/:id) — signs, saves signed copy, updates status
+- [ ] Register business address as Stripe tax origin (live + sandbox) for automatic tax
+- [ ] Real client payment end to end on live, then refund
+- [ ] Add LeadConnector chat widget script sitewide
