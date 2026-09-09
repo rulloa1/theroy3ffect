@@ -45,6 +45,8 @@ import {
 
 import { AdminProjectsView, type FilterTab } from "@/components/admin/AdminProjectsView";
 import { AdminInquiriesView } from "@/components/admin/AdminInquiriesView";
+import { AdminChatsView } from "@/components/admin/AdminChatsView";
+import { adminListChats, adminUpdateChatStatus } from "@/utils/chats.functions";
 import { AdminProposalsView } from "@/components/admin/AdminProposalsView";
 import { AdminPortfolioCMS } from "@/components/admin/AdminPortfolioCMS";
 import { AdminFinancialsView } from "@/components/admin/AdminFinancialsView";
