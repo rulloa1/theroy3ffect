@@ -37,6 +37,7 @@ import { Route as ProposalTokenRouteImport } from './routes/proposal.$token'
 import { Route as SiteReportTokenRouteImport } from './routes/site-report.$token'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 import { Route as AuthenticatedProjectsProjectIdRouteImport } from './routes/_authenticated/projects.$projectId'
+import { Route as AuthenticatedProposalsProposalIdRouteImport } from './routes/_authenticated/proposals.$proposalId'
 import { Route as ApiPublicBriefIntakeRouteImport } from './routes/api/public/brief-intake'
 import { Route as ApiPublicContactRouteImport } from './routes/api/public/contact'
 import { Route as ApiPublicVapiRouteImport } from './routes/api/public/vapi'
@@ -192,6 +193,12 @@ const AuthenticatedProjectsProjectIdRoute =
     path: '/projects/$projectId',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedProposalsProposalIdRoute =
+  AuthenticatedProposalsProposalIdRouteImport.update({
+    id: '/proposals/$proposalId',
+    path: '/proposals/$proposalId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const ApiPublicBriefIntakeRoute = ApiPublicBriefIntakeRouteImport.update({
   id: '/api/public/brief-intake',
   path: '/api/public/brief-intake',
@@ -266,6 +273,7 @@ export interface FileRoutesByFullPath {
   '/site-report/$token': typeof SiteReportTokenRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/projects/$projectId': typeof AuthenticatedProjectsProjectIdRoute
+  '/proposals/$proposalId': typeof AuthenticatedProposalsProposalIdRoute
   '/api/public/brief-intake': typeof ApiPublicBriefIntakeRoute
   '/api/public/contact': typeof ApiPublicContactRoute
   '/api/public/vapi': typeof ApiPublicVapiRoute
@@ -303,6 +311,7 @@ export interface FileRoutesByTo {
   '/site-report/$token': typeof SiteReportTokenRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/projects/$projectId': typeof AuthenticatedProjectsProjectIdRoute
+  '/proposals/$proposalId': typeof AuthenticatedProposalsProposalIdRoute
   '/api/public/brief-intake': typeof ApiPublicBriefIntakeRoute
   '/api/public/contact': typeof ApiPublicContactRoute
   '/api/public/vapi': typeof ApiPublicVapiRoute
@@ -342,6 +351,7 @@ export interface FileRoutesById {
   '/site-report/$token': typeof SiteReportTokenRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/_authenticated/projects/$projectId': typeof AuthenticatedProjectsProjectIdRoute
+  '/_authenticated/proposals/$proposalId': typeof AuthenticatedProposalsProposalIdRoute
   '/api/public/brief-intake': typeof ApiPublicBriefIntakeRoute
   '/api/public/contact': typeof ApiPublicContactRoute
   '/api/public/vapi': typeof ApiPublicVapiRoute
@@ -381,6 +391,7 @@ export interface FileRouteTypes {
     | '/site-report/$token'
     | '/.mcp/invoke-tool/$tool'
     | '/projects/$projectId'
+    | '/proposals/$proposalId'
     | '/api/public/brief-intake'
     | '/api/public/contact'
     | '/api/public/vapi'
@@ -418,6 +429,7 @@ export interface FileRouteTypes {
     | '/site-report/$token'
     | '/.mcp/invoke-tool/$tool'
     | '/projects/$projectId'
+    | '/proposals/$proposalId'
     | '/api/public/brief-intake'
     | '/api/public/contact'
     | '/api/public/vapi'
@@ -456,6 +468,7 @@ export interface FileRouteTypes {
     | '/site-report/$token'
     | '/.mcp/invoke-tool/$tool'
     | '/_authenticated/projects/$projectId'
+    | '/_authenticated/proposals/$proposalId'
     | '/api/public/brief-intake'
     | '/api/public/contact'
     | '/api/public/vapi'
@@ -699,6 +712,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProjectsProjectIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/proposals/$proposalId': {
+      id: '/_authenticated/proposals/$proposalId'
+      path: '/proposals/$proposalId'
+      fullPath: '/proposals/$proposalId'
+      preLoaderRoute: typeof AuthenticatedProposalsProposalIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/api/public/brief-intake': {
       id: '/api/public/brief-intake'
       path: '/api/public/brief-intake'
@@ -763,6 +783,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedPortalRoute: typeof AuthenticatedPortalRoute
   AuthenticatedProjectsProjectIdRoute: typeof AuthenticatedProjectsProjectIdRoute
+  AuthenticatedProposalsProposalIdRoute: typeof AuthenticatedProposalsProposalIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -770,6 +791,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedPortalRoute: AuthenticatedPortalRoute,
   AuthenticatedProjectsProjectIdRoute: AuthenticatedProjectsProjectIdRoute,
+  AuthenticatedProposalsProposalIdRoute: AuthenticatedProposalsProposalIdRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
