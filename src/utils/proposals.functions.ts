@@ -414,9 +414,10 @@ export const getMyProposals = createServerFn({ method: "GET" })
 /* ------------------------------------------------------------------ */
 
 async function loadOwnProposal(claims: unknown, id: string) {
-  const email = (claims as { email?: string } | undefined)?.email;
-  if (!email) return { error: "Not signed in" as const };
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const email = (claims as { email?: string } | undefined)?.email;
+  if (!email) return { proposal: null, error: "Not signed in", supabaseAdmin };
+
   const { data, error } = await supabaseAdmin
     .from("project_proposals")
     .select("*")
@@ -424,8 +425,9 @@ async function loadOwnProposal(claims: unknown, id: string) {
     .ilike("client_email", email)
     .in("status", ["sent", "viewed", "signed"])
     .maybeSingle();
-  if (error || !data) return { error: "Proposal not found" as const };
-  return { proposal: data as unknown as ProjectProposal, supabaseAdmin };
+
+  if (error || !data) return { proposal: null, error: "Proposal not found", supabaseAdmin };
+  return { proposal: data as unknown as ProjectProposal, error: undefined, supabaseAdmin };
 }
 
 /** Fetch one of the signed-in client's own proposals for the portal signing page */
