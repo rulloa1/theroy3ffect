@@ -123,6 +123,7 @@ type MainView =
   | "AUTOPILOT"
   | "PROSPECTS"
   | "INQUIRIES"
+  | "CHATS"
   | "PROPOSALS"
   | "PORTFOLIO"
   | "CLIENTPORTAL"

@@ -5,7 +5,7 @@ import type { ChatConversation } from "@/utils/chats.functions";
 interface Props {
   conversations: ChatConversation[];
   onUpdateStatus: (conversationId: string, status: "new" | "handled") => void;
-  date: (value: string | null | undefined) => string;
+  date: (value: string | null) => string;
 }
 
 export function AdminChatsView({ conversations, onUpdateStatus, date }: Props) {
