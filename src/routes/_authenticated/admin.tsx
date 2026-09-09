@@ -241,6 +241,22 @@ function AdminPage() {
     retry: false,
   });
 
+  const { data: chatsData } = useQuery({
+    queryKey: ["admin-chats"],
+    queryFn: () => listChats(),
+    retry: false,
+    refetchInterval: 60_000,
+  });
+
+  const setChatStatus = async (conversationId: string, status: "new" | "handled") => {
+    try {
+      await updateChatStatus({ data: { conversationId, status } });
+      await queryClient.invalidateQueries({ queryKey: ["admin-chats"] });
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not update chat");
+    }
+  };
+
   const { data: proposalsData } = useQuery({
     queryKey: ["admin-proposals"],
     queryFn: () => listProposals(),
