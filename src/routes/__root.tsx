@@ -236,6 +236,22 @@ function RootComponent() {
     void initSentryClient();
   }, []);
 
+  // Load LeadConnector chat widget client-side only to avoid SSR hydration mismatch.
+  useEffect(() => {
+    const existing = document.querySelector(
+      'script[data-widget-id="6aa0be0d4d65227e4e8be214"]',
+    );
+    if (existing) return;
+
+    const script = document.createElement("script");
+    script.src = "https://widgets.leadconnectorhq.com/loader.js";
+    script.async = true;
+    script.setAttribute("data-resources-url", "https://widgets.leadconnectorhq.com/chat-widget/loader.js");
+    script.setAttribute("data-widget-id", "6aa0be0d4d65227e4e8be214");
+    script.setAttribute("data-source", "WEB_USER");
+    document.body.appendChild(script);
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
