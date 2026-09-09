@@ -39,6 +39,26 @@ export function createStripeClient(env: StripeEnv): Stripe {
   });
 }
 
+/**
+ * Automatic tax requires a head-office address on the Stripe account. Create the
+ * session with it enabled, and retry without it when the account isn't set up —
+ * otherwise session creation throws and the embedded checkout never opens.
+ */
+export async function createCheckoutSessionWithTaxFallback(
+  stripe: Stripe,
+  params: Stripe.Checkout.SessionCreateParams,
+): Promise<Stripe.Checkout.Session> {
+  try {
+    return await stripe.checkout.sessions.create({
+      ...params,
+      automatic_tax: { enabled: true },
+    });
+  } catch (taxError) {
+    if (!/automatic tax|valid head office/i.test(getStripeErrorMessage(taxError))) throw taxError;
+    return await stripe.checkout.sessions.create(params);
+  }
+}
+
 export function getStripeErrorMessage(error: unknown): string {
   if (error && typeof error === "object") {
     const stripeError = error as {

@@ -1,7 +1,12 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { assertValidSessionId } from "@/lib/checkout-validation";
-import { type StripeEnv, createStripeClient, getStripeErrorMessage } from "@/lib/stripe.server";
+import {
+  type StripeEnv,
+  createCheckoutSessionWithTaxFallback,
+  createStripeClient,
+  getStripeErrorMessage,
+} from "@/lib/stripe.server";
 
 const DISCOVERY_PRICE_KEY = "discovery_call_fee";
 
@@ -65,12 +70,11 @@ export const createDiscoveryCheckoutSession = createServerFn({ method: "POST" })
         ...(data.notes ? { notes: data.notes.slice(0, 450) } : {}),
       };
 
-      const session = await stripe.checkout.sessions.create({
+      const session = await createCheckoutSessionWithTaxFallback(stripe, {
         line_items: [{ price: price.id, quantity: 1 }],
         mode: "payment",
         ui_mode: "embedded_page",
         return_url: data.returnUrl,
-        automatic_tax: { enabled: true },
         billing_address_collection: "required",
         customer_creation: "always",
         customer_email: data.email,
@@ -109,9 +113,8 @@ export const confirmDiscoveryPayment = createServerFn({ method: "POST" })
         return { status: "pending", message: "Payment is still processing." };
       }
 
-      const { fulfillPaidDiscoveryBooking } = await import(
-        "@/lib/booking/discovery-payment.server"
-      );
+      const { fulfillPaidDiscoveryBooking } =
+        await import("@/lib/booking/discovery-payment.server");
       const result = await fulfillPaidDiscoveryBooking({
         id: session.id,
         amountTotal: session.amount_total ?? 0,

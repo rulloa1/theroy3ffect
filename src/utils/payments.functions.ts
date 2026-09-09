@@ -8,7 +8,12 @@ import {
   clampQuantity,
 } from "@/lib/checkout-validation";
 
-import { type StripeEnv, createStripeClient, getStripeErrorMessage } from "@/lib/stripe.server";
+import {
+  type StripeEnv,
+  createCheckoutSessionWithTaxFallback,
+  createStripeClient,
+  getStripeErrorMessage,
+} from "@/lib/stripe.server";
 import type Stripe from "stripe";
 
 type CheckoutSessionResult = { clientSecret: string } | { error: string };
@@ -78,12 +83,11 @@ export const createCommissionCheckoutSession = createServerFn({ method: "POST" }
         ...(userId ? { user_id: userId } : {}),
       };
 
-      const session = await stripe.checkout.sessions.create({
+      const session = await createCheckoutSessionWithTaxFallback(stripe, {
         line_items: lineItems,
         mode: isRecurring ? "subscription" : "payment",
         ui_mode: "embedded_page",
         return_url: data.returnUrl,
-        automatic_tax: { enabled: true },
         billing_address_collection: "required",
         ...(isRecurring
           ? { subscription_data: { metadata } }
@@ -241,18 +245,7 @@ export const createBalanceCheckoutSession = createServerFn({ method: "POST" })
         },
       } satisfies Stripe.Checkout.SessionCreateParams;
 
-      // Automatic tax needs a head-office address configured on the Stripe
-      // account; fall back to no tax collection when it isn't set up yet.
-      let session: Stripe.Checkout.Session;
-      try {
-        session = await stripe.checkout.sessions.create({
-          ...baseParams,
-          automatic_tax: { enabled: true },
-        });
-      } catch (taxError) {
-        if (!/automatic tax|valid head office/i.test(getStripeErrorMessage(taxError))) throw taxError;
-        session = await stripe.checkout.sessions.create(baseParams);
-      }
+      const session = await createCheckoutSessionWithTaxFallback(stripe, baseParams);
 
       return { clientSecret: session.client_secret ?? "" };
     } catch (error) {

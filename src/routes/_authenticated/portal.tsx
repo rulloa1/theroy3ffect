@@ -14,16 +14,13 @@ import {
   LogOut,
   UserRound,
 } from "lucide-react";
-import { EmbeddedCheckout, EmbeddedCheckoutProvider } from "@stripe/react-stripe-js";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 import { Logo } from "@/components/Logo";
 import { ClientProfileForm } from "@/components/portal/ClientProfileForm";
-import { getStripe, getStripeEnvironment } from "@/lib/stripe";
-import {
-  confirmBalancePayment,
-  createBalanceCheckoutSession,
-} from "@/utils/payments.functions";
+import { getStripeEnvironment } from "@/lib/stripe";
+import { EmbeddedCheckoutFrame } from "@/components/EmbeddedCheckoutFrame";
+import { confirmBalancePayment, createBalanceCheckoutSession } from "@/utils/payments.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { getMyProposals, type ProjectProposal } from "@/utils/proposals.functions";
 import {
@@ -118,7 +115,9 @@ function ProjectSummary({ project }: { project: PortalProject }) {
             {project.title}
           </h2>
           <p className="mt-1 font-mono text-[11px] text-white/40">
-            {project.start_date ? `Started ${date(project.start_date)}` : `Started ${date(project.created_at)}`}
+            {project.start_date
+              ? `Started ${date(project.start_date)}`
+              : `Started ${date(project.created_at)}`}
             {project.target_date ? ` · Target delivery ${date(project.target_date)}` : ""}
           </p>
         </div>
@@ -342,9 +341,8 @@ function Proposals({ proposals }: { proposals: ProjectProposal[] }) {
                 type="button"
                 onClick={async () => {
                   try {
-                    const { downloadSignedProposalPdf } = await import(
-                      "@/utils/proposals.functions"
-                    );
+                    const { downloadSignedProposalPdf } =
+                      await import("@/utils/proposals.functions");
                     const res = await downloadSignedProposalPdf({
                       data: { token: p.share_token },
                     });
@@ -406,8 +404,7 @@ function PortalPage() {
     queryKey: ["client-profile"],
     queryFn: () => fetchProfile(),
   });
-  const needsOnboarding =
-    Boolean(profileData) && !profileData?.profile.onboarding_completed_at;
+  const needsOnboarding = Boolean(profileData) && !profileData?.profile.onboarding_completed_at;
 
   const fetchClientSecret = useCallback(async (): Promise<string> => {
     if (!payingOrderId) throw new Error("No invoice selected");
@@ -475,14 +472,11 @@ function PortalPage() {
               CANCEL
             </button>
           </div>
-          <EmbeddedCheckoutProvider stripe={getStripe()} options={{ fetchClientSecret }}>
-            <EmbeddedCheckout />
-          </EmbeddedCheckoutProvider>
+          <EmbeddedCheckoutFrame fetchClientSecret={fetchClientSecret} />
         </div>
       </main>
     );
   }
-
 
   return (
     <main className="min-h-screen bg-[#030014] px-5 py-16 md:px-10">

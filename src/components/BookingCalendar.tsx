@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { EmbeddedCheckoutProvider, EmbeddedCheckout } from "@stripe/react-stripe-js";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Calendar, Check, Clock, CreditCard, Loader2, User } from "lucide-react";
 import { toast } from "sonner";
@@ -10,7 +9,8 @@ import {
   createDiscoveryCheckoutSession,
   confirmDiscoveryPayment,
 } from "@/utils/booking-payment.functions";
-import { getStripe, getStripeEnvironment } from "@/lib/stripe";
+import { getStripeEnvironment } from "@/lib/stripe";
+import { EmbeddedCheckoutFrame } from "@/components/EmbeddedCheckoutFrame";
 import { SmsConsent } from "@/components/SmsConsent";
 
 export const DISCOVERY_FEE_LABEL = "$49";
@@ -53,12 +53,15 @@ function formatTimeLabel(iso: string) {
 }
 
 function groupByDay(slots: Slot[]): Record<string, Slot[]> {
-  return slots.reduce((acc, slot) => {
-    const key = slot.slot_start.slice(0, 10);
-    if (!acc[key]) acc[key] = [];
-    acc[key].push(slot);
-    return acc;
-  }, {} as Record<string, Slot[]>);
+  return slots.reduce(
+    (acc, slot) => {
+      const key = slot.slot_start.slice(0, 10);
+      if (!acc[key]) acc[key] = [];
+      acc[key].push(slot);
+      return acc;
+    },
+    {} as Record<string, Slot[]>,
+  );
 }
 
 export function BookingCalendar() {
@@ -109,7 +112,7 @@ export function BookingCalendar() {
 
   const slotsByDay = useMemo(() => groupByDay(data?.slots ?? []), [data]);
   const days = useMemo(() => Object.keys(slotsByDay).sort(), [slotsByDay]);
-  const daySlots = selectedDay ? slotsByDay[selectedDay] ?? [] : [];
+  const daySlots = selectedDay ? (slotsByDay[selectedDay] ?? []) : [];
 
   const fetchClientSecret = useCallback(async (): Promise<string> => {
     if (!pending) throw new Error("Booking details are missing");
@@ -165,7 +168,9 @@ export function BookingCalendar() {
         <div className="mx-auto mb-6 flex size-16 items-center justify-center rounded-full bg-[#FF3333]/10">
           <Check className="size-8 text-[#FF3333]" />
         </div>
-        <h3 className="font-display text-2xl uppercase text-white md:text-3xl">You&apos;re booked</h3>
+        <h3 className="font-display text-2xl uppercase text-white md:text-3xl">
+          You&apos;re booked
+        </h3>
         <p className="mx-auto mt-3 max-w-md font-mono text-sm leading-relaxed text-white/70">
           Payment received and a confirmation email is on its way. Your discovery call is set for{" "}
           <strong className="text-white">{result.spoken_time}</strong> ({result.time_zone}).
@@ -202,9 +207,7 @@ export function BookingCalendar() {
           Your slot is held once payment completes. The fee is credited toward your project if you
           commission work within 30 days.
         </p>
-        <EmbeddedCheckoutProvider stripe={getStripe()} options={{ fetchClientSecret }}>
-          <EmbeddedCheckout />
-        </EmbeddedCheckoutProvider>
+        <EmbeddedCheckoutFrame fetchClientSecret={fetchClientSecret} />
       </div>
     );
   }
@@ -261,7 +264,9 @@ export function BookingCalendar() {
               <span className="block font-mono text-[10px] uppercase tracking-wider opacity-70">
                 {formatDayLabel(day + "T00:00:00")}
               </span>
-              <span className="block font-mono text-xs font-semibold">{slotsByDay[day]?.length ?? 0} slots</span>
+              <span className="block font-mono text-xs font-semibold">
+                {slotsByDay[day]?.length ?? 0} slots
+              </span>
             </button>
           );
         })}

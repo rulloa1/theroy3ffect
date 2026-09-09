@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { assertAdmin } from "@/utils/require-admin";
+import { escapeLikePattern } from "@/lib/sql-like";
 
 export interface ProjectProposal {
   id: string;
@@ -218,7 +219,9 @@ export const signPublicProposal = createServerFn({ method: "POST" })
   }))
   .handler(async ({ data: input }): Promise<{ success: boolean; error?: string }> => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { error } = await supabaseAdmin
+    // Only a published proposal can be signed: `.neq("status", "signed")` alone
+    // let a leaked draft or archived token become a binding agreement.
+    const { data, error } = await supabaseAdmin
       .from("project_proposals")
       .update({
         status: "signed",
@@ -226,16 +229,22 @@ export const signPublicProposal = createServerFn({ method: "POST" })
         client_signed_at: new Date().toISOString(),
       })
       .eq("share_token", input.token)
-      .neq("status", "signed");
+      .in("status", ["sent", "viewed"])
+      .select("id");
 
     if (error) {
       console.error("signPublicProposal error:", error.message);
       return { success: false, error: "Could not sign this proposal." };
     }
 
+    // No row matched: already signed, or not published. Reporting success here
+    // told a second signer their name was recorded when it was discarded.
+    if (!data || data.length === 0) {
+      return { success: false, error: "This proposal is no longer awaiting a signature." };
+    }
+
     return { success: true };
   });
-
 
 /** Public server function to generate & return downloadable PDF bytes for a proposal */
 export const downloadSignedProposalPdf = createServerFn({ method: "POST" })
@@ -336,7 +345,12 @@ export const adminUpdateProposal = createServerFn({ method: "POST" })
 /** Publish a proposal to the client: mark sent and email the secure link */
 export const adminSendProposal = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input) => ({ id: z.string().uuid().parse((input as { id: string })?.id) }))
+  .inputValidator((input) => ({
+    id: z
+      .string()
+      .uuid()
+      .parse((input as { id: string })?.id),
+  }))
   .handler(
     async ({ context, data }): Promise<{ success: boolean; emailed?: boolean; error?: string }> => {
       await assertAdmin(context);
@@ -398,7 +412,7 @@ export const getMyProposals = createServerFn({ method: "GET" })
     const { data, error } = await supabaseAdmin
       .from("project_proposals")
       .select("*")
-      .ilike("client_email", email)
+      .ilike("client_email", escapeLikePattern(email))
       .in("status", ["sent", "viewed", "signed"])
       .order("created_at", { ascending: false });
 

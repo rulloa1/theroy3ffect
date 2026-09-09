@@ -6,6 +6,7 @@
  * idempotent — the Stripe checkout session id is the fulfilment key.
  */
 import { bookDiscoverySlot, formatSlot, BOOKING_TZ } from "@/utils/booking.server";
+import { escapeLikePattern } from "@/lib/sql-like";
 
 export const DISCOVERY_PRICE_KEY = "discovery_call_fee";
 export const DISCOVERY_FEE_CENTS = 4900;
@@ -47,7 +48,7 @@ async function syncPortalDiscoveryMilestone(input: {
   const { data: existingProject } = await db
     .from("client_projects")
     .select("id")
-    .ilike("client_email", email)
+    .ilike("client_email", escapeLikePattern(email))
     .order("created_at", { ascending: true })
     .limit(1)
     .maybeSingle();

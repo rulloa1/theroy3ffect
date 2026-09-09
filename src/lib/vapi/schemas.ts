@@ -24,16 +24,24 @@ const longText = z.string().trim().max(2000);
 
 /** Voice agents send loose values; normalize instead of rejecting a real lead. */
 const normalizeEnum = <T extends readonly string[]>(values: T, fallback?: T[number]) =>
-  z.preprocess((raw) => {
-    if (typeof raw !== "string") return fallback;
-    const key = raw.trim().toLowerCase().replace(/[\s-]+/g, "_");
-    return (values as readonly string[]).includes(key) ? key : fallback;
-  }, z.enum(values as unknown as [string, ...string[]]).optional());
+  z.preprocess(
+    (raw) => {
+      if (typeof raw !== "string") return fallback;
+      const key = raw
+        .trim()
+        .toLowerCase()
+        .replace(/[\s-]+/g, "_");
+      return (values as readonly string[]).includes(key) ? key : fallback;
+    },
+    z.enum(values as unknown as [string, ...string[]]).optional(),
+  );
 
 const looseEmail = z.preprocess((raw) => {
   if (typeof raw !== "string") return undefined;
   const value = raw.trim().replace(/\s+/g, "");
-  return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(value) && value.length <= 255 ? value : undefined;
+  // `*` is excluded: PostgREST reads it as a wildcard in ilike filters and it
+  // cannot be escaped there (see @/lib/sql-like).
+  return /^[^@\s*]+@[^@\s*]+\.[^@\s*]+$/.test(value) && value.length <= 255 ? value : undefined;
 }, z.string().optional());
 
 export const captureLeadSchema = z.object({

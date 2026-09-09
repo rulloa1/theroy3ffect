@@ -12,16 +12,57 @@ const money = (amount: number | null | undefined, currency: string | null | unde
     currency: (currency ?? "usd").toUpperCase(),
   }).format((amount ?? 0) / 100);
 
-function resolveEnv(url: string): StripeEnv {
-  const param = new URL(url).searchParams.get("env");
-  return param === "live" ? "live" : "sandbox";
+function webhookSecret(env: StripeEnv): string | undefined {
+  const key = env === "live" ? "PAYMENTS_LIVE_WEBHOOK_SECRET" : "PAYMENTS_SANDBOX_WEBHOOK_SECRET";
+  return process.env[key];
 }
 
-function webhookSecret(env: StripeEnv): string {
-  const key = env === "live" ? "PAYMENTS_LIVE_WEBHOOK_SECRET" : "PAYMENTS_SANDBOX_WEBHOOK_SECRET";
-  const value = process.env[key];
-  if (!value) throw new Error(`${key} is not configured`);
-  return value;
+/**
+ * Work out which Stripe environment sent this event by verifying the signature
+ * against each configured secret. The environment must never come from the
+ * request URL: an endpoint registered without `?env=live` would have verified
+ * live events against the sandbox secret, rejected every one of them, and
+ * silently dropped real payments once Stripe gave up retrying.
+ */
+async function verifyEvent(
+  body: string,
+  signature: string,
+): Promise<{ event: Stripe.Event; env: StripeEnv; stripe: Stripe } | null> {
+  const unavailable: string[] = [];
+
+  for (const env of ["live", "sandbox"] as const) {
+    const secret = webhookSecret(env);
+    if (!secret) {
+      unavailable.push(`${env}: webhook secret not configured`);
+      continue;
+    }
+
+    let stripe: Stripe;
+    try {
+      stripe = createStripeClient(env);
+    } catch (error) {
+      unavailable.push(`${env}: ${error instanceof Error ? error.message : "client unavailable"}`);
+      continue;
+    }
+
+    try {
+      const event = await stripe.webhooks.constructEventAsync(
+        body,
+        signature,
+        secret,
+        undefined,
+        Stripe.createSubtleCryptoProvider(),
+      );
+      return { event, env, stripe };
+    } catch {
+      // Signature belongs to the other environment (or is forged) - keep trying.
+    }
+  }
+
+  if (unavailable.length) {
+    console.error("Webhook verification could not try every environment:", unavailable.join("; "));
+  }
+  return null;
 }
 
 /** Resolve an app user id from checkout metadata, falling back to email match. */
@@ -105,7 +146,9 @@ async function handleCheckoutCompleted(
     },
     { onConflict: "stripe_session_id" },
   );
-  if (error) console.error("Order insert failed:", error.message);
+  // Throw rather than log: a swallowed failure here returns 200, Stripe never
+  // retries, and the customer has paid for an order that does not exist.
+  if (error) throw new Error(`Order insert failed: ${error.message}`);
 
   if (alreadyEmailed) return;
 
@@ -147,7 +190,7 @@ async function handleCheckoutCompleted(
 }
 
 /** Records renewals, first invoices and deposit-balance invoices. */
-async function handleInvoice(invoice: Stripe.Invoice, env: StripeEnv) {
+async function handleInvoice(invoice: Stripe.Invoice, env: StripeEnv, eventType: string) {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
   const subscriptionId =
@@ -204,7 +247,10 @@ async function handleInvoice(invoice: Stripe.Invoice, env: StripeEnv) {
       .neq("balance_status", "paid");
   }
 
-  if (invoice.status !== "paid" && email) {
+  // Only a real failure raises the alert. `invoice.finalized` arrives with status
+  // "open" by definition, so the old `status !== "paid"` test fired on every
+  // retainer renewal and on every successful deposit-balance payment.
+  if (eventType === "invoice.payment_failed" && email) {
     try {
       await sendTemplateEmail("subscription-notification", OWNER_EMAIL, {
         templateData: {
@@ -355,25 +401,24 @@ export const Route = createFileRoute("/api/public/payments/webhook")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const env = resolveEnv(request.url);
         const signature = request.headers.get("stripe-signature");
         const body = await request.text();
 
         if (!signature) return new Response("Missing signature", { status: 401 });
 
-        const stripe = createStripeClient(env);
-        let event: Stripe.Event;
-        try {
-          event = await stripe.webhooks.constructEventAsync(
-            body,
-            signature,
-            webhookSecret(env),
-            undefined,
-            Stripe.createSubtleCryptoProvider(),
-          );
-        } catch (error) {
-          console.error("Webhook signature verification failed:", error);
+        const verified = await verifyEvent(body, signature);
+        if (!verified) {
+          console.error("Webhook signature verification failed for every configured environment");
           return new Response("Invalid signature", { status: 401 });
+        }
+
+        const { event, stripe } = verified;
+        const env: StripeEnv = event.livemode ? "live" : "sandbox";
+        if (env !== verified.env) {
+          console.error(
+            `Webhook environment mismatch: livemode=${event.livemode} verified against ${verified.env}`,
+          );
+          return new Response("Environment mismatch", { status: 400 });
         }
 
         try {
@@ -386,9 +431,8 @@ export const Route = createFileRoute("/api/public/payments/webhook")({
               if (session.payment_status !== "unpaid") {
                 const purpose = session.metadata?.["purpose"];
                 if (purpose === "commission_balance") {
-                  const { settleCommissionBalance } = await import(
-                    "@/lib/booking/balance-payment.server"
-                  );
+                  const { settleCommissionBalance } =
+                    await import("@/lib/booking/balance-payment.server");
                   await settleCommissionBalance({
                     sessionId: session.id,
                     amountTotal: session.amount_total ?? 0,
@@ -398,9 +442,8 @@ export const Route = createFileRoute("/api/public/payments/webhook")({
                 }
                 await handleCheckoutCompleted(stripe, session, env);
                 if (purpose === "discovery_call") {
-                  const { fulfillPaidDiscoveryBooking } = await import(
-                    "@/lib/booking/discovery-payment.server"
-                  );
+                  const { fulfillPaidDiscoveryBooking } =
+                    await import("@/lib/booking/discovery-payment.server");
                   await fulfillPaidDiscoveryBooking({
                     id: session.id,
                     amountTotal: session.amount_total ?? 0,
@@ -425,7 +468,7 @@ export const Route = createFileRoute("/api/public/payments/webhook")({
             case "invoice.paid":
             case "invoice.payment_failed":
             case "invoice.finalized":
-              await handleInvoice(event.data.object as Stripe.Invoice, env);
+              await handleInvoice(event.data.object as Stripe.Invoice, env, event.type);
               break;
             case "charge.refunded":
               await handleChargeChange(event.data.object as Stripe.Charge, env, false);
