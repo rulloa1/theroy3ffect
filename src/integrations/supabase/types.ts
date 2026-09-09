@@ -591,6 +591,9 @@ export type Database = {
           client_signed_at: string | null
           created_at: string
           deposit_cents: number
+          deposit_paid_at: string | null
+          deposit_paid_cents: number | null
+          deposit_session_id: string | null
           id: string
           project_title: string
           scope_deliverables: string
@@ -610,6 +613,9 @@ export type Database = {
           client_signed_at?: string | null
           created_at?: string
           deposit_cents?: number
+          deposit_paid_at?: string | null
+          deposit_paid_cents?: number | null
+          deposit_session_id?: string | null
           id?: string
           project_title: string
           scope_deliverables: string
@@ -629,6 +635,9 @@ export type Database = {
           client_signed_at?: string | null
           created_at?: string
           deposit_cents?: number
+          deposit_paid_at?: string | null
+          deposit_paid_cents?: number | null
+          deposit_session_id?: string | null
           id?: string
           project_title?: string
           scope_deliverables?: string
