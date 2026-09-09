@@ -58,8 +58,14 @@ function PortalProposalPage() {
 
   const handleSign = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!signatureName.trim()) return toast.error("Type your full name to sign");
-    if (!agreed) return toast.error("Please confirm you agree to the terms");
+    if (!signatureName.trim()) {
+      toast.error("Type your full name to sign");
+      return;
+    }
+    if (!agreed) {
+      toast.error("Please confirm you agree to the terms");
+      return;
+    }
 
     setIsSigning(true);
     try {
@@ -123,7 +129,7 @@ function PortalProposalPage() {
       <Toaster />
       <div className="mx-auto max-w-4xl">
         <div className="flex flex-wrap items-center justify-between gap-4">
-          <Logo variant="inline" size="sm" href="/portal" />
+          <Logo variant="compact" size="sm" href="/portal" />
           <Link
             to="/portal"
             className="inline-flex items-center gap-1.5 font-mono text-[10px] tracking-widest text-white/50 hover:text-white"

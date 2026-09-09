@@ -495,7 +495,7 @@ export const downloadMyProposalPdf = createServerFn({ method: "POST" })
         const pdfBytes = await buildSignedProposalPdf({
           clientName: p.client_name,
           clientEmail: p.client_email,
-          clientCompany: p.client_company,
+          clientCompany: p.client_company ?? null,
           projectTitle: p.project_title,
           scopeDeliverables: p.scope_deliverables,
           timelineWeeks: p.timeline_weeks,
