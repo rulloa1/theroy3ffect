@@ -10,3 +10,7 @@
 - [ ] Register business address as Stripe tax origin (live + sandbox) for automatic tax
 - [ ] Real client payment end to end on live, then refund
 - [ ] Add LeadConnector chat widget script sitewide
+
+- [x] Website chat widget wired to leads: /api/public/leadconnector webhook -> chat_conversations/chat_messages + voice_leads, WEBSITE CHAT tab in admin
+- [ ] Rory: add the webhook action in LeadConnector workflow (URL + token) so live chats flow in
+- [ ] Live $1 test invoice payment + refund (pending)
