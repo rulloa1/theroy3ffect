@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { shouldRunHeavyEffects } from "@/lib/effects-guard";
 
 const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
