@@ -24,3 +24,7 @@ cd <repository-name>
 npm i
 npm run dev
 ```
+
+## Integrations
+
+Inbound leads (contact form, project brief, MCP inquiries) are synced to GoHighLevel via a GHL workflow Inbound Webhook. Set the `GHL_INBOUND_WEBHOOK_URL` secret (Project Settings → Secrets) to the webhook URL from your GHL workflow. If unset, the sync is skipped and form submissions are unaffected.
