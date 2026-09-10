@@ -8,6 +8,10 @@ export function ScrambleText({ text, className }: { text: string; className?: st
   const frame = useRef(0);
 
   useEffect(() => {
+    if (!shouldRunHeavyEffects()) {
+      setDisplay(text);
+      return;
+    }
     let raf = 0;
     frame.current = 0;
     const total = text.length * 4 + 12;
