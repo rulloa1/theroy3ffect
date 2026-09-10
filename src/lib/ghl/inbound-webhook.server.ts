@@ -6,21 +6,21 @@
  */
 
 export interface GhlLeadPayload {
-  name?: string | null;
-  email?: string | null;
-  phone?: string | null;
+  name?: string | null | undefined;
+  email?: string | null | undefined;
+  phone?: string | null | undefined;
   source: string;
-  projectType?: string | null;
-  message?: string | null;
-  company?: string | null;
-  budget?: string | null;
-  timeline?: string | null;
-  smsServiceConsent?: boolean;
-  smsMarketingConsent?: boolean;
-  consentCapturedAt?: string | null;
-  pageUrl?: string | null;
-  submittedAt?: string | null;
-  tags?: string[];
+  projectType?: string | null | undefined;
+  message?: string | null | undefined;
+  company?: string | null | undefined;
+  budget?: string | null | undefined;
+  timeline?: string | null | undefined;
+  smsServiceConsent?: boolean | undefined;
+  smsMarketingConsent?: boolean | undefined;
+  consentCapturedAt?: string | null | undefined;
+  pageUrl?: string | null | undefined;
+  submittedAt?: string | null | undefined;
+  tags?: string[] | undefined;
 }
 
 /** Flat, stable shape GHL's workflow field mapping can rely on. */
