@@ -16,19 +16,26 @@ export function HeroContent() {
   const [wordIndex, setWordIndex] = useState(0);
   const [headlineIndex, setHeadlineIndex] = useState(0);
   const [bioKey, setBioKey] = useState(0);
+  const [animated, setAnimated] = useState(false);
 
   useEffect(() => {
+    setAnimated(shouldRunHeavyEffects());
+  }, []);
+
+  useEffect(() => {
+    if (!animated) return;
     const id = setInterval(() => {
       setWordIndex((i) => (i + 1) % WORDS.length);
       setHeadlineIndex((i) => (i + 1) % HEADLINES.length);
     }, 4500);
     return () => clearInterval(id);
-  }, []);
+  }, [animated]);
 
   useEffect(() => {
+    if (!animated) return;
     const id = setInterval(() => setBioKey((k) => k + 1), 8000);
     return () => clearInterval(id);
-  }, []);
+  }, [animated]);
 
   return (
     <div className="pointer-events-none relative z-20 flex w-full flex-1 flex-col items-center justify-center px-5 pt-24 text-center md:justify-end md:pb-[26vh] md:pt-0">
