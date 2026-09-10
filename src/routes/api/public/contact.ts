@@ -73,7 +73,6 @@ export const Route = createFileRoute("/api/public/contact")({
             tags: ["website-lead", "contact-form"],
           }),
         );
-        }
 
         try {
           await sendTemplateEmail("brief-notification", OWNER_EMAIL, {

@@ -161,7 +161,6 @@ export const Route = createFileRoute("/api/public/brief-intake")({
             tags: ["website-lead", "project-brief"],
           }),
         );
-        }
 
         try {
           await sendTemplateEmail("project-brief-notification", OWNER_EMAIL, {
