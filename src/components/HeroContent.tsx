@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { ScrambleText } from "./ScrambleText";
+import { shouldRunHeavyEffects } from "@/lib/effects-guard";
 
 const WORDS = ["PURPOSE", "IMPACT", "INTENT"];
 const HEADLINES = [
@@ -15,19 +16,26 @@ export function HeroContent() {
   const [wordIndex, setWordIndex] = useState(0);
   const [headlineIndex, setHeadlineIndex] = useState(0);
   const [bioKey, setBioKey] = useState(0);
+  const [animated, setAnimated] = useState(false);
 
   useEffect(() => {
+    setAnimated(shouldRunHeavyEffects());
+  }, []);
+
+  useEffect(() => {
+    if (!animated) return;
     const id = setInterval(() => {
       setWordIndex((i) => (i + 1) % WORDS.length);
       setHeadlineIndex((i) => (i + 1) % HEADLINES.length);
     }, 4500);
     return () => clearInterval(id);
-  }, []);
+  }, [animated]);
 
   useEffect(() => {
+    if (!animated) return;
     const id = setInterval(() => setBioKey((k) => k + 1), 8000);
     return () => clearInterval(id);
-  }, []);
+  }, [animated]);
 
   return (
     <div className="pointer-events-none relative z-20 flex w-full flex-1 flex-col items-center justify-center px-5 pt-24 text-center md:justify-end md:pb-[26vh] md:pt-0">
@@ -72,16 +80,18 @@ export function HeroContent() {
         key={bioKey}
         className="mt-4 max-w-lg font-mono text-[11px] leading-relaxed text-white/70 sm:text-xs"
       >
-        {BIO.split("").map((ch, i) => (
-          <motion.span
-            key={`${bioKey}-${i}`}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: i * 0.015, duration: 0.04 }}
-          >
-            {ch}
-          </motion.span>
-        ))}
+        {animated
+          ? BIO.split("").map((ch, i) => (
+              <motion.span
+                key={`${bioKey}-${i}`}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: i * 0.015, duration: 0.04 }}
+              >
+                {ch}
+              </motion.span>
+            ))
+          : BIO}
       </motion.p>
 
       {/* Slogan Punchline */}
