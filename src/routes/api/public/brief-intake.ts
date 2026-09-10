@@ -49,6 +49,7 @@ export const Route = createFileRoute("/api/public/brief-intake")({
 
         const d = parsed.data;
         const briefId = crypto.randomUUID();
+        const pageUrl = request.headers.get("referer") ?? "";
 
         // Only trust a session id Stripe confirms as a completed checkout.
         let verifiedSessionId: string | null = null;
@@ -143,9 +144,10 @@ export const Route = createFileRoute("/api/public/brief-intake")({
           console.error("Brief insert threw:", dbError);
         }
 
-        // Fire-and-forget sync to GoHighLevel; never blocks the submission.
-        void import("@/lib/ghl/inbound-webhook.server").then(({ sendToGhl }) =>
-          sendToGhl({
+        // Await the GHL sync so the fetch isn't killed when the response returns.
+        try {
+          const { sendToGhl } = await import("@/lib/ghl/inbound-webhook.server");
+          await sendToGhl({
             name: d.name,
             email: d.email,
             source: "website_brief",
@@ -158,9 +160,13 @@ export const Route = createFileRoute("/api/public/brief-intake")({
             smsMarketingConsent: d.smsMarketing,
             consentCapturedAt: new Date().toISOString(),
             submittedAt: new Date().toISOString(),
+            pageUrl,
             tags: ["website-lead", "project-brief"],
-          }),
-        );
+          });
+        } catch (ghlError) {
+          // sendToGhl should never throw, but guard against it defensively.
+          console.error("GHL sync error (non-fatal):", ghlError);
+        }
 
         try {
           await sendTemplateEmail("project-brief-notification", OWNER_EMAIL, {

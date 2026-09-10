@@ -39,6 +39,7 @@ export const Route = createFileRoute("/api/public/contact")({
 
         const { name, email, projectType, message, smsService, smsMarketing } = parsed.data;
         const submissionId = crypto.randomUUID();
+        const pageUrl = request.headers.get("referer") ?? "";
 
         // Persist to database so inquiries are visible in Studio Admin dashboard
         try {
@@ -58,9 +59,10 @@ export const Route = createFileRoute("/api/public/contact")({
           console.error("Contact inquiry DB insert error (non-fatal):", dbError);
         }
 
-        // Fire-and-forget sync to GoHighLevel; never blocks the submission.
-        void import("@/lib/ghl/inbound-webhook.server").then(({ sendToGhl }) =>
-          sendToGhl({
+        // Await the GHL sync so the fetch isn't killed when the response returns.
+        try {
+          const { sendToGhl } = await import("@/lib/ghl/inbound-webhook.server");
+          await sendToGhl({
             name,
             email,
             source: "website_contact_form",
@@ -70,9 +72,13 @@ export const Route = createFileRoute("/api/public/contact")({
             smsMarketingConsent: smsMarketing,
             consentCapturedAt: new Date().toISOString(),
             submittedAt: new Date().toISOString(),
+            pageUrl,
             tags: ["website-lead", "contact-form"],
-          }),
-        );
+          });
+        } catch (ghlError) {
+          // sendToGhl should never throw, but guard against it defensively.
+          console.error("GHL sync error (non-fatal):", ghlError);
+        }
 
         try {
           await sendTemplateEmail("brief-notification", OWNER_EMAIL, {
