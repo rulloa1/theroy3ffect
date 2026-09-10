@@ -1,11 +1,13 @@
 import { useState } from "react";
-import { Copy, Download, ExternalLink, FileCheck, Plus, Trash2, Check } from "lucide-react";
+import { Copy, Download, ExternalLink, FileCheck, Pencil, Plus, Send, Trash2, Check } from "lucide-react";
 import { toast } from "sonner";
 import type { ProjectProposal } from "@/utils/proposals.functions";
 
 export interface AdminProposalsViewProps {
   proposals: ProjectProposal[];
   onCreateProposal: () => void;
+  onEditProposal: (proposal: ProjectProposal) => void;
+  onSendProposal: (proposalId: string) => Promise<void>;
   onDeleteProposal: (proposalId: string) => Promise<void>;
   money: (cents: number, currency: string) => string;
   date: (value: string | null) => string;
@@ -14,11 +16,15 @@ export interface AdminProposalsViewProps {
 export function AdminProposalsView({
   proposals,
   onCreateProposal,
+  onEditProposal,
+  onSendProposal,
   onDeleteProposal,
   money,
   date,
 }: AdminProposalsViewProps) {
   const [copiedToken, setCopiedToken] = useState<string | null>(null);
+  const [sendingId, setSendingId] = useState<string | null>(null);
+  const [pdfId, setPdfId] = useState<string | null>(null);
 
   const copyProposalLink = (token: string) => {
     const link = `${window.location.origin}/proposal/${token}`;
@@ -115,6 +121,66 @@ export function AdminProposalsView({
                         <Copy className="size-3 text-[#FF3333]" />
                       )}
                       {copiedToken === prop.share_token ? "COPIED" : "COPY LINK"}
+                    </button>
+
+                    {!isSigned && (
+                      <button
+                        onClick={() => onEditProposal(prop)}
+                        className="inline-flex items-center gap-1.5 border border-white/15 px-2.5 py-1.5 font-mono text-[10px] tracking-widest text-white hover:border-[#FF3333]"
+                      >
+                        <Pencil className="size-3" />
+                        EDIT
+                      </button>
+                    )}
+
+                    {!isSigned && (
+                      <button
+                        disabled={sendingId === prop.id}
+                        onClick={async () => {
+                          setSendingId(prop.id);
+                          try {
+                            await onSendProposal(prop.id);
+                          } finally {
+                            setSendingId(null);
+                          }
+                        }}
+                        className="inline-flex items-center gap-1.5 bg-[#FF3333] px-2.5 py-1.5 font-mono text-[10px] font-bold tracking-widest text-black disabled:opacity-50"
+                      >
+                        <Send className="size-3" />
+                        {sendingId === prop.id
+                          ? "SENDING…"
+                          : prop.status === "draft"
+                            ? "SEND TO CLIENT"
+                            : "RESEND TO CLIENT"}
+                      </button>
+                    )}
+
+                    <button
+                      disabled={pdfId === prop.id}
+                      onClick={async () => {
+                        setPdfId(prop.id);
+                        try {
+                          const { adminDownloadProposalPdf } = await import(
+                            "@/utils/proposals.functions"
+                          );
+                          const res = await adminDownloadProposalPdf({ data: { id: prop.id } });
+                          if (!res.success || !res.pdfBase64)
+                            throw new Error(res.error || "Failed");
+                          const link = document.createElement("a");
+                          link.href = `data:application/pdf;base64,${res.pdfBase64}`;
+                          link.download = res.filename || "proposal.pdf";
+                          link.click();
+                          toast.success("Proposal PDF downloaded");
+                        } catch {
+                          toast.error("Could not generate the PDF");
+                        } finally {
+                          setPdfId(null);
+                        }
+                      }}
+                      className="inline-flex items-center gap-1.5 border border-white/15 px-2.5 py-1.5 font-mono text-[10px] tracking-widest text-white hover:border-[#FF3333] disabled:opacity-50"
+                    >
+                      <Download className="size-3 text-[#FF3333]" />
+                      {pdfId === prop.id ? "BUILDING…" : "PDF"}
                     </button>
 
                     <a

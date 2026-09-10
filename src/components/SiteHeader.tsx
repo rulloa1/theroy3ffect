@@ -80,10 +80,10 @@ export function SiteHeader({ onNavigate }: { onNavigate: (target: NavTarget) => 
         </button>
 
         <Link
-          to={user ? "/account" : "/auth"}
+          to={user ? "/portal" : "/portal/login"}
           className="hidden rounded-full border border-white/20 px-3 py-1.5 font-mono text-[10px] tracking-widest text-white transition-colors hover:border-[#FF3333] md:inline-block sm:px-4 sm:py-2 sm:text-xs"
         >
-          {user ? "ACCOUNT" : "SIGN IN"}
+          {user ? "MY PORTAL" : "CLIENT SIGN IN"}
         </Link>
 
         <Link

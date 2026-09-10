@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { shouldRunHeavyEffects } from "@/lib/effects-guard";
 
 /**
  * Three.js WebGL particle + energy-line field with bloom post-processing.
@@ -11,8 +12,9 @@ export function ParticleBackground() {
     let disposed = false;
     let cleanup: (() => void) | undefined;
 
-    // Honor reduced motion preference
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    // Skip entirely for headless browsers, bots, reduced-motion users,
+    // low-power devices, and anywhere WebGL is unavailable.
+    if (!shouldRunHeavyEffects()) {
       return;
     }
 

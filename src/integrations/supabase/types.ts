@@ -56,6 +56,103 @@ export type Database = {
         }
         Relationships: []
       }
+      chat_conversations: {
+        Row: {
+          contact_email: string | null
+          contact_name: string | null
+          contact_phone: string | null
+          created_at: string
+          external_id: string | null
+          id: string
+          last_message_at: string
+          last_message_preview: string | null
+          lead_id: string | null
+          source: string
+          status: string
+          unread_count: number
+          updated_at: string
+        }
+        Insert: {
+          contact_email?: string | null
+          contact_name?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          external_id?: string | null
+          id?: string
+          last_message_at?: string
+          last_message_preview?: string | null
+          lead_id?: string | null
+          source?: string
+          status?: string
+          unread_count?: number
+          updated_at?: string
+        }
+        Update: {
+          contact_email?: string | null
+          contact_name?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          external_id?: string | null
+          id?: string
+          last_message_at?: string
+          last_message_preview?: string | null
+          lead_id?: string | null
+          source?: string
+          status?: string
+          unread_count?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_conversations_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "voice_leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chat_messages: {
+        Row: {
+          body: string
+          conversation_id: string
+          created_at: string
+          direction: string
+          external_id: string | null
+          id: string
+          message_type: string | null
+          sent_at: string
+        }
+        Insert: {
+          body?: string
+          conversation_id: string
+          created_at?: string
+          direction: string
+          external_id?: string | null
+          id?: string
+          message_type?: string | null
+          sent_at?: string
+        }
+        Update: {
+          body?: string
+          conversation_id?: string
+          created_at?: string
+          direction?: string
+          external_id?: string | null
+          id?: string
+          message_type?: string | null
+          sent_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "chat_conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       client_milestones: {
         Row: {
           completed_at: string | null
@@ -150,30 +247,39 @@ export type Database = {
       }
       contact_inquiries: {
         Row: {
+          consent_captured_at: string | null
           created_at: string
           email: string
           id: string
           message: string
           name: string
           project_type: string | null
+          sms_marketing_consent: boolean
+          sms_service_consent: boolean
           status: string
         }
         Insert: {
+          consent_captured_at?: string | null
           created_at?: string
           email: string
           id?: string
           message: string
           name: string
           project_type?: string | null
+          sms_marketing_consent?: boolean
+          sms_service_consent?: boolean
           status?: string
         }
         Update: {
+          consent_captured_at?: string | null
           created_at?: string
           email?: string
           id?: string
           message?: string
           name?: string
           project_type?: string | null
+          sms_marketing_consent?: boolean
+          sms_service_consent?: boolean
           status?: string
         }
         Relationships: []
@@ -259,6 +365,9 @@ export type Database = {
           balance_due_cents: number
           balance_invoice_id: string | null
           balance_invoice_url: string | null
+          balance_paid_at: string | null
+          balance_paid_cents: number
+          balance_session_id: string | null
           balance_status: string
           created_at: string
           currency: string
@@ -287,6 +396,9 @@ export type Database = {
           balance_due_cents?: number
           balance_invoice_id?: string | null
           balance_invoice_url?: string | null
+          balance_paid_at?: string | null
+          balance_paid_cents?: number
+          balance_session_id?: string | null
           balance_status?: string
           created_at?: string
           currency?: string
@@ -315,6 +427,9 @@ export type Database = {
           balance_due_cents?: number
           balance_invoice_id?: string | null
           balance_invoice_url?: string | null
+          balance_paid_at?: string | null
+          balance_paid_cents?: number
+          balance_session_id?: string | null
           balance_status?: string
           created_at?: string
           currency?: string
@@ -341,31 +456,52 @@ export type Database = {
       }
       profiles: {
         Row: {
+          city: string | null
           company: string | null
           created_at: string
           email: string | null
           full_name: string | null
           id: string
+          notes: string | null
+          onboarding_completed_at: string | null
+          phone: string | null
+          preferred_contact: string
           stripe_customer_id: string | null
+          time_zone: string | null
           updated_at: string
+          website: string | null
         }
         Insert: {
+          city?: string | null
           company?: string | null
           created_at?: string
           email?: string | null
           full_name?: string | null
           id: string
+          notes?: string | null
+          onboarding_completed_at?: string | null
+          phone?: string | null
+          preferred_contact?: string
           stripe_customer_id?: string | null
+          time_zone?: string | null
           updated_at?: string
+          website?: string | null
         }
         Update: {
+          city?: string | null
           company?: string | null
           created_at?: string
           email?: string | null
           full_name?: string | null
           id?: string
+          notes?: string | null
+          onboarding_completed_at?: string | null
+          phone?: string | null
+          preferred_contact?: string
           stripe_customer_id?: string | null
+          time_zone?: string | null
           updated_at?: string
+          website?: string | null
         }
         Relationships: []
       }
@@ -374,6 +510,7 @@ export type Database = {
           audience: string | null
           budget: string | null
           company: string | null
+          consent_captured_at: string | null
           created_at: string
           deliverables: string | null
           email: string
@@ -387,6 +524,8 @@ export type Database = {
           project_status: string
           project_type: string
           references_links: string | null
+          sms_marketing_consent: boolean
+          sms_service_consent: boolean
           stripe_session_id: string | null
           timeline: string | null
           user_id: string | null
@@ -395,6 +534,7 @@ export type Database = {
           audience?: string | null
           budget?: string | null
           company?: string | null
+          consent_captured_at?: string | null
           created_at?: string
           deliverables?: string | null
           email: string
@@ -408,6 +548,8 @@ export type Database = {
           project_status?: string
           project_type: string
           references_links?: string | null
+          sms_marketing_consent?: boolean
+          sms_service_consent?: boolean
           stripe_session_id?: string | null
           timeline?: string | null
           user_id?: string | null
@@ -416,6 +558,7 @@ export type Database = {
           audience?: string | null
           budget?: string | null
           company?: string | null
+          consent_captured_at?: string | null
           created_at?: string
           deliverables?: string | null
           email?: string
@@ -429,6 +572,8 @@ export type Database = {
           project_status?: string
           project_type?: string
           references_links?: string | null
+          sms_marketing_consent?: boolean
+          sms_service_consent?: boolean
           stripe_session_id?: string | null
           timeline?: string | null
           user_id?: string | null
@@ -446,6 +591,9 @@ export type Database = {
           client_signed_at: string | null
           created_at: string
           deposit_cents: number
+          deposit_paid_at: string | null
+          deposit_paid_cents: number | null
+          deposit_session_id: string | null
           id: string
           project_title: string
           scope_deliverables: string
@@ -465,6 +613,9 @@ export type Database = {
           client_signed_at?: string | null
           created_at?: string
           deposit_cents?: number
+          deposit_paid_at?: string | null
+          deposit_paid_cents?: number | null
+          deposit_session_id?: string | null
           id?: string
           project_title: string
           scope_deliverables: string
@@ -484,6 +635,9 @@ export type Database = {
           client_signed_at?: string | null
           created_at?: string
           deposit_cents?: number
+          deposit_paid_at?: string | null
+          deposit_paid_cents?: number | null
+          deposit_session_id?: string | null
           id?: string
           project_title?: string
           scope_deliverables?: string
@@ -886,6 +1040,7 @@ export type Database = {
       voice_bookings: {
         Row: {
           amount_paid_cents: number
+          consent_captured_at: string | null
           created_at: string
           currency: string
           email: string
@@ -897,6 +1052,8 @@ export type Database = {
           phone: string | null
           slot_end: string
           slot_start: string
+          sms_marketing_consent: boolean
+          sms_service_consent: boolean
           status: string
           stripe_session_id: string | null
           time_zone: string
@@ -905,6 +1062,7 @@ export type Database = {
         }
         Insert: {
           amount_paid_cents?: number
+          consent_captured_at?: string | null
           created_at?: string
           currency?: string
           email: string
@@ -916,6 +1074,8 @@ export type Database = {
           phone?: string | null
           slot_end: string
           slot_start: string
+          sms_marketing_consent?: boolean
+          sms_service_consent?: boolean
           status?: string
           stripe_session_id?: string | null
           time_zone?: string
@@ -924,6 +1084,7 @@ export type Database = {
         }
         Update: {
           amount_paid_cents?: number
+          consent_captured_at?: string | null
           created_at?: string
           currency?: string
           email?: string
@@ -935,6 +1096,8 @@ export type Database = {
           phone?: string | null
           slot_end?: string
           slot_start?: string
+          sms_marketing_consent?: boolean
+          sms_service_consent?: boolean
           status?: string
           stripe_session_id?: string | null
           time_zone?: string

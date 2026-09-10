@@ -37,12 +37,16 @@ import {
   adminListProposals,
   adminCreateProposal,
   adminDeleteProposal,
+  adminUpdateProposal,
+  adminSendProposal,
   type ProjectProposal,
   DEFAULT_TERMS,
 } from "@/utils/proposals.functions";
 
 import { AdminProjectsView, type FilterTab } from "@/components/admin/AdminProjectsView";
 import { AdminInquiriesView } from "@/components/admin/AdminInquiriesView";
+import { AdminChatsView } from "@/components/admin/AdminChatsView";
+import { adminListChats, adminUpdateChatStatus } from "@/utils/chats.functions";
 import { AdminProposalsView } from "@/components/admin/AdminProposalsView";
 import { AdminPortfolioCMS } from "@/components/admin/AdminPortfolioCMS";
 import { AdminFinancialsView } from "@/components/admin/AdminFinancialsView";
@@ -119,6 +123,7 @@ type MainView =
   | "AUTOPILOT"
   | "PROSPECTS"
   | "INQUIRIES"
+  | "CHATS"
   | "PROPOSALS"
   | "PORTFOLIO"
   | "CLIENTPORTAL"
@@ -132,6 +137,8 @@ function AdminPage() {
   const sendInvoice = useServerFn(adminSendBalanceInvoice);
   const updateMilestone = useServerFn(adminUpdateProjectMilestone);
   const listInquiries = useServerFn(adminListInquiries);
+  const listChats = useServerFn(adminListChats);
+  const updateChatStatus = useServerFn(adminUpdateChatStatus);
   const updateInquiry = useServerFn(adminUpdateInquiryStatus);
   const listPortfolio = useServerFn(adminListPortfolioProjects);
   const upsertPortfolio = useServerFn(adminUpsertPortfolioProject);
@@ -139,6 +146,8 @@ function AdminPage() {
   const listProposals = useServerFn(adminListProposals);
   const createProposal = useServerFn(adminCreateProposal);
   const deleteProposal = useServerFn(adminDeleteProposal);
+  const updateProposal = useServerFn(adminUpdateProposal);
+  const sendProposal = useServerFn(adminSendProposal);
   const listPipeline = useServerFn(adminListPipeline);
   const updateLeadStage = useServerFn(adminUpdateLeadStage);
   const updateBookingStatus = useServerFn(adminUpdateBookingStatus);
@@ -173,6 +182,7 @@ function AdminPage() {
   const [editingProject, setEditingProject] = useState<PortfolioProject | null>(null);
   const [isNewProjectModalOpen, setIsNewProjectModalOpen] = useState(false);
   const [isProposalModalOpen, setIsProposalModalOpen] = useState(false);
+  const [editingProposalId, setEditingProposalId] = useState<string | null>(null);
 
   // Proposal form state
   const [proposalForm, setProposalForm] = useState<{
@@ -235,6 +245,22 @@ function AdminPage() {
     queryFn: () => listInquiries(),
     retry: false,
   });
+
+  const { data: chatsData } = useQuery({
+    queryKey: ["admin-chats"],
+    queryFn: () => listChats(),
+    retry: false,
+    refetchInterval: 60_000,
+  });
+
+  const setChatStatus = async (conversationId: string, status: "new" | "handled") => {
+    try {
+      await updateChatStatus({ data: { conversationId, status } });
+      await queryClient.invalidateQueries({ queryKey: ["admin-chats"] });
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not update chat");
+    }
+  };
 
   const { data: proposalsData } = useQuery({
     queryKey: ["admin-proposals"],
@@ -630,34 +656,86 @@ function AdminPage() {
     }
   };
 
-  const handleSaveProposal = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const submitProposal = async (mode: "draft" | "sent") => {
     if (!proposalForm.clientName || !proposalForm.clientEmail || !proposalForm.projectTitle) {
       toast.error("Client name, email, and project title are required");
       return;
     }
-    try {
-      const res = await createProposal({
-        data: {
-          ...(proposalForm.briefId ? { briefId: proposalForm.briefId } : {}),
-          clientName: proposalForm.clientName,
-          clientEmail: proposalForm.clientEmail,
-          ...(proposalForm.clientCompany ? { clientCompany: proposalForm.clientCompany } : {}),
-          projectTitle: proposalForm.projectTitle,
-          scopeDeliverables: proposalForm.scopeDeliverables,
-          timelineWeeks: proposalForm.timelineWeeks,
-          totalPriceCents: Math.round(proposalForm.totalPriceDollars * 100),
-          terms: proposalForm.terms,
-        },
-      });
+    const payload = {
+      clientName: proposalForm.clientName,
+      clientEmail: proposalForm.clientEmail,
+      ...(proposalForm.clientCompany ? { clientCompany: proposalForm.clientCompany } : {}),
+      projectTitle: proposalForm.projectTitle,
+      scopeDeliverables: proposalForm.scopeDeliverables,
+      timelineWeeks: proposalForm.timelineWeeks,
+      totalPriceCents: Math.round(proposalForm.totalPriceDollars * 100),
+      terms: proposalForm.terms,
+    };
 
-      if (!res.success) throw new Error(res.error || "Failed to create proposal");
-      toast.success("Proposal created and client link generated!");
+    try {
+      if (editingProposalId) {
+        const res = await updateProposal({ data: { id: editingProposalId, ...payload } });
+        if (!res.success) throw new Error(res.error || "Failed to save proposal");
+        if (mode === "sent") {
+          const sent = await sendProposal({ data: { id: editingProposalId } });
+          if (!sent.success) throw new Error(sent.error || "Failed to send proposal");
+          toast.success(sent.emailed ? "Proposal sent to the client" : "Proposal published (email not delivered)");
+        } else {
+          toast.success("Draft saved");
+        }
+      } else {
+        const res = await createProposal({
+          data: {
+            ...(proposalForm.briefId ? { briefId: proposalForm.briefId } : {}),
+            ...payload,
+            status: mode,
+          },
+        });
+        if (!res.success || !res.proposal) throw new Error(res.error || "Failed to create proposal");
+        if (mode === "sent") {
+          const sent = await sendProposal({ data: { id: res.proposal.id } });
+          toast.success(
+            sent.success && sent.emailed
+              ? "Proposal sent to the client"
+              : "Proposal published (email not delivered)",
+          );
+        } else {
+          toast.success("Draft saved");
+        }
+      }
+
       setIsProposalModalOpen(false);
+      setEditingProposalId(null);
       await queryClient.invalidateQueries({ queryKey: ["admin-proposals"] });
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Error creating proposal");
+      toast.error(err instanceof Error ? err.message : "Error saving proposal");
     }
+  };
+
+  const handleSendProposalItem = async (id: string) => {
+    try {
+      const res = await sendProposal({ data: { id } });
+      if (!res.success) throw new Error(res.error || "Send failed");
+      toast.success(res.emailed ? "Proposal sent to the client" : "Proposal published (email not delivered)");
+      await queryClient.invalidateQueries({ queryKey: ["admin-proposals"] });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Error sending proposal");
+    }
+  };
+
+  const handleEditProposal = (prop: ProjectProposal) => {
+    setProposalForm({
+      clientName: prop.client_name,
+      clientEmail: prop.client_email,
+      clientCompany: prop.client_company || "",
+      projectTitle: prop.project_title,
+      scopeDeliverables: prop.scope_deliverables,
+      timelineWeeks: prop.timeline_weeks,
+      totalPriceDollars: prop.total_price_cents / 100,
+      terms: prop.terms,
+    });
+    setEditingProposalId(prop.id);
+    setIsProposalModalOpen(true);
   };
 
   const handleDeleteProposalItem = async (id: string) => {
@@ -686,6 +764,7 @@ function AdminPage() {
       terms: DEFAULT_TERMS,
     });
     setSelectedBrief(null);
+    setEditingProposalId(null);
     setIsProposalModalOpen(true);
   };
 
@@ -792,6 +871,11 @@ function AdminPage() {
             {
               id: "INQUIRIES",
               label: `CLIENT LEADS (${unreadInquiriesCount})`,
+              icon: MessageSquare,
+            },
+            {
+              id: "CHATS",
+              label: `WEBSITE CHAT (${(chatsData?.conversations ?? []).filter((c) => c.unread_count > 0).length})`,
               icon: MessageSquare,
             },
             {
@@ -904,6 +988,14 @@ function AdminPage() {
             />
           )}
 
+          {currentView === "CHATS" && (
+            <AdminChatsView
+              conversations={chatsData?.conversations ?? []}
+              onUpdateStatus={setChatStatus}
+              date={date}
+            />
+          )}
+
           {currentView === "PROPOSALS" && (
             <AdminProposalsView
               proposals={proposalsData ?? []}
@@ -919,8 +1011,11 @@ function AdminPage() {
                   totalPriceDollars: 5000,
                   terms: DEFAULT_TERMS,
                 });
+                setEditingProposalId(null);
                 setIsProposalModalOpen(true);
               }}
+              onEditProposal={handleEditProposal}
+              onSendProposal={handleSendProposalItem}
               onDeleteProposal={handleDeleteProposalItem}
               money={money}
               date={date}
@@ -1138,22 +1233,31 @@ function AdminPage() {
               <div className="flex items-start justify-between border-b border-white/10 pb-4">
                 <div>
                   <span className="font-mono text-[10px] tracking-widest text-[#FF3333]">
-                    1-CLICK PROPOSAL GENERATOR
+                    PROPOSAL BUILDER
                   </span>
                   <h2 className="mt-1 font-display text-2xl uppercase text-white">
-                    Create Scope Agreement
+                    {editingProposalId ? "Edit Scope Agreement" : "Create Scope Agreement"}
                   </h2>
                 </div>
                 <button
                   type="button"
-                  onClick={() => setIsProposalModalOpen(false)}
+                  onClick={() => {
+                    setIsProposalModalOpen(false);
+                    setEditingProposalId(null);
+                  }}
                   className="text-white/40 hover:text-white"
                 >
                   <X className="size-5" />
                 </button>
               </div>
 
-              <form onSubmit={handleSaveProposal} className="mt-6 space-y-4 font-mono text-xs">
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  void submitProposal("sent");
+                }}
+                className="mt-6 space-y-4 font-mono text-xs"
+              >
                 <div>
                   <label className="block text-[10px] text-white/40">CLIENT NAME</label>
                   <input
@@ -1241,14 +1345,24 @@ function AdminPage() {
 
                 <div className="mt-6 flex justify-end gap-3 border-t border-white/10 pt-4">
                   <button
+                    type="button"
+                    onClick={() => void submitProposal("draft")}
+                    className="border border-white/20 px-4 py-2 font-mono text-xs text-white hover:border-[#FF3333]"
+                  >
+                    SAVE DRAFT
+                  </button>
+                  <button
                     type="submit"
                     className="bg-[#FF3333] px-4 py-2 font-mono text-xs font-bold text-black hover:opacity-90"
                   >
-                    GENERATE &amp; SHARE PROPOSAL →
+                    SEND TO CLIENT →
                   </button>
                   <button
                     type="button"
-                    onClick={() => setIsProposalModalOpen(false)}
+                    onClick={() => {
+                      setIsProposalModalOpen(false);
+                      setEditingProposalId(null);
+                    }}
                     className="border border-white/15 px-4 py-2 font-mono text-xs text-white/60 hover:text-white"
                   >
                     CANCEL

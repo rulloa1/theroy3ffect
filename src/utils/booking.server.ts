@@ -9,6 +9,8 @@ export const BOOKING_TZ = "America/Chicago";
 /** Discovery slots offered daily, expressed in UTC hours (10am / 1pm / 3pm Central). */
 export const SLOT_HOURS_UTC = [15, 18, 20] as const;
 export const SLOT_MINUTES = 15;
+/** Shared so a caller can tell a lost slot apart from a broken query. */
+export const SLOT_TAKEN_MESSAGE = "That time was just taken.";
 
 export const bookingSlotSchema = z.object({
   full_name: z.string().trim().min(1, "Please add your name").max(120),
@@ -129,15 +131,53 @@ export async function getAvailableSlots(count = 3) {
   return candidates.filter((c) => !taken.has(c.toISOString())).slice(0, count * 3);
 }
 
-export async function bookDiscoverySlot(input: BookingSlotInput) {
+/** Payment facts recorded on the booking row in the same insert that reserves the slot. */
+export interface BookingPaymentDetails {
+  stripe_session_id: string;
+  amount_paid_cents: number;
+  currency: string;
+  sms_service_consent: boolean;
+  sms_marketing_consent: boolean;
+}
+
+export interface BookingResult {
+  booking_id: string;
+  spoken_time: string;
+  time_zone: string;
+  /** True when this slot was already reserved by the same Stripe session. */
+  already_booked?: boolean;
+}
+
+/**
+ * True when the time is one of the slots the site actually offers.
+ * `getAvailableSlots` only ever hands out these, so anything else is a caller
+ * inventing a time — a 3am booking, or a way to fill the calendar with junk.
+ */
+export function isOfferedSlot(start: Date): boolean {
+  const weekday = start.getUTCDay();
+  if (weekday === 0 || weekday === 6) return false;
+  if (!(SLOT_HOURS_UTC as readonly number[]).includes(start.getUTCHours())) return false;
+  return start.getUTCMinutes() === 0 && start.getUTCSeconds() === 0;
+}
+
+export async function bookDiscoverySlot(
+  input: BookingSlotInput,
+  payment?: BookingPaymentDetails,
+): Promise<BookingResult> {
   const data = bookingSlotSchema.parse(input);
   const start = new Date(data.slot_start);
   if (Number.isNaN(start.getTime()) || start.getTime() < Date.now()) {
     throw new Error("That time is no longer available.");
   }
+  if (!isOfferedSlot(start)) {
+    throw new Error("That time isn't one of the slots on offer.");
+  }
   const end = new Date(start.getTime() + SLOT_MINUTES * 60_000);
   const db = await admin();
 
+  // Fast path for a friendly message. The real guarantee is the partial unique
+  // index on (slot_start) where status = 'scheduled', enforced on insert below —
+  // this check alone loses the race between two simultaneous payments.
   const { data: clash } = await db
     .from("voice_bookings")
     .select("id")
@@ -146,7 +186,7 @@ export async function bookDiscoverySlot(input: BookingSlotInput) {
     .limit(1)
     .maybeSingle();
   if (clash?.id) {
-    throw new Error("That time was just taken.");
+    throw new Error(SLOT_TAKEN_MESSAGE);
   }
 
   const leadId = await upsertLead(
@@ -161,6 +201,10 @@ export async function bookDiscoverySlot(input: BookingSlotInput) {
     null,
   );
 
+  // The Stripe session id goes in with the row, not in a follow-up update: as an
+  // update it was written after the insert, so it could not serve as the
+  // fulfilment key for the two callers racing to fulfil the same payment, and a
+  // failed update left a booking with no session id holding the slot forever.
   const { data: row, error } = await db
     .from("voice_bookings")
     .insert({
@@ -173,10 +217,52 @@ export async function bookDiscoverySlot(input: BookingSlotInput) {
       time_zone: data.time_zone,
       status: "scheduled",
       vapi_call_id: null,
+      ...(payment
+        ? {
+            stripe_session_id: payment.stripe_session_id,
+            payment_status: "paid",
+            amount_paid_cents: payment.amount_paid_cents,
+            currency: payment.currency,
+            sms_service_consent: payment.sms_service_consent,
+            sms_marketing_consent: payment.sms_marketing_consent,
+            consent_captured_at: new Date().toISOString(),
+          }
+        : {}),
     })
     .select("id")
     .single();
-  if (error) throw new Error(error.message);
+
+  if (error) {
+    // 23505 = unique violation: the slot, this session, or this email+slot pair
+    // was claimed between the check above and this insert.
+    if (error.code === "23505" && payment) {
+      const { data: mine } = await db
+        .from("voice_bookings")
+        .select("id, slot_start, time_zone")
+        .eq("stripe_session_id", payment.stripe_session_id)
+        .limit(1)
+        .maybeSingle();
+      if (mine?.id) {
+        return {
+          booking_id: mine.id as string,
+          spoken_time: formatSlot(new Date(mine.slot_start as string)),
+          time_zone: (mine.time_zone as string) ?? BOOKING_TZ,
+          already_booked: true,
+        };
+      }
+    }
+    if (error.code === "23505") {
+      if (payment) {
+        // Paid, but somebody else holds the slot: retrying will never succeed,
+        // so say so loudly rather than letting the caller loop for days.
+        console.error(
+          `REFUND REQUIRED: session ${payment.stripe_session_id} paid for ${start.toISOString()}, which is already booked`,
+        );
+      }
+      throw new Error(SLOT_TAKEN_MESSAGE);
+    }
+    throw new Error(error.message);
+  }
 
   const spoken = formatSlot(start);
 

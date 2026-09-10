@@ -9,6 +9,7 @@ import {
   formatSlot,
   getAvailableSlots,
   upsertLead,
+  isOfferedSlot,
 } from "@/utils/booking.server";
 import {
   bookDiscoveryCallSchema,
@@ -167,6 +168,9 @@ export const handlers: Record<ToolName, Handler> = {
     if (Number.isNaN(start.getTime()) || start.getTime() < Date.now()) {
       return { status: "unavailable", reason: "That time is no longer available." };
     }
+    if (!isOfferedSlot(start)) {
+      return { status: "unavailable", reason: "That time isn't one of the slots on offer." };
+    }
     const end = new Date(start.getTime() + SLOT_MINUTES * 60_000);
     const db = await admin();
 
@@ -207,7 +211,14 @@ export const handlers: Record<ToolName, Handler> = {
       })
       .select("id")
       .single();
-    if (error) throw new Error(error.message);
+    if (error) {
+      // The partial unique index on (slot_start) is what actually prevents a
+      // double booking; the check above only loses the race politely.
+      if (error.code === "23505") {
+        return { status: "unavailable", reason: "That time was just taken." };
+      }
+      throw new Error(error.message);
+    }
 
     const spoken = formatSlot(start);
     await sendLeadEmail(
@@ -233,7 +244,10 @@ export const handlers: Record<ToolName, Handler> = {
   send_approved_followup: async (args, callId) => {
     const data = sendApprovedFollowupSchema.parse(args);
     const first = data.first_name ? `Hi ${data.first_name}, ` : "";
-    const copy: Record<string, { heading: string; body: string; ctaLabel?: string; ctaUrl?: string }> = {
+    const copy: Record<
+      string,
+      { heading: string; body: string; ctaLabel?: string; ctaUrl?: string }
+    > = {
       audit_acknowledgement: {
         heading: "Your free audit request is in",
         body: `${first}Rory will review your site and send your audit shortly.`,
@@ -399,7 +413,8 @@ export async function recordCallEvent(message: any, callId: string | null) {
       updated_at: new Date().toISOString(),
     };
     if (transcript) row["transcript"] = transcript;
-    if (message?.summary ?? artifact?.summary) row["summary"] = message?.summary ?? artifact?.summary;
+    if (message?.summary ?? artifact?.summary)
+      row["summary"] = message?.summary ?? artifact?.summary;
     if (message?.recordingUrl ?? artifact?.recordingUrl)
       row["recording_url"] = message?.recordingUrl ?? artifact?.recordingUrl;
     if (message?.endedReason) row["ended_reason"] = message.endedReason;

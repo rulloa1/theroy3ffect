@@ -11,6 +11,7 @@ import {
 } from "@/utils/booking-payment.functions";
 import { getStripeEnvironment } from "@/lib/stripe";
 import { EmbeddedCheckoutFrame } from "@/components/EmbeddedCheckoutFrame";
+import { SmsConsent } from "@/components/SmsConsent";
 
 export const DISCOVERY_FEE_LABEL = "$49";
 
@@ -30,6 +31,8 @@ interface PendingBooking {
   phone: string;
   notes: string;
   slot_start: string;
+  smsService: boolean;
+  smsMarketing: boolean;
 }
 
 function formatDayLabel(iso: string) {
@@ -76,6 +79,8 @@ export function BookingCalendar() {
   const [pending, setPending] = useState<PendingBooking | null>(null);
   const [result, setResult] = useState<BookingResult | null>(null);
   const [confirming, setConfirming] = useState(false);
+  const [smsService, setSmsService] = useState(false);
+  const [smsMarketing, setSmsMarketing] = useState(false);
 
   // Returning from Stripe: confirm the payment and reserve the slot if the
   // webhook has not already done it.
@@ -143,6 +148,8 @@ export function BookingCalendar() {
       phone: String(fd.get("phone") ?? "").trim(),
       notes: String(fd.get("notes") ?? "").trim(),
       slot_start: selectedSlot,
+      smsService,
+      smsMarketing,
     });
   };
 
@@ -347,6 +354,14 @@ export function BookingCalendar() {
               maxLength={2000}
               className="w-full resize-none border-0 border-b border-white/20 bg-transparent px-0 py-3 text-sm text-white placeholder:text-white/30 focus:border-[#FF3333] focus:outline-none"
             />
+            <SmsConsent
+              smsService={smsService}
+              smsMarketing={smsMarketing}
+              onChange={(field, value) =>
+                field === "smsService" ? setSmsService(value) : setSmsMarketing(value)
+              }
+            />
+
             <div className="pt-2">
               <button
                 type="submit"

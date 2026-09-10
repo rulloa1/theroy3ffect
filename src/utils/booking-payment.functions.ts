@@ -17,6 +17,8 @@ const checkoutInputSchema = z.object({
   slot_start: z.string().trim().min(10).max(40),
   time_zone: z.string().trim().max(60).default("America/Chicago"),
   notes: z.string().trim().max(2000).optional(),
+  smsService: z.boolean().optional().default(false),
+  smsMarketing: z.boolean().optional().default(false),
   returnUrl: z.string().trim().url().max(500),
   environment: z.enum(["sandbox", "live"]),
 });
@@ -34,6 +36,12 @@ export const createDiscoveryCheckoutSession = createServerFn({ method: "POST" })
       const start = new Date(data.slot_start);
       if (Number.isNaN(start.getTime()) || start.getTime() < Date.now()) {
         return { error: "That time is no longer available." };
+      }
+      // Checked here as well as at fulfilment: taking $49 for a time that
+      // cannot be booked leaves the client paid up with no call.
+      const { isOfferedSlot } = await import("@/utils/booking.server");
+      if (!isOfferedSlot(start)) {
+        return { error: "That time isn't one of the slots on offer." };
       }
 
       const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -62,6 +70,8 @@ export const createDiscoveryCheckoutSession = createServerFn({ method: "POST" })
         email: data.email,
         slot_start: start.toISOString(),
         time_zone: data.time_zone,
+        sms_service_consent: data.smsService ? "true" : "false",
+        sms_marketing_consent: data.smsMarketing ? "true" : "false",
         ...(data.phone ? { phone: data.phone } : {}),
         ...(data.notes ? { notes: data.notes.slice(0, 450) } : {}),
       };

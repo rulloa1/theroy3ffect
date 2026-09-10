@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -7,15 +7,25 @@ import {
   CheckCircle2,
   Circle,
   ExternalLink,
+  FileSignature,
   FileText,
   LayoutDashboard,
   Loader2,
   LogOut,
+  UserRound,
 } from "lucide-react";
+import { toast } from "sonner";
+import { Toaster } from "@/components/ui/sonner";
 import { Logo } from "@/components/Logo";
+import { ClientProfileForm } from "@/components/portal/ClientProfileForm";
+import { getStripeEnvironment } from "@/lib/stripe";
+import { EmbeddedCheckoutFrame } from "@/components/EmbeddedCheckoutFrame";
+import { confirmBalancePayment, createBalanceCheckoutSession } from "@/utils/payments.functions";
 import { supabase } from "@/integrations/supabase/client";
+import { getMyProposals, type ProjectProposal } from "@/utils/proposals.functions";
 import {
   getMyPortal,
+  getMyProfile,
   type PortalInvoice,
   type PortalProject,
 } from "@/utils/portal.functions";
@@ -105,7 +115,9 @@ function ProjectSummary({ project }: { project: PortalProject }) {
             {project.title}
           </h2>
           <p className="mt-1 font-mono text-[11px] text-white/40">
-            {project.start_date ? `Started ${date(project.start_date)}` : `Started ${date(project.created_at)}`}
+            {project.start_date
+              ? `Started ${date(project.start_date)}`
+              : `Started ${date(project.created_at)}`}
             {project.target_date ? ` · Target delivery ${date(project.target_date)}` : ""}
           </p>
         </div>
@@ -195,7 +207,13 @@ function Timeline({ project }: { project: PortalProject }) {
   );
 }
 
-function Invoices({ invoices }: { invoices: PortalInvoice[] }) {
+function Invoices({
+  invoices,
+  onPayBalance,
+}: {
+  invoices: PortalInvoice[];
+  onPayBalance: (orderId: string) => void;
+}) {
   if (invoices.length === 0) {
     return (
       <p className="font-mono text-xs text-white/40">
@@ -243,6 +261,15 @@ function Invoices({ invoices }: { invoices: PortalInvoice[] }) {
             <span className="font-mono text-sm text-white">
               {money(inv.amount_cents, inv.currency)}
             </span>
+            {inv.kind === "commission" && inv.balance_due_cents > 0 && (
+              <button
+                type="button"
+                onClick={() => onPayBalance(inv.id)}
+                className="inline-flex items-center gap-1.5 border border-[#FF3333] bg-[#FF3333]/10 px-3 py-1.5 font-mono text-[10px] tracking-widest text-[#FF3333] transition-colors hover:bg-[#FF3333] hover:text-black"
+              >
+                PAY {money(inv.balance_due_cents, inv.currency)}
+              </button>
+            )}
             {inv.hosted_url && (
               <a
                 href={inv.hosted_url}
@@ -260,12 +287,95 @@ function Invoices({ invoices }: { invoices: PortalInvoice[] }) {
   );
 }
 
-type Tab = "overview" | "timeline" | "invoices";
+function Proposals({ proposals }: { proposals: ProjectProposal[] }) {
+  if (proposals.length === 0) {
+    return (
+      <p className="font-mono text-xs text-white/40">
+        No proposals yet. When Rory sends you a scope agreement it will appear here to review and
+        sign.
+      </p>
+    );
+  }
+
+  return (
+    <div className="divide-y divide-white/10 border border-white/10">
+      {proposals.map((p) => {
+        const signed = p.status === "signed";
+        return (
+          <div key={p.id} className="space-y-3 p-5">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <p className="font-display text-lg uppercase text-white">{p.project_title}</p>
+                <p className="mt-1 font-mono text-[11px] text-white/40">
+                  {date(p.created_at)} · TIMELINE {p.timeline_weeks.toUpperCase()}
+                </p>
+              </div>
+              <span
+                className={`px-2 py-0.5 font-mono text-[9px] font-bold uppercase tracking-widest ${
+                  signed ? "bg-emerald-500 text-black" : "bg-[#FF3333] text-black"
+                }`}
+              >
+                {signed ? "SIGNED" : "AWAITING SIGNATURE"}
+              </span>
+            </div>
+
+            <p className="whitespace-pre-line font-mono text-xs text-white/60">
+              {p.scope_deliverables}
+            </p>
+
+            <p className="font-mono text-xs text-white">
+              Total {money(p.total_price_cents, "usd")} · Deposit to start{" "}
+              {money(p.deposit_cents, "usd")}
+            </p>
+
+            <div className="flex flex-wrap gap-2">
+              <Link
+                to="/proposals/$proposalId"
+                params={{ proposalId: p.id }}
+                className="inline-flex items-center gap-1.5 border border-[#FF3333] bg-[#FF3333]/10 px-3 py-1.5 font-mono text-[10px] tracking-widest text-[#FF3333] transition-colors hover:bg-[#FF3333] hover:text-black"
+              >
+                {signed ? "VIEW AGREEMENT" : "REVIEW & SIGN"} <ExternalLink className="size-3" />
+              </Link>
+
+              <button
+                type="button"
+                onClick={async () => {
+                  try {
+                    const { downloadSignedProposalPdf } =
+                      await import("@/utils/proposals.functions");
+                    const res = await downloadSignedProposalPdf({
+                      data: { token: p.share_token },
+                    });
+                    if (!res.success || !res.pdfBase64) throw new Error(res.error || "Failed");
+                    const link = document.createElement("a");
+                    link.href = `data:application/pdf;base64,${res.pdfBase64}`;
+                    link.download = res.filename || "proposal.pdf";
+                    link.click();
+                    toast.success("Proposal PDF downloaded");
+                  } catch {
+                    toast.error("Could not download the PDF");
+                  }
+                }}
+                className="inline-flex items-center gap-1.5 border border-white/15 px-3 py-1.5 font-mono text-[10px] tracking-widest text-white transition-colors hover:border-[#FF3333]"
+              >
+                DOWNLOAD PDF ↓
+              </button>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+type Tab = "overview" | "timeline" | "proposals" | "invoices" | "profile";
 
 const TABS: { key: Tab; label: string; icon: typeof LayoutDashboard }[] = [
   { key: "overview", label: "OVERVIEW", icon: LayoutDashboard },
   { key: "timeline", label: "TIMELINE", icon: CalendarDays },
+  { key: "proposals", label: "PROPOSALS", icon: FileSignature },
   { key: "invoices", label: "INVOICES", icon: FileText },
+  { key: "profile", label: "MY DETAILS", icon: UserRound },
 ];
 
 function PortalPage() {
@@ -274,11 +384,63 @@ function PortalPage() {
   const queryClient = useQueryClient();
   const [tab, setTab] = useState<Tab>("overview");
   const [activeProjectId, setActiveProjectId] = useState<string | null>(null);
+  const [payingOrderId, setPayingOrderId] = useState<string | null>(null);
+  const startBalanceCheckout = useServerFn(createBalanceCheckoutSession);
+  const confirmBalance = useServerFn(confirmBalancePayment);
 
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ["client-portal"],
     queryFn: () => fetchPortal(),
   });
+
+  const fetchProposals = useServerFn(getMyProposals);
+  const { data: proposalsData } = useQuery({
+    queryKey: ["client-proposals"],
+    queryFn: () => fetchProposals(),
+  });
+
+  const fetchProfile = useServerFn(getMyProfile);
+  const { data: profileData } = useQuery({
+    queryKey: ["client-profile"],
+    queryFn: () => fetchProfile(),
+  });
+  const needsOnboarding = Boolean(profileData) && !profileData?.profile.onboarding_completed_at;
+
+  const fetchClientSecret = useCallback(async (): Promise<string> => {
+    if (!payingOrderId) throw new Error("No invoice selected");
+    const res = await startBalanceCheckout({
+      data: {
+        orderId: payingOrderId,
+        returnUrl: `${window.location.origin}/portal?balance_session={CHECKOUT_SESSION_ID}`,
+        environment: getStripeEnvironment(),
+      },
+    });
+    if ("error" in res) throw new Error(res.error);
+    if (!res.clientSecret) throw new Error("Checkout could not be started");
+    return res.clientSecret;
+  }, [payingOrderId, startBalanceCheckout]);
+
+  // Confirm settlement when Stripe returns the client to the portal.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const sessionId = params.get("balance_session");
+    if (!sessionId) return;
+    window.history.replaceState({}, "", "/portal");
+    void (async () => {
+      const res = await confirmBalance({
+        data: { sessionId, environment: getStripeEnvironment() },
+      });
+      if (res.paid) {
+        toast.success("Balance paid — thank you!");
+        await refetch();
+      } else if (res.error) {
+        toast.error(res.error);
+      } else {
+        toast.message("Payment is processing. We'll update your invoice once it settles.");
+      }
+      setTab("invoices");
+    })();
+  }, [confirmBalance, refetch]);
 
   const projects = data?.projects ?? [];
   const invoices = data?.invoices ?? [];
@@ -294,8 +456,31 @@ function PortalPage() {
     void navigate({ to: "/portal/login", replace: true });
   };
 
+  if (payingOrderId) {
+    return (
+      <main className="min-h-screen bg-[#030014] px-5 py-16 md:px-10">
+        <Toaster />
+        <div className="mx-auto max-w-3xl">
+          <Logo variant="compact" size="md" href="/" className="mb-6" />
+          <div className="mb-6 flex items-center justify-between gap-4">
+            <h1 className="font-display text-2xl uppercase text-white">PAY REMAINING BALANCE</h1>
+            <button
+              type="button"
+              onClick={() => setPayingOrderId(null)}
+              className="border border-white/20 px-3 py-1.5 font-mono text-[10px] tracking-widest text-white/70 hover:border-white/50"
+            >
+              CANCEL
+            </button>
+          </div>
+          <EmbeddedCheckoutFrame fetchClientSecret={fetchClientSecret} />
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main className="min-h-screen bg-[#030014] px-5 py-16 md:px-10">
+      <Toaster />
       <div className="mx-auto max-w-5xl">
         <Logo variant="compact" size="md" href="/" className="mb-6" />
         <div className="flex flex-wrap items-end justify-between gap-4">
@@ -348,6 +533,22 @@ function PortalPage() {
 
         {data && (
           <>
+            {needsOnboarding && tab !== "profile" && (
+              <div className="mt-8 flex flex-wrap items-center justify-between gap-4 border border-[#FF3333]/40 bg-[#FF3333]/5 p-5">
+                <p className="font-mono text-xs text-white/70">
+                  Finish onboarding so I have your contact details and can reach you the way you
+                  prefer.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setTab("profile")}
+                  className="bg-[#FF3333] px-4 py-2 font-mono text-[11px] tracking-widest text-black transition-opacity hover:opacity-90"
+                >
+                  COMPLETE MY DETAILS →
+                </button>
+              </div>
+            )}
+
             <nav className="mt-10 flex flex-wrap gap-2 border-b border-white/10 pb-3">
               {TABS.map(({ key, label, icon: Icon }) => (
                 <button
@@ -400,7 +601,18 @@ function PortalPage() {
                     </Link>
                   </div>
                 ) : (
-                  projects.map((p) => <ProjectSummary key={p.id} project={p} />)
+                  projects.map((p) => (
+                    <div key={p.id} className="space-y-3">
+                      <ProjectSummary project={p} />
+                      <Link
+                        to="/projects/$projectId"
+                        params={{ projectId: p.id }}
+                        className="inline-flex items-center gap-1.5 border border-white/15 px-3 py-1.5 font-mono text-[10px] tracking-widest text-white transition-colors hover:border-[#FF3333] hover:text-[#FF3333]"
+                      >
+                        OPEN PROJECT PAGE →
+                      </Link>
+                    </div>
+                  ))
                 ))}
 
               {tab === "timeline" &&
@@ -415,7 +627,13 @@ function PortalPage() {
                   <p className="font-mono text-xs text-white/40">No timeline yet.</p>
                 ))}
 
-              {tab === "invoices" && <Invoices invoices={invoices} />}
+              {tab === "proposals" && <Proposals proposals={proposalsData ?? []} />}
+
+              {tab === "invoices" && (
+                <Invoices invoices={invoices} onPayBalance={setPayingOrderId} />
+              )}
+
+              {tab === "profile" && <ClientProfileForm email={data.email} />}
             </div>
           </>
         )}

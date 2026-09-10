@@ -3,6 +3,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { z } from "zod";
 import { LockKeyhole, Mail } from "lucide-react";
+import { Toaster } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import { useAuth } from "@/hooks/useAuth";
@@ -49,6 +50,21 @@ function PortalLoginPage() {
   useEffect(() => {
     if (!loading && user) void navigate({ to: "/portal", replace: true });
   }, [user, loading, navigate]);
+
+  // Surface OAuth failures: the provider redirects back here with error params.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const hash = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+    const description =
+      params.get("error_description") ??
+      hash.get("error_description") ??
+      params.get("error") ??
+      hash.get("error");
+    if (description) {
+      toast.error(decodeURIComponent(description.replace(/\+/g, " ")));
+      window.history.replaceState(null, "", window.location.pathname);
+    }
+  }, []);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -102,6 +118,7 @@ function PortalLoginPage() {
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-[#030014] px-5 py-24">
+      <Toaster />
       <div className="w-full max-w-md border border-white/10 bg-white/[0.02] p-8">
         <div className="mb-6 flex justify-center border-b border-white/10 pb-6">
           <Logo variant="stacked" size="md" href="/" />

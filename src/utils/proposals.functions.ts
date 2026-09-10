@@ -21,6 +21,9 @@ export interface ProjectProposal {
   status: "draft" | "sent" | "viewed" | "signed" | "archived";
   client_signed_at?: string | null;
   client_signature_name?: string | null;
+  deposit_paid_at?: string | null;
+  deposit_paid_cents?: number | null;
+  deposit_session_id?: string | null;
   created_at: string;
 }
 
@@ -67,6 +70,8 @@ export const adminCreateProposal = createServerFn({ method: "POST" })
       totalPriceCents: number;
       depositCents?: number;
       terms?: string;
+      /** Save as a draft (default) or publish immediately as sent. */
+      status?: "draft" | "sent";
     }) => input,
   )
   .handler(
@@ -97,7 +102,7 @@ export const adminCreateProposal = createServerFn({ method: "POST" })
           deposit_cents: deposit,
           balance_cents: balance,
           terms: input.terms || DEFAULT_TERMS,
-          status: "sent",
+          status: input.status === "sent" ? "sent" : "draft",
         })
         .select("*")
         .single();
@@ -123,6 +128,60 @@ export const adminDeleteProposal = createServerFn({ method: "POST" })
     return { success: true };
   });
 
+/** Admin-only: export any proposal (signed or draft) as a polished PDF */
+export const adminDownloadProposalPdf = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { id: string }) => ({ id: z.string().uuid().parse(input?.id) }))
+  .handler(
+    async ({
+      context,
+      data: input,
+    }): Promise<{ success: boolean; pdfBase64?: string; filename?: string; error?: string }> => {
+      await assertAdmin(context);
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      const { data: proposal, error } = await supabaseAdmin
+        .from("project_proposals")
+        .select("*")
+        .eq("id", input.id)
+        .maybeSingle();
+
+      if (error || !proposal) return { success: false, error: "Proposal not found" };
+
+      try {
+        const { buildSignedProposalPdf } = await import("@/lib/proposal-pdf.server");
+        const pdfBytes = await buildSignedProposalPdf({
+          clientName: proposal.client_name,
+          clientEmail: proposal.client_email,
+          clientCompany: proposal.client_company,
+          projectTitle: proposal.project_title,
+          scopeDeliverables: proposal.scope_deliverables,
+          timelineWeeks: proposal.timeline_weeks,
+          totalPriceCents: proposal.total_price_cents,
+          depositCents: proposal.deposit_cents,
+          balanceCents: proposal.balance_cents,
+          terms: proposal.terms,
+          clientSignatureName: proposal.client_signature_name,
+          clientSignedAt: proposal.client_signed_at,
+          shareToken: proposal.share_token,
+        });
+
+        const safeTitle = proposal.project_title
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .slice(0, 30);
+
+        return {
+          success: true,
+          pdfBase64: Buffer.from(pdfBytes).toString("base64"),
+          filename: `proposal-${safeTitle}-${proposal.share_token.slice(0, 6)}.pdf`,
+        };
+      } catch (err) {
+        console.error("adminDownloadProposalPdf error:", err);
+        return { success: false, error: "Could not generate PDF" };
+      }
+    },
+  );
+
 const shareTokenSchema = z
   .string()
   .trim()
@@ -143,8 +202,9 @@ export const getPublicProposal = createServerFn({ method: "GET" })
 
     if (error || !data) return null;
 
-    // If currently draft or sent, update to viewed
-    if (data.status === "draft" || data.status === "sent") {
+    // Only a published proposal becomes "viewed". Drafts stay drafts so an
+    // admin preview never publishes an unfinished proposal to the client.
+    if (data.status === "sent") {
       await supabaseAdmin
         .from("project_proposals")
         .update({ status: "viewed" })
@@ -366,3 +426,117 @@ export const getMyProposals = createServerFn({ method: "GET" })
     }
     return (data ?? []) as unknown as ProjectProposal[];
   });
+
+/* ------------------------------------------------------------------ */
+/* Portal (signed-in client) proposal signing                          */
+/* ------------------------------------------------------------------ */
+
+async function loadOwnProposal(claims: unknown, id: string) {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const email = (claims as { email?: string } | undefined)?.email;
+  if (!email) return { proposal: null, error: "Not signed in", supabaseAdmin };
+
+  const { data, error } = await supabaseAdmin
+    .from("project_proposals")
+    .select("*")
+    .eq("id", id)
+    .ilike("client_email", escapeLikePattern(email))
+    .in("status", ["sent", "viewed", "signed"])
+    .maybeSingle();
+
+  if (error || !data) return { proposal: null, error: "Proposal not found", supabaseAdmin };
+  return { proposal: data as unknown as ProjectProposal, error: undefined, supabaseAdmin };
+}
+
+/** Fetch one of the signed-in client's own proposals for the portal signing page */
+export const getMyProposal = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { id: string }) => ({ id: z.string().uuid().parse(input?.id) }))
+  .handler(async ({ context, data }): Promise<ProjectProposal | null> => {
+    const res = await loadOwnProposal(context.claims, data.id);
+    if (!res.proposal) return null;
+    if (res.proposal.status === "sent") {
+      await res.supabaseAdmin
+        .from("project_proposals")
+        .update({ status: "viewed" })
+        .eq("id", data.id);
+      return { ...res.proposal, status: "viewed" };
+    }
+    return res.proposal;
+  });
+
+/** Signed-in client digitally signs their own proposal */
+export const signMyProposal = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { id: string; signatureName: string }) => ({
+    id: z.string().uuid().parse(input?.id),
+    signatureName: z.string().trim().min(2).max(120).parse(input?.signatureName),
+  }))
+  .handler(async ({ context, data }): Promise<{ success: boolean; error?: string }> => {
+    const res = await loadOwnProposal(context.claims, data.id);
+    if (!res.proposal) return { success: false, error: res.error };
+    if (res.proposal.status === "signed") {
+      return { success: false, error: "This proposal is already signed." };
+    }
+
+    const { error } = await res.supabaseAdmin
+      .from("project_proposals")
+      .update({
+        status: "signed",
+        client_signature_name: data.signatureName,
+        client_signed_at: new Date().toISOString(),
+      })
+      .eq("id", data.id)
+      .neq("status", "signed");
+
+    if (error) {
+      console.error("signMyProposal error:", error.message);
+      return { success: false, error: "Could not sign this proposal." };
+    }
+    return { success: true };
+  });
+
+/** Download the signed/unsigned PDF copy of the client's own proposal */
+export const downloadMyProposalPdf = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { id: string }) => ({ id: z.string().uuid().parse(input?.id) }))
+  .handler(
+    async ({
+      context,
+      data,
+    }): Promise<{ success: boolean; pdfBase64?: string; filename?: string; error?: string }> => {
+      const res = await loadOwnProposal(context.claims, data.id);
+      if (!res.proposal) return { success: false, error: res.error };
+      const p = res.proposal;
+      try {
+        const { buildSignedProposalPdf } = await import("@/lib/proposal-pdf.server");
+        const pdfBytes = await buildSignedProposalPdf({
+          clientName: p.client_name,
+          clientEmail: p.client_email,
+          clientCompany: p.client_company ?? null,
+          projectTitle: p.project_title,
+          scopeDeliverables: p.scope_deliverables,
+          timelineWeeks: p.timeline_weeks,
+          totalPriceCents: p.total_price_cents,
+          depositCents: p.deposit_cents,
+          balanceCents: p.balance_cents,
+          terms: p.terms,
+          clientSignatureName: p.client_signature_name ?? null,
+          clientSignedAt: p.client_signed_at ?? null,
+          shareToken: p.share_token,
+        });
+        const safeTitle = p.project_title
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .slice(0, 30);
+        return {
+          success: true,
+          pdfBase64: Buffer.from(pdfBytes).toString("base64"),
+          filename: `proposal-${safeTitle}.pdf`,
+        };
+      } catch (err) {
+        console.error("downloadMyProposalPdf error:", err);
+        return { success: false, error: "Could not generate PDF" };
+      }
+    },
+  );

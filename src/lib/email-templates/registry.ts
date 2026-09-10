@@ -7,6 +7,7 @@ import { template as orderConfirmation } from "./order-confirmation";
 import { template as orderNotification } from "./order-notification";
 import { template as prospectOutreach } from "./prospect-outreach";
 import { template as projectBriefNotification } from "./project-brief-notification";
+import { template as proposalReady } from "./proposal-ready";
 import { template as subscriptionNotification } from "./subscription-notification";
 import { template as voiceAgentFollowup } from "./voice-agent-followup";
 import { template as voiceAgentNotification } from "./voice-agent-notification";
@@ -36,6 +37,7 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   "order-confirmation": orderConfirmation,
   "order-notification": orderNotification,
   "project-brief-notification": projectBriefNotification,
+  "proposal-ready": proposalReady,
   "prospect-outreach": prospectOutreach,
   "subscription-notification": subscriptionNotification,
   "voice-agent-followup": voiceAgentFollowup,

@@ -236,7 +236,15 @@ async function handleInvoice(invoice: Stripe.Invoice, env: StripeEnv, eventType:
   // Deposit balance invoices carry the order id in metadata.
   const orderId = invoice.metadata?.["order_id"];
   if (orderId && invoice.status === "paid") {
-    await supabaseAdmin.from("orders").update({ balance_status: "paid" }).eq("id", orderId);
+    await supabaseAdmin
+      .from("orders")
+      .update({
+        balance_status: "paid",
+        balance_paid_at: new Date().toISOString(),
+        balance_paid_cents: invoice.amount_paid ?? 0,
+      })
+      .eq("id", orderId)
+      .neq("balance_status", "paid");
   }
 
   // Only a real failure raises the alert. `invoice.finalized` arrives with status
@@ -433,6 +441,14 @@ export const Route = createFileRoute("/api/public/payments/webhook")({
                   break;
                 }
                 await handleCheckoutCompleted(stripe, session, env);
+                if (purpose === "proposal_deposit") {
+                  const { fulfillProposalDeposit } = await import("@/lib/proposals/deposit.server");
+                  await fulfillProposalDeposit({
+                    id: session.id,
+                    amountTotal: session.amount_total ?? 0,
+                    metadata: (session.metadata ?? {}) as Record<string, string | undefined>,
+                  });
+                }
                 if (purpose === "discovery_call") {
                   const { fulfillPaidDiscoveryBooking } =
                     await import("@/lib/booking/discovery-payment.server");

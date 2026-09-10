@@ -7,6 +7,8 @@ const FOOTER_LINKS = [
   { label: "BOOK", to: "/book" },
   { label: "CASE STUDY", to: "/case-study" },
   { label: "AUDIT", to: "/audit" },
+  { label: "PRIVACY", to: "/privacy" },
+  { label: "TERMS", to: "/terms" },
 ];
 
 const GUIDE_LINKS = [
@@ -120,7 +122,7 @@ export function SiteFooter() {
               FREE AUDIT
             </Link>
             {" — "}
-            <Link to="/portal/login" className="transition-colors hover:text-[#FF3333]">
+            <Link to="/clients" className="transition-colors hover:text-[#FF3333]">
               CLIENT PORTAL
             </Link>
           </p>

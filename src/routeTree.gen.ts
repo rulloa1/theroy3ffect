@@ -16,10 +16,13 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as BookRouteImport } from './routes/book'
 import { Route as BriefRouteImport } from './routes/brief'
 import { Route as CaseStudyRouteImport } from './routes/case-study'
+import { Route as ClientsRouteImport } from './routes/clients'
 import { Route as McpRouteImport } from './routes/mcp'
 import { Route as PricingRouteImport } from './routes/pricing'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ServicesRouteImport } from './routes/services'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticated/account'
@@ -33,8 +36,11 @@ import { Route as PortalLoginRouteImport } from './routes/portal.login'
 import { Route as ProposalTokenRouteImport } from './routes/proposal.$token'
 import { Route as SiteReportTokenRouteImport } from './routes/site-report.$token'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
+import { Route as AuthenticatedProjectsProjectIdRouteImport } from './routes/_authenticated/projects.$projectId'
+import { Route as AuthenticatedProposalsProposalIdRouteImport } from './routes/_authenticated/proposals.$proposalId'
 import { Route as ApiPublicBriefIntakeRouteImport } from './routes/api/public/brief-intake'
 import { Route as ApiPublicContactRouteImport } from './routes/api/public/contact'
+import { Route as ApiPublicLeadconnectorRouteImport } from './routes/api/public/leadconnector'
 import { Route as ApiPublicVapiRouteImport } from './routes/api/public/vapi'
 import { Route as ApiPublicAutomationFollowupsRouteImport } from './routes/api/public/automation/followups'
 import { Route as ApiPublicAutomationGscIndexWatchRouteImport } from './routes/api/public/automation/gsc-index-watch'
@@ -76,6 +82,11 @@ const CaseStudyRoute = CaseStudyRouteImport.update({
   path: '/case-study',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ClientsRoute = ClientsRouteImport.update({
+  id: '/clients',
+  path: '/clients',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const McpRoute = McpRouteImport.update({
   id: '/mcp',
   path: '/mcp',
@@ -86,6 +97,11 @@ const PricingRoute = PricingRouteImport.update({
   path: '/pricing',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ServicesRoute = ServicesRouteImport.update({
   id: '/services',
   path: '/services',
@@ -94,6 +110,11 @@ const ServicesRoute = ServicesRouteImport.update({
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
 const Char91DotmcpChar93ListToolsRoute =
@@ -167,6 +188,18 @@ const Char91DotmcpChar93InvokeToolToolRoute =
     path: '/.mcp/invoke-tool/$tool',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AuthenticatedProjectsProjectIdRoute =
+  AuthenticatedProjectsProjectIdRouteImport.update({
+    id: '/projects/$projectId',
+    path: '/projects/$projectId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedProposalsProposalIdRoute =
+  AuthenticatedProposalsProposalIdRouteImport.update({
+    id: '/proposals/$proposalId',
+    path: '/proposals/$proposalId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const ApiPublicBriefIntakeRoute = ApiPublicBriefIntakeRouteImport.update({
   id: '/api/public/brief-intake',
   path: '/api/public/brief-intake',
@@ -175,6 +208,11 @@ const ApiPublicBriefIntakeRoute = ApiPublicBriefIntakeRouteImport.update({
 const ApiPublicContactRoute = ApiPublicContactRouteImport.update({
   id: '/api/public/contact',
   path: '/api/public/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicLeadconnectorRoute = ApiPublicLeadconnectorRouteImport.update({
+  id: '/api/public/leadconnector',
+  path: '/api/public/leadconnector',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicVapiRoute = ApiPublicVapiRouteImport.update({
@@ -220,10 +258,13 @@ export interface FileRoutesByFullPath {
   '/book': typeof BookRoute
   '/brief': typeof BriefRoute
   '/case-study': typeof CaseStudyRoute
+  '/clients': typeof ClientsRoute
   '/mcp': typeof McpRoute
   '/pricing': typeof PricingRoute
+  '/privacy': typeof PrivacyRoute
   '/services': typeof ServicesRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terms': typeof TermsRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/account': typeof AuthenticatedAccountRoute
@@ -237,8 +278,11 @@ export interface FileRoutesByFullPath {
   '/proposal/$token': typeof ProposalTokenRoute
   '/site-report/$token': typeof SiteReportTokenRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/projects/$projectId': typeof AuthenticatedProjectsProjectIdRoute
+  '/proposals/$proposalId': typeof AuthenticatedProposalsProposalIdRoute
   '/api/public/brief-intake': typeof ApiPublicBriefIntakeRoute
   '/api/public/contact': typeof ApiPublicContactRoute
+  '/api/public/leadconnector': typeof ApiPublicLeadconnectorRoute
   '/api/public/vapi': typeof ApiPublicVapiRoute
   '/api/public/automation/followups': typeof ApiPublicAutomationFollowupsRoute
   '/api/public/automation/gsc-index-watch': typeof ApiPublicAutomationGscIndexWatchRoute
@@ -253,10 +297,13 @@ export interface FileRoutesByTo {
   '/book': typeof BookRoute
   '/brief': typeof BriefRoute
   '/case-study': typeof CaseStudyRoute
+  '/clients': typeof ClientsRoute
   '/mcp': typeof McpRoute
   '/pricing': typeof PricingRoute
+  '/privacy': typeof PrivacyRoute
   '/services': typeof ServicesRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terms': typeof TermsRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/account': typeof AuthenticatedAccountRoute
@@ -270,8 +317,11 @@ export interface FileRoutesByTo {
   '/proposal/$token': typeof ProposalTokenRoute
   '/site-report/$token': typeof SiteReportTokenRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/projects/$projectId': typeof AuthenticatedProjectsProjectIdRoute
+  '/proposals/$proposalId': typeof AuthenticatedProposalsProposalIdRoute
   '/api/public/brief-intake': typeof ApiPublicBriefIntakeRoute
   '/api/public/contact': typeof ApiPublicContactRoute
+  '/api/public/leadconnector': typeof ApiPublicLeadconnectorRoute
   '/api/public/vapi': typeof ApiPublicVapiRoute
   '/api/public/automation/followups': typeof ApiPublicAutomationFollowupsRoute
   '/api/public/automation/gsc-index-watch': typeof ApiPublicAutomationGscIndexWatchRoute
@@ -288,10 +338,13 @@ export interface FileRoutesById {
   '/book': typeof BookRoute
   '/brief': typeof BriefRoute
   '/case-study': typeof CaseStudyRoute
+  '/clients': typeof ClientsRoute
   '/mcp': typeof McpRoute
   '/pricing': typeof PricingRoute
+  '/privacy': typeof PrivacyRoute
   '/services': typeof ServicesRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terms': typeof TermsRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/_authenticated/account': typeof AuthenticatedAccountRoute
@@ -305,8 +358,11 @@ export interface FileRoutesById {
   '/proposal/$token': typeof ProposalTokenRoute
   '/site-report/$token': typeof SiteReportTokenRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/_authenticated/projects/$projectId': typeof AuthenticatedProjectsProjectIdRoute
+  '/_authenticated/proposals/$proposalId': typeof AuthenticatedProposalsProposalIdRoute
   '/api/public/brief-intake': typeof ApiPublicBriefIntakeRoute
   '/api/public/contact': typeof ApiPublicContactRoute
+  '/api/public/leadconnector': typeof ApiPublicLeadconnectorRoute
   '/api/public/vapi': typeof ApiPublicVapiRoute
   '/api/public/automation/followups': typeof ApiPublicAutomationFollowupsRoute
   '/api/public/automation/gsc-index-watch': typeof ApiPublicAutomationGscIndexWatchRoute
@@ -323,10 +379,13 @@ export interface FileRouteTypes {
     | '/book'
     | '/brief'
     | '/case-study'
+    | '/clients'
     | '/mcp'
     | '/pricing'
+    | '/privacy'
     | '/services'
     | '/sitemap.xml'
+    | '/terms'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/account'
@@ -340,8 +399,11 @@ export interface FileRouteTypes {
     | '/proposal/$token'
     | '/site-report/$token'
     | '/.mcp/invoke-tool/$tool'
+    | '/projects/$projectId'
+    | '/proposals/$proposalId'
     | '/api/public/brief-intake'
     | '/api/public/contact'
+    | '/api/public/leadconnector'
     | '/api/public/vapi'
     | '/api/public/automation/followups'
     | '/api/public/automation/gsc-index-watch'
@@ -356,10 +418,13 @@ export interface FileRouteTypes {
     | '/book'
     | '/brief'
     | '/case-study'
+    | '/clients'
     | '/mcp'
     | '/pricing'
+    | '/privacy'
     | '/services'
     | '/sitemap.xml'
+    | '/terms'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/account'
@@ -373,8 +438,11 @@ export interface FileRouteTypes {
     | '/proposal/$token'
     | '/site-report/$token'
     | '/.mcp/invoke-tool/$tool'
+    | '/projects/$projectId'
+    | '/proposals/$proposalId'
     | '/api/public/brief-intake'
     | '/api/public/contact'
+    | '/api/public/leadconnector'
     | '/api/public/vapi'
     | '/api/public/automation/followups'
     | '/api/public/automation/gsc-index-watch'
@@ -390,10 +458,13 @@ export interface FileRouteTypes {
     | '/book'
     | '/brief'
     | '/case-study'
+    | '/clients'
     | '/mcp'
     | '/pricing'
+    | '/privacy'
     | '/services'
     | '/sitemap.xml'
+    | '/terms'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/_authenticated/account'
@@ -407,8 +478,11 @@ export interface FileRouteTypes {
     | '/proposal/$token'
     | '/site-report/$token'
     | '/.mcp/invoke-tool/$tool'
+    | '/_authenticated/projects/$projectId'
+    | '/_authenticated/proposals/$proposalId'
     | '/api/public/brief-intake'
     | '/api/public/contact'
+    | '/api/public/leadconnector'
     | '/api/public/vapi'
     | '/api/public/automation/followups'
     | '/api/public/automation/gsc-index-watch'
@@ -425,10 +499,13 @@ export interface RootRouteChildren {
   BookRoute: typeof BookRoute
   BriefRoute: typeof BriefRoute
   CaseStudyRoute: typeof CaseStudyRoute
+  ClientsRoute: typeof ClientsRoute
   McpRoute: typeof McpRoute
   PricingRoute: typeof PricingRoute
+  PrivacyRoute: typeof PrivacyRoute
   ServicesRoute: typeof ServicesRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  TermsRoute: typeof TermsRoute
   Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   CheckoutReturnRoute: typeof CheckoutReturnRoute
@@ -441,6 +518,7 @@ export interface RootRouteChildren {
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
   ApiPublicBriefIntakeRoute: typeof ApiPublicBriefIntakeRoute
   ApiPublicContactRoute: typeof ApiPublicContactRoute
+  ApiPublicLeadconnectorRoute: typeof ApiPublicLeadconnectorRoute
   ApiPublicVapiRoute: typeof ApiPublicVapiRoute
   ApiPublicAutomationFollowupsRoute: typeof ApiPublicAutomationFollowupsRoute
   ApiPublicAutomationGscIndexWatchRoute: typeof ApiPublicAutomationGscIndexWatchRoute
@@ -500,6 +578,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CaseStudyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/clients': {
+      id: '/clients'
+      path: '/clients'
+      fullPath: '/clients'
+      preLoaderRoute: typeof ClientsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/mcp': {
       id: '/mcp'
       path: '/mcp'
@@ -514,6 +599,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PricingRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/services': {
       id: '/services'
       path: '/services'
@@ -526,6 +618,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/.mcp/list-tools': {
@@ -619,6 +718,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char91DotmcpChar93InvokeToolToolRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/projects/$projectId': {
+      id: '/_authenticated/projects/$projectId'
+      path: '/projects/$projectId'
+      fullPath: '/projects/$projectId'
+      preLoaderRoute: typeof AuthenticatedProjectsProjectIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/proposals/$proposalId': {
+      id: '/_authenticated/proposals/$proposalId'
+      path: '/proposals/$proposalId'
+      fullPath: '/proposals/$proposalId'
+      preLoaderRoute: typeof AuthenticatedProposalsProposalIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/api/public/brief-intake': {
       id: '/api/public/brief-intake'
       path: '/api/public/brief-intake'
@@ -631,6 +744,13 @@ declare module '@tanstack/react-router' {
       path: '/api/public/contact'
       fullPath: '/api/public/contact'
       preLoaderRoute: typeof ApiPublicContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/leadconnector': {
+      id: '/api/public/leadconnector'
+      path: '/api/public/leadconnector'
+      fullPath: '/api/public/leadconnector'
+      preLoaderRoute: typeof ApiPublicLeadconnectorRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/vapi': {
@@ -682,12 +802,16 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAccountRoute: typeof AuthenticatedAccountRoute
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedPortalRoute: typeof AuthenticatedPortalRoute
+  AuthenticatedProjectsProjectIdRoute: typeof AuthenticatedProjectsProjectIdRoute
+  AuthenticatedProposalsProposalIdRoute: typeof AuthenticatedProposalsProposalIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAccountRoute: AuthenticatedAccountRoute,
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedPortalRoute: AuthenticatedPortalRoute,
+  AuthenticatedProjectsProjectIdRoute: AuthenticatedProjectsProjectIdRoute,
+  AuthenticatedProposalsProposalIdRoute: AuthenticatedProposalsProposalIdRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -701,10 +825,13 @@ const rootRouteChildren: RootRouteChildren = {
   BookRoute: BookRoute,
   BriefRoute: BriefRoute,
   CaseStudyRoute: CaseStudyRoute,
+  ClientsRoute: ClientsRoute,
   McpRoute: McpRoute,
   PricingRoute: PricingRoute,
+  PrivacyRoute: PrivacyRoute,
   ServicesRoute: ServicesRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  TermsRoute: TermsRoute,
   Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
@@ -718,6 +845,7 @@ const rootRouteChildren: RootRouteChildren = {
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
   ApiPublicBriefIntakeRoute: ApiPublicBriefIntakeRoute,
   ApiPublicContactRoute: ApiPublicContactRoute,
+  ApiPublicLeadconnectorRoute: ApiPublicLeadconnectorRoute,
   ApiPublicVapiRoute: ApiPublicVapiRoute,
   ApiPublicAutomationFollowupsRoute: ApiPublicAutomationFollowupsRoute,
   ApiPublicAutomationGscIndexWatchRoute: ApiPublicAutomationGscIndexWatchRoute,

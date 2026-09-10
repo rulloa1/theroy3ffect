@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { toast } from "sonner";
+import { SmsConsent } from "@/components/SmsConsent";
 import { z } from "zod";
 import { Check, QrCode, Sparkles, ArrowRight, ShieldCheck, Zap } from "lucide-react";
 import { Toaster } from "@/components/ui/sonner";
@@ -65,6 +66,8 @@ export function AuditPage() {
   const [websiteUrl, setWebsiteUrl] = useState("");
   const [bottleneck, setBottleneck] = useState("Conversion Rate & Inbound Leads");
   const [notes, setNotes] = useState("");
+  const [smsService, setSmsService] = useState(false);
+  const [smsMarketing, setSmsMarketing] = useState(false);
   const [sending, setSending] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
@@ -85,6 +88,8 @@ export function AuditPage() {
           name: result.data.name,
           email: result.data.email,
           projectType: "5-Minute Website Audit",
+          smsService,
+          smsMarketing,
           message: `[5-MINUTE AUDIT REQUEST]\nWebsite: ${result.data.websiteUrl}\nPrimary Bottleneck: ${result.data.bottleneck}\nNotes: ${result.data.notes || "None provided"}`,
         }),
       });
@@ -299,6 +304,14 @@ export function AuditPage() {
                   className="mt-2 w-full resize-none border border-white/15 bg-[#030014] p-3 font-mono text-xs text-white placeholder:text-white/30 focus:border-[#DFBA73] focus:outline-none"
                 />
               </div>
+
+              <SmsConsent
+                smsService={smsService}
+                smsMarketing={smsMarketing}
+                onChange={(field, value) =>
+                  field === "smsService" ? setSmsService(value) : setSmsMarketing(value)
+                }
+              />
 
               <div className="flex flex-wrap items-center justify-between gap-4 border-t border-white/10 pt-6">
                 <div className="flex items-center gap-2 font-mono text-[11px] text-white/50">

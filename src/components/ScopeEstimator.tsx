@@ -1,108 +1,16 @@
 import { useState, useMemo } from "react";
 import { Link } from "@tanstack/react-router";
 import { Check, Sparkles, ArrowRight, Calculator, ShieldCheck, Clock, Zap } from "lucide-react";
+import {
+  DEFAULT_PROJECT_TYPE_ID,
+  EXTRA_PAGE_PRICE,
+  OPTIONAL_FEATURES,
+  PROJECT_TYPES,
+  calculateScopeEstimate,
+  getProjectType,
+} from "@/lib/scope-estimate";
 
-export interface ScopeFeature {
-  id: string;
-  label: string;
-  description: string;
-  price: number;
-  daysAdded: number;
-}
-
-const PROJECT_TYPES = [
-  {
-    id: "landing_page",
-    name: "Conversion Landing Page",
-    basePrice: 2500,
-    baseDays: 7,
-    description: "High-impact single page designed for maximum lead capture & sales.",
-    defaultPages: 1,
-    maxPages: 3,
-  },
-  {
-    id: "full_website",
-    name: "Full Multi-Page Website",
-    basePrice: 5000,
-    baseDays: 18,
-    description: "Complete custom digital experience: marketing, services, case studies & CMS.",
-    defaultPages: 5,
-    maxPages: 15,
-  },
-  {
-    id: "brand_identity",
-    name: "Brand Identity System",
-    basePrice: 1500,
-    baseDays: 5,
-    description: "Comprehensive logo mark, typography guidelines, color palette & assets.",
-    defaultPages: 0,
-    maxPages: 0,
-  },
-  {
-    id: "retainer",
-    name: "Monthly Design Retainer",
-    basePrice: 4500,
-    baseDays: 30,
-    description: "Continuous UI/UX design & development queue with dedicated turnaround.",
-    defaultPages: 0,
-    maxPages: 0,
-    isRetainer: true,
-  },
-] as const satisfies ReadonlyArray<{
-  id: string;
-  name: string;
-  basePrice: number;
-  baseDays: number;
-  description: string;
-  defaultPages: number;
-  maxPages: number;
-  isRetainer?: boolean;
-}>;
-
-const OPTIONAL_FEATURES: ScopeFeature[] = [
-  {
-    id: "webgl_3d",
-    label: "3D / WebGL Shader Animations",
-    description: "Custom interactive canvas, particle physics & kinetic micro-interactions",
-    price: 1000,
-    daysAdded: 4,
-  },
-  {
-    id: "cms_system",
-    label: "Dynamic CMS / Case Studies",
-    description: "Self-serve content management for blog articles, work & client showcases",
-    price: 750,
-    daysAdded: 3,
-  },
-  {
-    id: "stripe_commerce",
-    label: "Stripe eCommerce & Checkouts",
-    description: "Full cart, checkout sessions, customer portal & automatic receipt emails",
-    price: 1000,
-    daysAdded: 4,
-  },
-  {
-    id: "brand_bundle",
-    label: "Full Brand Visual Identity Suite",
-    description: "Vector logo mark suite, custom fonts, favicon, and brand styleguide",
-    price: 1500,
-    daysAdded: 5,
-  },
-  {
-    id: "seo_copy",
-    label: "SEO Architecture & Copywriting",
-    description: "High-converting sales copy, meta tags, schema markup & sitemap setup",
-    price: 750,
-    daysAdded: 2,
-  },
-  {
-    id: "rush_delivery",
-    label: "Priority Rush Kickoff (Save ~40% Timeline)",
-    description: "Dedicated priority build slot with expedited milestone reviews",
-    price: 1500,
-    daysAdded: -5,
-  },
-];
+export type { ScopeFeature } from "@/lib/scope-estimate";
 
 export function ScopeEstimator({
   onSelectScope,
@@ -116,13 +24,17 @@ export function ScopeEstimator({
     timelineWeeks: string;
   }) => void;
 }) {
-  const [selectedType, setSelectedType] = useState<string>("full_website");
+  const [selectedType, setSelectedType] = useState<string>(DEFAULT_PROJECT_TYPE_ID);
   const [pageCount, setPageCount] = useState<number>(5);
   const [selectedFeatures, setSelectedFeatures] = useState<string[]>(["webgl_3d", "seo_copy"]);
 
-  const activeTypeObj = useMemo(
-    () => PROJECT_TYPES.find((t) => t.id === selectedType) ?? PROJECT_TYPES[1]!,
-    [selectedType],
+  const activeTypeObj = useMemo(() => getProjectType(selectedType), [selectedType]);
+
+  // Clamped exactly as calculateScopeEstimate clamps it, so the line item and
+  // the total can never disagree.
+  const extraPages = Math.max(
+    0,
+    Math.min(pageCount, activeTypeObj.maxPages) - activeTypeObj.defaultPages,
   );
 
   const toggleFeature = (featureId: string) => {
@@ -131,40 +43,19 @@ export function ScopeEstimator({
     );
   };
 
-  const { totalPrice, depositPrice, timelineString } = useMemo(() => {
-    let price = activeTypeObj.basePrice;
-    let days = activeTypeObj.baseDays;
-
-    if (activeTypeObj.maxPages > 0 && pageCount > activeTypeObj.defaultPages) {
-      const extraPages = pageCount - activeTypeObj.defaultPages;
-      price += extraPages * 400; // $400 per extra designed & built page
-      days += extraPages * 1.5;
-    }
-
-    if (!("isRetainer" in activeTypeObj && activeTypeObj.isRetainer)) {
-      for (const featId of selectedFeatures) {
-        const feat = OPTIONAL_FEATURES.find((f) => f.id === featId);
-        if (feat) {
-          price += feat.price;
-          days += feat.daysAdded;
-        }
-      }
-    }
-
-    const calculatedDays = Math.max(days, 5);
-    const weeksMin = Math.max(1, Math.round(calculatedDays / 7));
-    const weeksMax = weeksMin + 1;
-    const timeline =
-      "isRetainer" in activeTypeObj && activeTypeObj.isRetainer
-        ? "Monthly (Continuous)"
-        : `${weeksMin}–${weeksMax} Weeks`;
-
-    return {
-      totalPrice: price,
-      depositPrice: Math.round(price * 0.5),
-      timelineString: timeline,
-    };
-  }, [activeTypeObj, pageCount, selectedFeatures]);
+  const {
+    totalPrice,
+    depositPrice,
+    timelineLabel: timelineString,
+  } = useMemo(
+    () =>
+      calculateScopeEstimate({
+        typeId: activeTypeObj.id,
+        pageCount,
+        featureIds: selectedFeatures,
+      }),
+    [activeTypeObj, pageCount, selectedFeatures],
+  );
 
   const formattedTotal = new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -239,8 +130,7 @@ export function ScopeEstimator({
                       </p>
                     </div>
                     <span className="mt-3 font-mono text-xs font-semibold text-[#DFBA73]">
-                      Starting at ${pt.basePrice.toLocaleString()}{" "}
-                      {"isRetainer" in pt && pt.isRetainer ? "/mo" : ""}
+                      Starting at ${pt.basePrice.toLocaleString()} {pt.isRetainer ? "/mo" : ""}
                     </span>
                   </button>
                 );
@@ -276,7 +166,7 @@ export function ScopeEstimator({
           )}
 
           {/* Step 3: Interactive Feature Add-Ons */}
-          {!("isRetainer" in activeTypeObj && activeTypeObj.isRetainer) && (
+          {!activeTypeObj.isRetainer && (
             <div>
               <label className="block font-mono text-xs uppercase tracking-wider text-white/70">
                 {activeTypeObj.maxPages > 0 ? "3." : "2."} Select Features &amp; Add-Ons
@@ -344,16 +234,17 @@ export function ScopeEstimator({
                 <span className="text-white">${activeTypeObj.basePrice.toLocaleString()}</span>
               </div>
 
-              {activeTypeObj.maxPages > 0 && pageCount > activeTypeObj.defaultPages && (
+              {extraPages > 0 && (
                 <div className="flex justify-between text-white/70">
-                  <span>Additional Pages ({pageCount - activeTypeObj.defaultPages}):</span>
+                  <span>Additional Pages ({extraPages}):</span>
                   <span className="text-white">
-                    +${((pageCount - activeTypeObj.defaultPages) * 400).toLocaleString()}
+                    +$
+                    {(extraPages * EXTRA_PAGE_PRICE).toLocaleString()}
                   </span>
                 </div>
               )}
 
-              {!("isRetainer" in activeTypeObj && activeTypeObj.isRetainer) &&
+              {!activeTypeObj.isRetainer &&
                 selectedFeatures.map((fId) => {
                   const feat = OPTIONAL_FEATURES.find((f) => f.id === fId);
                   if (!feat) return null;
@@ -376,7 +267,7 @@ export function ScopeEstimator({
                 </span>
               </div>
 
-              {!("isRetainer" in activeTypeObj && activeTypeObj.isRetainer) && (
+              {!activeTypeObj.isRetainer && (
                 <div className="mt-2 flex items-center justify-between border-t border-white/5 pt-2 font-mono text-xs text-[#DFBA73]">
                   <span>50% Kickoff Deposit:</span>
                   <span className="font-bold">{formattedDeposit}</span>

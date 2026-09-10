@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 import { sendTemplateEmail } from "@/lib/email-templates/send-email";
-import { json } from "@/lib/http/public-endpoint";
+import { clientIp, json, requireRateLimit } from "@/lib/http/public-endpoint";
 
 const OWNER_EMAIL = "rory@theroyeffect.com";
 
@@ -18,12 +18,23 @@ const schema = z.object({
   budget: z.string().trim().max(60).optional().default(""),
   timeline: z.string().trim().max(60).optional().default(""),
   extra: z.string().trim().max(2000).optional().default(""),
+  smsService: z.boolean().optional().default(false),
+  smsMarketing: z.boolean().optional().default(false),
 });
 
 export const Route = createFileRoute("/api/public/brief-intake")({
   server: {
     handlers: {
       POST: async ({ request }) => {
+        // Every call renders a PDF, stores it and sends two emails, so this is
+        // capped per IP and again across all callers to bound the total cost.
+        const throttled =
+          (await requireRateLimit(`brief-intake:${clientIp(request)}`, {
+            limit: 5,
+            windowSeconds: 3600,
+          })) ?? (await requireRateLimit("brief-intake:all", { limit: 200, windowSeconds: 3600 }));
+        if (throttled) return throttled;
+
         let payload: unknown;
         try {
           payload = await request.json();
@@ -123,6 +134,9 @@ export const Route = createFileRoute("/api/public/brief-intake")({
             budget: d.budget || null,
             timeline: d.timeline || null,
             extra: d.extra || null,
+            sms_service_consent: d.smsService,
+            sms_marketing_consent: d.smsMarketing,
+            consent_captured_at: new Date().toISOString(),
           });
           if (error) console.error("Brief insert failed:", error.message);
         } catch (dbError) {
