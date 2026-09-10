@@ -11,34 +11,12 @@ export interface BalanceSettlementSession {
   metadata: Record<string, string | undefined>;
 }
 
-async function admin() {
-  const mod = await import("@/integrations/supabase/client.server");
-  return (mod as unknown as { supabaseAdmin: any }).supabaseAdmin;
-}
-
-export async function settleCommissionBalance(session: BalanceSettlementSession) {
-  const orderId = session.metadata["order_id"];
+export async function settleCommissionBalance(input: BalanceSettlementSession): Promise<void> {
+  const orderId = input.metadata["order_id"];
   if (!orderId) {
     console.error("settleCommissionBalance: missing order_id in metadata");
     return;
   }
-
-  const db = await admin();
-  const { error } = await db
-    .from("orders")
-    .update({
-      balance_status: "paid",
- * Settles the remaining balance on a deposit commission after a Stripe
- * balance checkout completes. Idempotent: safe for webhook retries and for
- * the client-side confirmation call that runs on the portal return URL.
- */
-export async function settleCommissionBalance(input: {
-  sessionId: string;
-  amountTotal: number;
-  metadata: Record<string, string | undefined>;
-}): Promise<void> {
-  const orderId = input.metadata["order_id"];
-  if (!orderId) return;
 
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
@@ -64,5 +42,4 @@ export async function settleCommissionBalance(input: {
   if (error) {
     console.error("settleCommissionBalance: database update failed:", error.message);
   }
-  if (error) console.error("Balance settlement failed:", error.message);
 }
