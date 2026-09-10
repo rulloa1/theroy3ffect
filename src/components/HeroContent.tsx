@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { ScrambleText } from "./ScrambleText";
+import { shouldRunHeavyEffects } from "@/lib/effects-guard";
 
 const WORDS = ["PURPOSE", "IMPACT", "INTENT"];
 const HEADLINES = [
