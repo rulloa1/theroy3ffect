@@ -9,7 +9,6 @@ import {
   clampQuantity,
 } from "@/lib/checkout-validation";
 
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { SITE_URL } from "@/lib/site";
 import {
   type StripeEnv,
@@ -226,7 +225,7 @@ export const createBalanceCheckoutSession = createServerFn({ method: "POST" })
             price_data: {
               currency: String(order["currency"] ?? "usd"),
               unit_amount: balance,
-              product_data: { name: `${label} — remaining balance` },
+              
               product_data: {
                 name: `${label} — remaining balance`,
                 // Stripe tax code: General - Services (design/build services).
