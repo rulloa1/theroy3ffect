@@ -58,6 +58,22 @@ export const Route = createFileRoute("/api/public/contact")({
           console.error("Contact inquiry DB insert error (non-fatal):", dbError);
         }
 
+        // Fire-and-forget sync to GoHighLevel; never blocks the submission.
+        void import("@/lib/ghl/inbound-webhook.server").then(({ sendToGhl }) =>
+          sendToGhl({
+            name,
+            email,
+            source: "website_contact_form",
+            projectType,
+            message,
+            smsServiceConsent: smsService,
+            smsMarketingConsent: smsMarketing,
+            consentCapturedAt: new Date().toISOString(),
+            submittedAt: new Date().toISOString(),
+            tags: ["website-lead", "contact-form"],
+          }),
+        );
+
         try {
           await sendTemplateEmail("brief-notification", OWNER_EMAIL, {
             templateData: { name, email, projectType, message },

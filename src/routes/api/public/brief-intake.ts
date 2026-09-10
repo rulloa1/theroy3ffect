@@ -143,6 +143,25 @@ export const Route = createFileRoute("/api/public/brief-intake")({
           console.error("Brief insert threw:", dbError);
         }
 
+        // Fire-and-forget sync to GoHighLevel; never blocks the submission.
+        void import("@/lib/ghl/inbound-webhook.server").then(({ sendToGhl }) =>
+          sendToGhl({
+            name: d.name,
+            email: d.email,
+            source: "website_brief",
+            projectType: d.projectType,
+            message: d.goals,
+            company: d.company,
+            budget: d.budget,
+            timeline: d.timeline,
+            smsServiceConsent: d.smsService,
+            smsMarketingConsent: d.smsMarketing,
+            consentCapturedAt: new Date().toISOString(),
+            submittedAt: new Date().toISOString(),
+            tags: ["website-lead", "project-brief"],
+          }),
+        );
+
         try {
           await sendTemplateEmail("project-brief-notification", OWNER_EMAIL, {
             templateData: { ...d, sessionId: d.sessionId, pdfUrl },
