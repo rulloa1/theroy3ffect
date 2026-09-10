@@ -1,5 +1,12 @@
-import { describe, expect, it } from "vitest";
-import { json, timingSafeEqual } from "@/lib/http/public-endpoint";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
+const rpc = vi.fn();
+vi.mock("@/integrations/supabase/client.server", () => ({
+  supabaseAdmin: { rpc: (name: string) => rpc(name) },
+}));
+
+const { json, requireAutomationToken, timingSafeEqual } =
+  await import("@/lib/http/public-endpoint");
 
 describe("timingSafeEqual", () => {
   it("accepts identical strings", () => {
@@ -48,5 +55,48 @@ describe("json", () => {
     const res = json({ error: "Unauthorized" }, 401);
     expect(res.status).toBe(401);
     await expect(res.json()).resolves.toEqual({ error: "Unauthorized" });
+  });
+});
+
+describe("requireAutomationToken", () => {
+  const TOKEN = "a".repeat(64);
+  const request = (token?: string) =>
+    new Request("https://example.test/api/public/automation/followups", {
+      method: "POST",
+      ...(token === undefined ? {} : { headers: { "x-automation-token": token } }),
+    });
+
+  beforeEach(() => {
+    rpc.mockReset();
+    rpc.mockResolvedValue({ data: TOKEN });
+  });
+
+  it("authorizes a caller presenting the configured token", async () => {
+    await expect(requireAutomationToken(request(TOKEN))).resolves.toBeNull();
+    expect(rpc).toHaveBeenCalledWith("automation_cron_token");
+  });
+
+  it("rejects a wrong token with a JSON 401", async () => {
+    const denied = await requireAutomationToken(request("b".repeat(64)));
+    expect(denied?.status).toBe(401);
+    expect(denied?.headers.get("Content-Type")).toBe("application/json");
+    await expect(denied?.json()).resolves.toEqual({ error: "Unauthorized" });
+  });
+
+  it("rejects a caller that sends no token header", async () => {
+    expect((await requireAutomationToken(request()))?.status).toBe(401);
+  });
+
+  it("rejects a token that is merely a prefix of the real one", async () => {
+    expect((await requireAutomationToken(request(TOKEN.slice(0, 32))))?.status).toBe(401);
+  });
+
+  it("fails closed when the token is not configured", async () => {
+    // No row, or an empty token, must never authorize an empty header.
+    for (const data of [null, undefined, ""]) {
+      rpc.mockResolvedValue({ data });
+      expect((await requireAutomationToken(request()))?.status, String(data)).toBe(401);
+      expect((await requireAutomationToken(request(TOKEN)))?.status, String(data)).toBe(401);
+    }
   });
 });

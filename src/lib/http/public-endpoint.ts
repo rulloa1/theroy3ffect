@@ -44,7 +44,7 @@ export async function requireAutomationToken(request: Request): Promise<Response
 
   const { data: expected } = await db.rpc("automation_cron_token");
   if (!expected || !timingSafeEqual(provided, String(expected))) {
-    return new Response("Unauthorized", { status: 401 });
+    return json({ error: "Unauthorized" }, 401);
   }
   return null;
 }
