@@ -30,6 +30,19 @@ export default defineTool({
     const submissionId = crypto.randomUUID();
     const templateData = { name, email, projectType: projectType ?? "", message };
 
+    // Fire-and-forget sync to GoHighLevel; never blocks the inquiry.
+    void import("@/lib/ghl/inbound-webhook.server").then(({ sendToGhl }) =>
+      sendToGhl({
+        name,
+        email,
+        source: "mcp_inquiry",
+        projectType,
+        message,
+        submittedAt: new Date().toISOString(),
+        tags: ["website-lead", "mcp-inquiry"],
+      }),
+    );
+
     try {
       await sendTemplateEmail("brief-notification", OWNER_EMAIL, {
         templateData,
