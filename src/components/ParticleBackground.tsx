@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { shouldRunHeavyEffects } from "@/lib/effects-guard";
 
 /**
  * Three.js WebGL particle + energy-line field with bloom post-processing.
