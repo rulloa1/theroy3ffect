@@ -30,18 +30,23 @@ export default defineTool({
     const submissionId = crypto.randomUUID();
     const templateData = { name, email, projectType: projectType ?? "", message };
 
-    // Fire-and-forget sync to GoHighLevel; never blocks the inquiry.
-    void import("@/lib/ghl/inbound-webhook.server").then(({ sendToGhl }) =>
-      sendToGhl({
+    // Await the GHL sync so the fetch isn't killed when the tool returns.
+    try {
+      const { sendToGhl } = await import("@/lib/ghl/inbound-webhook.server");
+      await sendToGhl({
         name,
         email,
         source: "mcp_inquiry",
         projectType,
         message,
         submittedAt: new Date().toISOString(),
+        pageUrl: "",
         tags: ["website-lead", "mcp-inquiry"],
-      }),
-    );
+      });
+    } catch (ghlError) {
+      // sendToGhl should never throw, but guard against it defensively.
+      console.error("GHL sync error (non-fatal):", ghlError);
+    }
 
     try {
       await sendTemplateEmail("brief-notification", OWNER_EMAIL, {
