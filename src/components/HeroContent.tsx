@@ -80,16 +80,18 @@ export function HeroContent() {
         key={bioKey}
         className="mt-4 max-w-lg font-mono text-[11px] leading-relaxed text-white/70 sm:text-xs"
       >
-        {BIO.split("").map((ch, i) => (
-          <motion.span
-            key={`${bioKey}-${i}`}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: i * 0.015, duration: 0.04 }}
-          >
-            {ch}
-          </motion.span>
-        ))}
+        {animated
+          ? BIO.split("").map((ch, i) => (
+              <motion.span
+                key={`${bioKey}-${i}`}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: i * 0.015, duration: 0.04 }}
+              >
+                {ch}
+              </motion.span>
+            ))
+          : BIO}
       </motion.p>
 
       {/* Slogan Punchline */}
