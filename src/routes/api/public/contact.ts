@@ -5,14 +5,23 @@ import { clientIp, json, requireRateLimit } from "@/lib/http/public-endpoint";
 
 const OWNER_EMAIL = "rory@theroyeffect.com";
 
-const briefSchema = z.object({
-  name: z.string().trim().min(1, "Name is required").max(100, "Name is too long"),
-  email: z.string().trim().email("Enter a valid email").max(255),
-  projectType: z.string().trim().max(60).optional().default(""),
-  message: z.string().trim().min(10, "Tell me a bit more about the project").max(2000),
-  smsService: z.boolean().optional().default(false),
-  smsMarketing: z.boolean().optional().default(false),
-});
+const briefSchema = z
+  .object({
+    name: z.string().trim().min(1, "Name is required").max(100, "Name is too long"),
+    email: z.string().trim().email("Enter a valid email").max(255),
+    phone: z.string().trim().max(40).optional().default(""),
+    projectType: z.string().trim().max(60).optional().default(""),
+    message: z.string().trim().max(2000).default(""),
+    websiteUrl: z.string().trim().max(255).optional().default(""),
+    bottleneck: z.string().trim().max(120).optional().default(""),
+    notes: z.string().trim().max(2000).optional().default(""),
+    smsService: z.boolean().optional().default(false),
+    smsMarketing: z.boolean().optional().default(false),
+  })
+  .refine((data) => Boolean(data.websiteUrl) || data.message.length >= 10, {
+    message: "Tell me a bit more about the project",
+    path: ["message"],
+  });
 
 export const Route = createFileRoute("/api/public/contact")({
   server: {
