@@ -110,8 +110,8 @@ const container = {
   padding: "32px 24px",
   maxWidth: "560px",
   width: "100%",
-  borderTop: "2px solid #dfba73",
   border: "1px solid rgba(255,255,255,0.08)",
+  borderTop: "2px solid #dfba73",
 };
 const eyebrow = {
   fontSize: "11px",
