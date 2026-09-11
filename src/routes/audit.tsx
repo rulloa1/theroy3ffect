@@ -90,7 +90,10 @@ export function AuditPage() {
           projectType: "5-Minute Website Audit",
           smsService,
           smsMarketing,
-          message: `[5-MINUTE AUDIT REQUEST]\nWebsite: ${result.data.websiteUrl}\nPrimary Bottleneck: ${result.data.bottleneck}\nNotes: ${result.data.notes || "None provided"}`,
+          websiteUrl: result.data.websiteUrl,
+          bottleneck: result.data.bottleneck,
+          notes: result.data.notes ?? "",
+          message: result.data.notes ?? "",
         }),
       });
 

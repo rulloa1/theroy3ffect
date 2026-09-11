@@ -13,6 +13,9 @@ export interface GhlLeadPayload {
   projectType?: string | null | undefined;
   message?: string | null | undefined;
   company?: string | null | undefined;
+  websiteUrl?: string | null | undefined;
+  bottleneck?: string | null | undefined;
+  notes?: string | null | undefined;
   budget?: string | null | undefined;
   timeline?: string | null | undefined;
   smsServiceConsent?: boolean | undefined;
@@ -40,6 +43,9 @@ export function normalizeGhlPayload(p: GhlLeadPayload): Record<string, string | 
     project_type: p.projectType ?? "",
     message: p.message ?? "",
     company: p.company ?? "",
+    website_url: p.websiteUrl ?? "",
+    bottleneck: p.bottleneck ?? "",
+    notes: p.notes ?? "",
     budget: p.budget ?? "",
     timeline: p.timeline ?? "",
     sms_service_consent: p.smsServiceConsent ?? false,
