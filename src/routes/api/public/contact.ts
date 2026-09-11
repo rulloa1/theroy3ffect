@@ -5,14 +5,23 @@ import { clientIp, json, requireRateLimit } from "@/lib/http/public-endpoint";
 
 const OWNER_EMAIL = "rory@theroyeffect.com";
 
-const briefSchema = z.object({
-  name: z.string().trim().min(1, "Name is required").max(100, "Name is too long"),
-  email: z.string().trim().email("Enter a valid email").max(255),
-  projectType: z.string().trim().max(60).optional().default(""),
-  message: z.string().trim().min(10, "Tell me a bit more about the project").max(2000),
-  smsService: z.boolean().optional().default(false),
-  smsMarketing: z.boolean().optional().default(false),
-});
+const briefSchema = z
+  .object({
+    name: z.string().trim().min(1, "Name is required").max(100, "Name is too long"),
+    email: z.string().trim().email("Enter a valid email").max(255),
+    phone: z.string().trim().max(40).optional().default(""),
+    projectType: z.string().trim().max(60).optional().default(""),
+    message: z.string().trim().max(2000).default(""),
+    websiteUrl: z.string().trim().max(255).optional().default(""),
+    bottleneck: z.string().trim().max(120).optional().default(""),
+    notes: z.string().trim().max(2000).optional().default(""),
+    smsService: z.boolean().optional().default(false),
+    smsMarketing: z.boolean().optional().default(false),
+  })
+  .refine((data) => Boolean(data.websiteUrl) || data.message.length >= 10, {
+    message: "Tell me a bit more about the project",
+    path: ["message"],
+  });
 
 export const Route = createFileRoute("/api/public/contact")({
   server: {
@@ -37,9 +46,22 @@ export const Route = createFileRoute("/api/public/contact")({
           return json({ error: parsed.error.issues[0]?.message ?? "Invalid submission" }, 400);
         }
 
-        const { name, email, projectType, message, smsService, smsMarketing } = parsed.data;
+        const {
+          name,
+          email,
+          phone,
+          projectType,
+          message,
+          websiteUrl,
+          bottleneck,
+          notes,
+          smsService,
+          smsMarketing,
+        } = parsed.data;
         const submissionId = crypto.randomUUID();
         const pageUrl = request.headers.get("referer") ?? "";
+        const submittedAt = new Date().toISOString();
+        const isAudit = Boolean(websiteUrl);
 
         // Persist to database so inquiries are visible in Studio Admin dashboard
         try {
@@ -48,12 +70,16 @@ export const Route = createFileRoute("/api/public/contact")({
             id: submissionId,
             name,
             email,
+            phone: phone || null,
             project_type: projectType || null,
             message,
+            website_url: websiteUrl || null,
+            bottleneck: bottleneck || null,
+            notes: notes || null,
             status: "unread",
             sms_service_consent: smsService,
             sms_marketing_consent: smsMarketing,
-            consent_captured_at: new Date().toISOString(),
+            consent_captured_at: submittedAt,
           });
         } catch (dbError) {
           console.error("Contact inquiry DB insert error (non-fatal):", dbError);
@@ -65,15 +91,21 @@ export const Route = createFileRoute("/api/public/contact")({
           await sendToGhl({
             name,
             email,
-            source: "website_contact_form",
+            phone,
+            source: isAudit ? "website_audit_form" : "website_contact_form",
             projectType,
             message,
+            websiteUrl,
+            bottleneck,
+            notes,
             smsServiceConsent: smsService,
             smsMarketingConsent: smsMarketing,
-            consentCapturedAt: new Date().toISOString(),
-            submittedAt: new Date().toISOString(),
+            consentCapturedAt: submittedAt,
+            submittedAt,
             pageUrl,
-            tags: ["website-lead", "contact-form"],
+            tags: isAudit
+              ? ["website-lead", "audit-request"]
+              : ["website-lead", "contact-form"],
           });
         } catch (ghlError) {
           // sendToGhl should never throw, but guard against it defensively.
@@ -82,13 +114,23 @@ export const Route = createFileRoute("/api/public/contact")({
 
         try {
           await sendTemplateEmail("brief-notification", OWNER_EMAIL, {
-            templateData: { name, email, projectType, message },
+            templateData: {
+              name,
+              email,
+              phone,
+              projectType,
+              message,
+              websiteUrl,
+              bottleneck,
+              notes,
+              submittedAt,
+            },
             idempotencyKey: `brief-notification-${submissionId}`,
             replyTo: email,
           });
 
           await sendTemplateEmail("brief-confirmation", email, {
-            templateData: { name, projectType, message },
+            templateData: { name, projectType, message, websiteUrl, notes },
             idempotencyKey: `brief-confirmation-${submissionId}`,
             replyTo: OWNER_EMAIL,
           });
