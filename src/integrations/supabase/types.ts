@@ -247,40 +247,52 @@ export type Database = {
       }
       contact_inquiries: {
         Row: {
+          bottleneck: string | null
           consent_captured_at: string | null
           created_at: string
           email: string
           id: string
           message: string
           name: string
+          notes: string | null
+          phone: string | null
           project_type: string | null
           sms_marketing_consent: boolean
           sms_service_consent: boolean
           status: string
+          website_url: string | null
         }
         Insert: {
+          bottleneck?: string | null
           consent_captured_at?: string | null
           created_at?: string
           email: string
           id?: string
           message: string
           name: string
+          notes?: string | null
+          phone?: string | null
           project_type?: string | null
           sms_marketing_consent?: boolean
           sms_service_consent?: boolean
           status?: string
+          website_url?: string | null
         }
         Update: {
+          bottleneck?: string | null
           consent_captured_at?: string | null
           created_at?: string
           email?: string
           id?: string
           message?: string
           name?: string
+          notes?: string | null
+          phone?: string | null
           project_type?: string | null
           sms_marketing_consent?: boolean
           sms_service_consent?: boolean
           status?: string
+          website_url?: string | null
         }
         Relationships: []
       }
