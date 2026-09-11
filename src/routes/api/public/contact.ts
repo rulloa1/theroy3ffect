@@ -46,9 +46,22 @@ export const Route = createFileRoute("/api/public/contact")({
           return json({ error: parsed.error.issues[0]?.message ?? "Invalid submission" }, 400);
         }
 
-        const { name, email, projectType, message, smsService, smsMarketing } = parsed.data;
+        const {
+          name,
+          email,
+          phone,
+          projectType,
+          message,
+          websiteUrl,
+          bottleneck,
+          notes,
+          smsService,
+          smsMarketing,
+        } = parsed.data;
         const submissionId = crypto.randomUUID();
         const pageUrl = request.headers.get("referer") ?? "";
+        const submittedAt = new Date().toISOString();
+        const isAudit = Boolean(websiteUrl);
 
         // Persist to database so inquiries are visible in Studio Admin dashboard
         try {
@@ -57,12 +70,16 @@ export const Route = createFileRoute("/api/public/contact")({
             id: submissionId,
             name,
             email,
+            phone: phone || null,
             project_type: projectType || null,
             message,
+            website_url: websiteUrl || null,
+            bottleneck: bottleneck || null,
+            notes: notes || null,
             status: "unread",
             sms_service_consent: smsService,
             sms_marketing_consent: smsMarketing,
-            consent_captured_at: new Date().toISOString(),
+            consent_captured_at: submittedAt,
           });
         } catch (dbError) {
           console.error("Contact inquiry DB insert error (non-fatal):", dbError);
@@ -74,15 +91,21 @@ export const Route = createFileRoute("/api/public/contact")({
           await sendToGhl({
             name,
             email,
-            source: "website_contact_form",
+            phone,
+            source: isAudit ? "website_audit_form" : "website_contact_form",
             projectType,
             message,
+            websiteUrl,
+            bottleneck,
+            notes,
             smsServiceConsent: smsService,
             smsMarketingConsent: smsMarketing,
-            consentCapturedAt: new Date().toISOString(),
-            submittedAt: new Date().toISOString(),
+            consentCapturedAt: submittedAt,
+            submittedAt,
             pageUrl,
-            tags: ["website-lead", "contact-form"],
+            tags: isAudit
+              ? ["website-lead", "audit-request"]
+              : ["website-lead", "contact-form"],
           });
         } catch (ghlError) {
           // sendToGhl should never throw, but guard against it defensively.
@@ -91,13 +114,23 @@ export const Route = createFileRoute("/api/public/contact")({
 
         try {
           await sendTemplateEmail("brief-notification", OWNER_EMAIL, {
-            templateData: { name, email, projectType, message },
+            templateData: {
+              name,
+              email,
+              phone,
+              projectType,
+              message,
+              websiteUrl,
+              bottleneck,
+              notes,
+              submittedAt,
+            },
             idempotencyKey: `brief-notification-${submissionId}`,
             replyTo: email,
           });
 
           await sendTemplateEmail("brief-confirmation", email, {
-            templateData: { name, projectType, message },
+            templateData: { name, projectType, message, websiteUrl, notes },
             idempotencyKey: `brief-confirmation-${submissionId}`,
             replyTo: OWNER_EMAIL,
           });
