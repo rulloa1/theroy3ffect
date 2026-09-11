@@ -206,13 +206,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         type: "application/ld+json",
         children: JSON.stringify(STRUCTURED_DATA),
       },
-      {
-        src: "https://widgets.leadconnectorhq.com/loader.js",
-        "data-resources-url":
-          "https://widgets.leadconnectorhq.com/chat-widget/loader.js",
-        "data-widget-id": "6aa0be0d4d65227e4e8be214",
-        "data-source": "WEB_USER",
-      } as Record<string, string>,
     ],
   }),
   shellComponent: RootShell,
