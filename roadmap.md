@@ -8,3 +8,4 @@
 - [ ] Replace the sitewide logo and browser icon with the supplied Roy Effect mark
 - [ ] Publish the site with the live GHL webhook configuration
 - [ ] Submit a real website lead and confirm it appears in the admin inbox
+- [ ] Improve public-site text readability and add lightweight scroll reveal animations
