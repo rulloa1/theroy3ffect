@@ -22,9 +22,9 @@ export function createGeminiProvider(apiKey: string) {
 }
 
 /**
- * Resolves the AI provider for drafting jobs. Prefers the owner's
- * GOOGLE_API_KEY (direct Gemini, no credit usage); falls back to the
- * Lovable AI Gateway when the key is absent.
+ * Resolves the AI provider for drafting jobs. Prefers the Lovable AI Gateway
+ * (reliable, current models); falls back to a direct Gemini key only when the
+ * gateway key is absent.
  */
 export function resolveDraftingProvider(): {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -32,20 +32,20 @@ export function resolveDraftingProvider(): {
   model: string;
   source: "google" | "lovable";
 } {
-  const googleKey = process.env["GOOGLE_API_KEY"];
-  if (googleKey) {
+  const lovableKey = process.env["LOVABLE_API_KEY"];
+  if (lovableKey) {
     return {
-      provider: createGeminiProvider(googleKey),
-      model: "gemini-2.5-flash",
-      source: "google",
+      provider: createLovableAiGatewayProvider(lovableKey),
+      model: "google/gemini-3.8-flash",
+      source: "lovable",
     };
   }
-  const lovableKey = process.env["LOVABLE_API_KEY"];
-  if (!lovableKey) throw new Error("Missing GOOGLE_API_KEY and LOVABLE_API_KEY");
+  const googleKey = process.env["GOOGLE_API_KEY"];
+  if (!googleKey) throw new Error("Missing LOVABLE_API_KEY and GOOGLE_API_KEY");
   return {
-    provider: createLovableAiGatewayProvider(lovableKey),
-    model: "google/gemini-3-flash-preview",
-    source: "lovable",
+    provider: createGeminiProvider(googleKey),
+    model: "gemini-2.5-flash",
+    source: "google",
   };
 }
 

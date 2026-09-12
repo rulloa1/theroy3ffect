@@ -126,9 +126,47 @@ export function AdminInquiriesView({
                   </div>
                 </div>
 
-                <p className="mt-4 border-t border-white/5 pt-3 font-mono text-xs leading-relaxed text-white/80 whitespace-pre-wrap">
-                  {inquiry.message}
-                </p>
+                <div className="mt-4 space-y-2 border-t border-white/5 pt-3">
+                  {inquiry.website_url && (
+                    <p className="font-mono text-xs text-white/80">
+                      <span className="text-[#FF3333]">WEBSITE:</span>{" "}
+                      <a
+                        href={
+                          inquiry.website_url.startsWith("http")
+                            ? inquiry.website_url
+                            : `https://${inquiry.website_url}`
+                        }
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="underline hover:text-white"
+                      >
+                        {inquiry.website_url}
+                      </a>
+                    </p>
+                  )}
+                  {inquiry.bottleneck && (
+                    <p className="font-mono text-xs text-white/80">
+                      <span className="text-[#FF3333]">BOTTLENECK:</span> {inquiry.bottleneck}
+                    </p>
+                  )}
+                  {inquiry.phone && (
+                    <p className="font-mono text-xs text-white/80">
+                      <span className="text-[#FF3333]">PHONE:</span> {inquiry.phone}
+                    </p>
+                  )}
+                  {(inquiry.notes || inquiry.message) && (
+                    <p className="font-mono text-xs leading-relaxed text-white/80 whitespace-pre-wrap">
+                      <span className="text-[#FF3333]">NOTES:</span>{" "}
+                      {inquiry.notes || inquiry.message}
+                    </p>
+                  )}
+                  {!inquiry.website_url &&
+                    !inquiry.bottleneck &&
+                    !inquiry.notes &&
+                    !inquiry.message && (
+                      <p className="font-mono text-xs text-white/40">No message provided.</p>
+                    )}
+                </div>
               </div>
             ))}
           </div>

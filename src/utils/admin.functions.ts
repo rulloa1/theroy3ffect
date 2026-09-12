@@ -55,6 +55,10 @@ export interface AdminInquiry {
   services?: string[] | null;
   project_type: string | null;
   message: string;
+  website_url?: string | null;
+  bottleneck?: string | null;
+  notes?: string | null;
+  phone?: string | null;
   status: "unread" | "replied" | "archived";
   created_at: string;
 }
