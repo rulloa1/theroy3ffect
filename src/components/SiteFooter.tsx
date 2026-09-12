@@ -28,7 +28,7 @@ export function SiteFooter() {
           <div className="lg:col-span-4">
             <Link
               to="/"
-              className="font-display text-2xl uppercase tracking-tight text-white"
+              className="inline-flex min-h-11 items-center font-display text-2xl uppercase tracking-tight text-white"
             >
               THE ROY EFFECT
             </Link>
