@@ -3,6 +3,7 @@ import { template as bookingConfirmation } from "./booking-confirmation";
 import { template as bookingNotification } from "./booking-notification";
 import { template as briefConfirmation } from "./brief-confirmation";
 import { template as briefNotification } from "./brief-notification";
+import { template as clientWelcome } from "./client-welcome";
 import { template as orderConfirmation } from "./order-confirmation";
 import { template as orderNotification } from "./order-notification";
 import { template as prospectOutreach } from "./prospect-outreach";
@@ -34,6 +35,7 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   "booking-notification": bookingNotification,
   "brief-confirmation": briefConfirmation,
   "brief-notification": briefNotification,
+  "client-welcome": clientWelcome,
   "order-confirmation": orderConfirmation,
   "order-notification": orderNotification,
   "project-brief-notification": projectBriefNotification,
