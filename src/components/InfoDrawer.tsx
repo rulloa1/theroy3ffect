@@ -267,7 +267,7 @@ export function InfoDrawer({
                               <h3 className="font-display text-lg uppercase tracking-wide text-white">
                                 {tier.name}
                               </h3>
-                              <p className="mt-1 max-w-sm font-mono text-xs leading-relaxed text-white/50">
+                              <p className="mt-1 max-w-sm font-mono text-[15px] leading-[1.6] text-white/90">
                                 {tier.description}
                               </p>
                             </div>
@@ -415,7 +415,7 @@ export function InfoDrawer({
                           </span>
                         </div>
 
-                        <p className="mt-3 max-w-md font-mono text-xs leading-relaxed text-white/60">
+                        <p className="mt-3 max-w-md font-mono text-base leading-[1.6] text-white/90">
                           {project.description}
                         </p>
 
@@ -564,7 +564,7 @@ export function InfoDrawer({
                     <span className="font-mono text-xs tracking-widest text-[#dfba73]">ABOUT</span>
                     <h2 className="mt-2 font-display text-4xl uppercase text-white">Rory Ulloa</h2>
                   </div>
-                  <div className="max-w-lg space-y-4 font-mono text-xs leading-relaxed text-white/60">
+                  <div className="max-w-lg space-y-4 font-mono text-base leading-[1.6] text-white/90">
                     <p>
                       I&apos;m a freelance UI/UX designer and no-code developer working with
                       founders and small teams across the US, based in the Houston, Texas area and
@@ -650,7 +650,7 @@ export function InfoDrawer({
                         <h3 className="font-display text-xl uppercase tracking-wide text-white">
                           {item.title}
                         </h3>
-                        <p className="mt-1 max-w-lg font-mono text-xs leading-relaxed text-white/50">
+                        <p className="mt-1 max-w-lg font-mono text-[15px] leading-[1.6] text-white/90">
                           {item.body}
                         </p>
                       </li>
@@ -701,7 +701,7 @@ export function InfoDrawer({
                           {block.rows.map((row) => (
                             <li
                               key={row}
-                              className="max-w-lg font-mono text-xs leading-relaxed text-white/60"
+                              className="max-w-lg font-mono text-base leading-[1.6] text-white/90"
                             >
                               {row}
                             </li>

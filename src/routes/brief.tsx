@@ -224,7 +224,7 @@ function BriefPage() {
           <h1 className="mt-4 font-display text-4xl uppercase leading-[0.9] text-white">
             THANK YOU
           </h1>
-          <p className="mt-4 font-mono text-xs leading-relaxed text-white/60">
+          <p className="mt-4 font-mono text-base leading-[1.6] text-white/90">
             Your brief is with me. I&apos;ll review it and reply within one business day with scope,
             schedule and next steps. A copy is in your inbox.
           </p>
@@ -259,7 +259,7 @@ function BriefPage() {
         <h1 className="mt-3 font-display text-4xl uppercase leading-[0.9] text-white sm:text-5xl md:text-6xl">
           PROJECT BRIEF
         </h1>
-        <p className="mt-4 max-w-lg font-mono text-xs leading-relaxed text-white/50">
+        <p className="mt-4 max-w-lg font-mono text-[15px] leading-[1.6] text-white/90">
           Four short steps. Your progress is saved automatically. The more detail you share, the
           faster we lock scope and kick off your build.
         </p>

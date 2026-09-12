@@ -54,7 +54,7 @@ function BookPage() {
           <h1 className="mt-3 font-display text-4xl uppercase leading-[0.9] text-white md:text-6xl lg:text-7xl">
             Book a time to talk
           </h1>
-          <p className="mt-4 max-w-2xl font-mono text-sm leading-relaxed text-white/60">
+          <p className="mt-4 max-w-2xl font-mono text-base leading-[1.6] text-white/90">
             Pick a slot below and pay the $49 fee to lock it in. I&apos;ll call you at the scheduled time to discuss your project, scope, and
             timeline.
           </p>

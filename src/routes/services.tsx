@@ -58,7 +58,7 @@ function ServicesPage() {
         <h1 className="mt-3 font-display text-4xl uppercase leading-[0.9] text-white md:text-6xl">
           Design &amp; build services
         </h1>
-        <p className="mt-5 max-w-2xl font-mono text-xs leading-relaxed text-white/60 md:text-sm">
+        <p className="mt-5 max-w-2xl font-mono text-base leading-[1.6] text-white/90 md:text-sm">
           I&apos;m Rory Ulloa — a freelance UI/UX designer and no-code developer based near Houston,
           Texas, working remotely with founders and small teams across the US. My work sits between
           brand and build: identity systems, high-contrast interface design, and shipped,
@@ -76,7 +76,7 @@ function ServicesPage() {
               <p className="mt-2 font-mono text-[11px] tracking-widest text-[#dfba73]">
                 FROM {s.from}
               </p>
-              <p className="mt-3 font-mono text-xs leading-relaxed text-white/60">{s.summary}</p>
+              <p className="mt-3 font-mono text-base leading-[1.6] text-white/90">{s.summary}</p>
               <ul className="mt-5 space-y-2">
                 {s.deliverables.map((d) => (
                   <li key={d} className="flex items-start gap-2 font-mono text-xs text-white/70">
@@ -102,7 +102,7 @@ function ServicesPage() {
                 <h3 className="font-display text-xl uppercase tracking-wide text-white">
                   {item.title}
                 </h3>
-                <p className="mt-1 max-w-2xl font-mono text-xs leading-relaxed text-white/50">
+                <p className="mt-1 max-w-2xl font-mono text-[15px] leading-[1.6] text-white/90">
                   {item.body}
                 </p>
               </li>

@@ -54,7 +54,7 @@ function PricingPage() {
         <h1 className="mt-3 font-display text-4xl uppercase leading-[0.9] text-white md:text-6xl">
           What it costs to work together
         </h1>
-        <p className="mt-5 max-w-2xl font-mono text-xs leading-relaxed text-white/60 md:text-sm">
+        <p className="mt-5 max-w-2xl font-mono text-base leading-[1.6] text-white/90 md:text-sm">
           Fixed starting points for brand, web design, full design-and-build and ongoing retainers.
           Every project is scoped and priced in writing before it starts — pay a 50% deposit to hold
           a slot, or use the scope calculator for a custom page count.

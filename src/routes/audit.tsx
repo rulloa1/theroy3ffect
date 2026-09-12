@@ -128,7 +128,7 @@ export function AuditPage() {
             </span>
           </h1>
 
-          <p className="mt-5 max-w-xl font-mono text-xs leading-relaxed text-white/60 sm:text-sm">
+          <p className="mt-5 max-w-xl font-mono text-base leading-[1.6] text-white/90 sm:text-sm">
             Most local service websites in Houston look dated, load slowly on phones, and send
             high-paying clients straight to a competitor. Send me your URL and I'll record a free
             5-minute video breaking down your UX bottlenecks and conversion leaks — no sales call,
@@ -163,7 +163,7 @@ export function AuditPage() {
                 {pillar.tag}
               </span>
               <h3 className="mt-2 font-display text-xl uppercase text-white">{pillar.title}</h3>
-              <p className="mt-2 font-mono text-xs leading-relaxed text-white/50">{pillar.desc}</p>
+              <p className="mt-2 font-mono text-[15px] leading-[1.6] text-white/90">{pillar.desc}</p>
             </div>
           ))}
         </div>
@@ -176,7 +176,7 @@ export function AuditPage() {
                 <Check className="size-7" />
               </div>
               <h2 className="font-display text-3xl uppercase text-white">AUDIT REQUEST RECEIVED</h2>
-              <p className="mx-auto max-w-md font-mono text-xs leading-relaxed text-white/60">
+              <p className="mx-auto max-w-md font-mono text-base leading-[1.6] text-white/90">
                 Thanks, <strong>{name}</strong>. Rory Ulloa is reviewing{" "}
                 <strong>{websiteUrl}</strong> and will email your personalized teardown within 1
                 business day.
@@ -339,7 +339,7 @@ export function AuditPage() {
           <h2 className="font-display text-2xl uppercase text-white sm:text-3xl">
             Who the audit is for
           </h2>
-          <p className="mt-3 max-w-2xl font-mono text-xs leading-relaxed text-white/60">
+          <p className="mt-3 max-w-2xl font-mono text-base leading-[1.6] text-white/90">
             I work mostly with owner-run businesses around Houston — contractors, clinics, law and
             accounting practices, salons, restaurants, real estate agents and B2B service firms.
             If people find you, look at the site, and still call someone else, the audit shows you
@@ -354,7 +354,7 @@ export function AuditPage() {
             ].map((item) => (
               <li
                 key={item}
-                className="flex items-start gap-2 border border-white/10 bg-white/[0.02] p-4 font-mono text-xs leading-relaxed text-white/60"
+                className="flex items-start gap-2 border border-white/10 bg-white/[0.02] p-4 font-mono text-base leading-[1.6] text-white/90"
               >
                 <Zap className="mt-0.5 size-3.5 shrink-0 text-[#dfba73]" />
                 <span>{item}</span>
@@ -377,7 +377,7 @@ export function AuditPage() {
             ].map((step, i) => (
               <li key={step} className="flex gap-4">
                 <span className="font-display text-2xl text-[#c8362b]">0{i + 1}</span>
-                <p className="font-mono text-xs leading-relaxed text-white/60">{step}</p>
+                <p className="font-mono text-base leading-[1.6] text-white/90">{step}</p>
               </li>
             ))}
           </ol>
@@ -409,7 +409,7 @@ export function AuditPage() {
             ].map((faq) => (
               <div key={faq.q} className="border border-white/10 bg-white/[0.02] p-5">
                 <h3 className="font-display text-lg uppercase text-white">{faq.q}</h3>
-                <p className="mt-2 font-mono text-xs leading-relaxed text-white/60">{faq.a}</p>
+                <p className="mt-2 font-mono text-base leading-[1.6] text-white/90">{faq.a}</p>
               </div>
             ))}
           </div>

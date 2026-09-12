@@ -48,7 +48,7 @@ export function GuideArticle({
         <h1 className="mt-3 font-display text-4xl uppercase leading-[0.9] text-white md:text-6xl">
           {title}
         </h1>
-        <p className="mt-5 max-w-2xl font-mono text-xs leading-relaxed text-white/60 md:text-sm">
+        <p className="mt-5 max-w-2xl font-mono text-base leading-[1.6] text-white/90 md:text-sm">
           {lede}
         </p>
         <p className="mt-4 font-mono text-[11px] tracking-widest text-white/40">
@@ -65,7 +65,7 @@ export function GuideArticle({
           <h2 className="mt-3 font-display text-3xl uppercase leading-[0.9] text-white md:text-5xl">
             {cta.heading}
           </h2>
-          <p className="mt-4 max-w-xl font-mono text-xs leading-relaxed text-white/60 md:text-sm">
+          <p className="mt-4 max-w-xl font-mono text-base leading-[1.6] text-white/90 md:text-sm">
             {cta.body}
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
@@ -103,7 +103,7 @@ export function GuideArticle({
               <h3 className="font-display text-lg uppercase leading-tight text-white group-hover:text-[#dfba73]">
                 {r.title}
               </h3>
-              <p className="mt-2 font-mono text-xs leading-relaxed text-white/50">{r.blurb}</p>
+              <p className="mt-2 font-mono text-[15px] leading-[1.6] text-white/90">{r.blurb}</p>
               <span className="mt-4 inline-flex items-center gap-1 font-mono text-[11px] tracking-widest text-[#dfba73]">
                 READ
                 <ArrowUpRight className="size-3" />
@@ -136,7 +136,7 @@ export function GuideSection({
 
 export function GuideParagraph({ children }: { children: ReactNode }) {
   return (
-    <p className="max-w-2xl font-mono text-xs leading-relaxed text-white/60 md:text-sm">
+    <p className="max-w-2xl font-mono text-base leading-[1.6] text-white/90 md:text-sm">
       {children}
     </p>
   );

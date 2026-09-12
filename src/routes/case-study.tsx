@@ -102,7 +102,7 @@ function CaseStudyPage() {
         <h1 className="mt-3 font-display text-4xl uppercase leading-[0.9] text-white md:text-6xl">
           From a cluttered website to a brand people trust
         </h1>
-        <p className="mt-5 max-w-2xl font-mono text-xs leading-relaxed text-white/60 md:text-sm">
+        <p className="mt-5 max-w-2xl font-mono text-base leading-[1.6] text-white/90 md:text-sm">
           A representative walkthrough of how I work with a Houston service business — the problems
           I usually find, the order I fix them in, and what the business ends up with. Composite
           example built from the way these projects actually run; no client names, numbers or quotes
@@ -131,7 +131,7 @@ function CaseStudyPage() {
         <h2 className="font-display text-3xl uppercase leading-[0.95] text-white md:text-4xl">
           The problem
         </h2>
-        <p className="mt-4 max-w-2xl font-mono text-xs leading-relaxed text-white/60 md:text-sm">
+        <p className="mt-4 max-w-2xl font-mono text-base leading-[1.6] text-white/90 md:text-sm">
           The business was busy but invisible online. Referrals kept it alive; the website actively
           worked against it. Four things showed up immediately:
         </p>
@@ -139,7 +139,7 @@ function CaseStudyPage() {
           {PROBLEMS.map((p) => (
             <li
               key={p}
-              className="border-l-2 border-[#dfba73]/60 bg-white/[0.02] py-4 pl-5 pr-4 font-mono text-xs leading-relaxed text-white/70 md:text-sm"
+              className="border-l-2 border-[#dfba73]/60 bg-white/[0.02] py-4 pl-5 pr-4 font-mono text-[15px] leading-[1.6] text-white/90 md:text-sm"
             >
               {p}
             </li>
@@ -159,7 +159,7 @@ function CaseStudyPage() {
             <article key={step} className="min-h-56 border border-white/10 bg-[#16130f] p-5">
               <div className="flex items-center justify-between"><span className="font-mono text-[10px] text-[#dfba73]">{step}</span><Icon className="size-5 text-[#dfba73]" /></div>
               <h3 className="mt-12 font-display text-xl uppercase text-white">{title}</h3>
-              <p className="mt-2 font-mono text-xs leading-relaxed text-white/50">{body}</p>
+              <p className="mt-2 font-mono text-[15px] leading-[1.6] text-white/90">{body}</p>
             </article>
           ))}
         </div>
@@ -175,7 +175,7 @@ function CaseStudyPage() {
             <article key={title} className="border border-white/10 bg-white/[0.02] p-6 md:p-8">
               <Icon className="mb-3 size-5 text-[#dfba73]" />
               <h3 className="font-display text-xl uppercase text-white">{title}</h3>
-              <p className="mt-2 font-mono text-xs leading-relaxed text-white/60 md:text-sm">
+              <p className="mt-2 font-mono text-base leading-[1.6] text-white/90 md:text-sm">
                 {body}
               </p>
             </article>
@@ -188,7 +188,7 @@ function CaseStudyPage() {
         <h2 className="font-display text-3xl uppercase leading-[0.95] text-white md:text-4xl">
           The result
         </h2>
-        <p className="mt-4 max-w-2xl font-mono text-xs leading-relaxed text-white/60 md:text-sm">
+        <p className="mt-4 max-w-2xl font-mono text-base leading-[1.6] text-white/90 md:text-sm">
           Described in what changed, not in invented statistics. Performance numbers belong to real
           named projects — when a client shares theirs, they'll appear here with their permission.
         </p>
@@ -196,7 +196,7 @@ function CaseStudyPage() {
           {OUTCOMES.map((o) => (
             <div key={o.title} className="border border-white/10 bg-white/[0.02] p-6">
               <h3 className="font-display text-lg uppercase text-white">{o.title}</h3>
-              <p className="mt-2 font-mono text-xs leading-relaxed text-white/50">{o.body}</p>
+              <p className="mt-2 font-mono text-[15px] leading-[1.6] text-white/90">{o.body}</p>
             </div>
           ))}
         </div>
@@ -211,7 +211,7 @@ function CaseStudyPage() {
           <h2 className="mt-3 font-display text-3xl uppercase leading-[0.9] text-white md:text-5xl">
             Every project starts with the audit
           </h2>
-          <p className="mt-4 max-w-xl font-mono text-xs leading-relaxed text-white/60 md:text-sm">
+          <p className="mt-4 max-w-xl font-mono text-base leading-[1.6] text-white/90 md:text-sm">
             Send your URL and I'll record a free 5-minute teardown of your homepage, mobile UX and
             conversion flow — the exact first step described above. No call, no pitch.
           </p>
