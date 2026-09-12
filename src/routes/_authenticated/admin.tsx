@@ -14,6 +14,7 @@ import {
   X,
   Radar,
   FolderKanban,
+  Rocket,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
@@ -54,6 +55,14 @@ import { AdminPipelineView } from "@/components/admin/AdminPipelineView";
 import { AdminAutopilotView } from "@/components/admin/AdminAutopilotView";
 import { AdminProspectsView } from "@/components/admin/AdminProspectsView";
 import { AdminPortalView } from "@/components/admin/AdminPortalView";
+import { AdminOnboardingView } from "@/components/admin/AdminOnboardingView";
+import {
+  adminListOnboarding,
+  adminRunOnboarding,
+  adminApproveOnboarding,
+  adminRetryOnboarding,
+  adminDismissOnboarding,
+} from "@/utils/onboarding.functions";
 import {
   adminListProspects,
   adminFindProspects,
@@ -121,6 +130,7 @@ type MainView =
   | "PROJECTS"
   | "PIPELINE"
   | "AUTOPILOT"
+  | "SETUP"
   | "PROSPECTS"
   | "INQUIRIES"
   | "CHATS"
