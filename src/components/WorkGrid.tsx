@@ -1,11 +1,17 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowUpRight } from "lucide-react";
 import { SHOWCASE_WORK, type ShowcaseWorkEntry } from "@/lib/site-content";
 
 function WorkCard({ entry, index, compact }: { entry: ShowcaseWorkEntry; index: number; compact: boolean }) {
   const [imageFailed, setImageFailed] = useState(false);
+  const imgRef = useRef<HTMLImageElement>(null);
   const showImage = entry.image !== null && !imageFailed;
+
+  useEffect(() => {
+    const img = imgRef.current;
+    if (img && img.complete && img.naturalWidth === 0) setImageFailed(true);
+  }, []);
 
   return (
     <article className="group border border-white/10 bg-white/[0.02] transition-colors hover:border-[#DFBA73]/60">
@@ -13,6 +19,7 @@ function WorkCard({ entry, index, compact }: { entry: ShowcaseWorkEntry; index: 
         {showImage ? (
           <>
             <img
+              ref={imgRef}
               src={entry.image ?? ""}
               alt={entry.alt}
               loading="lazy"
