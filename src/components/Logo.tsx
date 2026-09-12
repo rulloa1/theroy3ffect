@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import logoAsset from "@/assets/roy-effect-round-logo.png.asset.json";
+import logoAsset from "@/assets/roy-effect-logo-192.webp.asset.json";
 
 export interface LogoProps {
   variant?: "mark" | "compact" | "full" | "stacked" | "responsive";
@@ -29,8 +29,8 @@ export function LogoMark({
       <img
         src={logoAsset.url}
         alt=""
-        width={768}
-        height={768}
+        width={192}
+        height={192}
         decoding="async"
         className={`size-full object-contain transition duration-300 motion-reduce:transition-none ${
           animated ? "group-hover:scale-[1.03] group-hover:drop-shadow-[0_0_14px_rgba(255,51,51,0.4)]" : ""

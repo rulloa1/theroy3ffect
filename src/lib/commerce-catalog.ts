@@ -33,7 +33,7 @@ export const PRICING_TIERS: CatalogTier[] = [
       "Basic brand guidelines",
       "2 revision rounds",
     ],
-    cta: "START A BRAND SPRINT",
+    cta: "START BRAND SPRINT",
     deposit: {
       priceId: "deposit_brand_sprint_onetime",
       label: "50% deposit",
@@ -57,7 +57,7 @@ export const PRICING_TIERS: CatalogTier[] = [
       "Clickable prototype",
       "3 revision rounds",
     ],
-    cta: "DESIGN MY PRODUCT",
+    cta: "START WEBSITE / UI-UX",
     featured: true,
     deposit: {
       priceId: "deposit_website_uiux_onetime",
@@ -82,7 +82,7 @@ export const PRICING_TIERS: CatalogTier[] = [
       "Performance & SEO basics",
       "Post-launch support (14 days)",
     ],
-    cta: "BUILD THE FULL THING",
+    cta: "START DESIGN + BUILD",
     deposit: {
       priceId: "deposit_design_build_onetime",
       label: "50% deposit",
@@ -106,7 +106,7 @@ export const PRICING_TIERS: CatalogTier[] = [
       "Weekly async sync",
       "Pause or cancel anytime",
     ],
-    cta: "SET UP A RETAINER",
+    cta: "START RETAINER",
     deposit: {
       priceId: "deposit_retainer_onetime",
       label: "First month only",

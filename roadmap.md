@@ -9,3 +9,5 @@
 - [x] Publish the site with the live GHL webhook configuration
 - [x] Submit a real website lead and confirm it appears in the admin inbox
 - [x] Improve public-site text readability and add lightweight scroll reveal animations
+- [x] Complete the approved eight-item homepage conversion, accessibility, and performance pass
+- [x] Keep the 15-minute discovery call described as free while distinguishing it from the video audit

@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" role="img" aria-labelledby="title desc">
+  <title id="title">Brand identity system mockup</title>
+  <desc id="desc">A logo, colour palette, letterhead and business cards arranged in red, gold and near-black.</desc>
+  <rect width="1200" height="900" fill="#07031a"/>
+  <path d="M0 90h1200M0 810h1200M80 0v900M1120 0v900" stroke="#fff" stroke-opacity=".06"/>
+  <rect x="128" y="120" width="525" height="645" transform="rotate(-4 128 120)" fill="#efece3"/>
+  <rect x="176" y="170" width="75" height="10" transform="rotate(-4 176 170)" fill="#FF3333"/>
+  <text x="178" y="250" transform="rotate(-4 178 250)" fill="#030014" font-family="Arial Black,sans-serif" font-size="56">BRAND</text>
+  <text x="178" y="310" transform="rotate(-4 178 310)" fill="#030014" font-family="Arial Black,sans-serif" font-size="56">SYSTEM</text>
+  <rect x="185" y="377" width="345" height="8" transform="rotate(-4 185 377)" fill="#030014" fill-opacity=".18"/>
+  <rect x="185" y="411" width="290" height="8" transform="rotate(-4 185 411)" fill="#030014" fill-opacity=".18"/>
+  <circle cx="705" cy="190" r="90" fill="#FF3333"/>
+  <circle cx="898" cy="190" r="90" fill="#DFBA73"/>
+  <circle cx="1090" cy="190" r="90" fill="#fff"/>
+  <rect x="640" y="340" width="420" height="245" rx="6" transform="rotate(6 640 340)" fill="#030014" stroke="#DFBA73" stroke-width="4"/>
+  <circle cx="833" cy="455" r="68" fill="none" stroke="#FF3333" stroke-width="9"/>
+  <path d="M797 480l36-70 36 70M815 452h36" fill="none" stroke="#fff" stroke-width="12"/>
+  <rect x="695" y="640" width="350" height="165" transform="rotate(-6 695 640)" fill="#FF3333"/>
+  <rect x="728" y="681" width="80" height="9" transform="rotate(-6 728 681)" fill="#030014"/>
+  <rect x="728" y="713" width="225" height="14" transform="rotate(-6 728 713)" fill="#fff"/>
+  <rect x="728" y="745" width="165" height="8" transform="rotate(-6 728 745)" fill="#030014" fill-opacity=".55"/>
+  <text x="105" y="850" fill="#DFBA73" font-family="monospace" font-size="22" letter-spacing="5">IDENTITY / PALETTE / APPLICATION</text>
+</svg>

@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" role="img" aria-labelledby="title desc">
+  <title id="title">Art-directed studio brand scene</title>
+  <desc id="desc">An owner-run creative studio scene with a dramatic sign, desk, screen and brand materials.</desc>
+  <defs><linearGradient id="wall" x2="1" y2="1"><stop stop-color="#0a0620"/><stop offset="1" stop-color="#030014"/></linearGradient></defs>
+  <rect width="1200" height="900" fill="url(#wall)"/>
+  <path d="M0 685L1200 580v320H0z" fill="#100b24"/>
+  <path d="M820 0l380 0v390z" fill="#FF3333" fill-opacity=".12"/>
+  <rect x="105" y="110" width="480" height="365" fill="#030014" stroke="#DFBA73" stroke-width="5"/>
+  <rect x="140" y="145" width="410" height="295" fill="#09051f"/>
+  <text x="175" y="250" fill="#fff" font-family="Arial Black,sans-serif" font-size="72">STAND</text>
+  <text x="175" y="325" fill="#FF3333" font-family="Arial Black,sans-serif" font-size="72">OUT.</text>
+  <rect x="175" y="366" width="220" height="10" fill="#DFBA73"/>
+  <rect x="650" y="175" width="375" height="275" rx="12" fill="#08041c" stroke="#fff" stroke-opacity=".18" stroke-width="4"/>
+  <rect x="680" y="205" width="315" height="215" fill="#030014"/>
+  <rect x="715" y="244" width="75" height="9" fill="#DFBA73"/>
+  <rect x="715" y="283" width="215" height="26" fill="#fff"/>
+  <rect x="715" y="323" width="180" height="26" fill="#fff"/>
+  <rect x="715" y="374" width="120" height="29" fill="#FF3333"/>
+  <path d="M802 450h72v74h-72zM737 524h202" stroke="#DFBA73" stroke-width="9"/>
+  <path d="M130 638h870l80 194H60z" fill="#1b1530" stroke="#DFBA73" stroke-opacity=".45" stroke-width="3"/>
+  <rect x="212" y="615" width="245" height="145" transform="rotate(-8 212 615)" fill="#efece3"/>
+  <rect x="246" y="651" width="84" height="9" transform="rotate(-8 246 651)" fill="#FF3333"/>
+  <rect x="246" y="685" width="148" height="18" transform="rotate(-8 246 685)" fill="#030014"/>
+  <rect x="625" y="622" width="180" height="112" transform="rotate(9 625 622)" fill="#FF3333"/>
+  <circle cx="715" cy="675" r="35" fill="none" stroke="#fff" stroke-width="7"/>
+  <circle cx="1012" cy="610" r="78" fill="#DFBA73" fill-opacity=".18" stroke="#DFBA73" stroke-width="4"/>
+  <path d="M1012 530v-80M990 450h44" stroke="#DFBA73" stroke-width="10"/>
+  <text x="105" y="858" fill="#DFBA73" font-family="monospace" font-size="22" letter-spacing="5">CREATIVE DIRECTION / STUDIO PRESENCE</text>
+</svg>

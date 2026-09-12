@@ -5,9 +5,9 @@ const FOOTER_LINKS = [
   { label: "WORK", to: "/work" },
   { label: "SERVICES", to: "/services" },
   { label: "PRICING", to: "/pricing" },
-  { label: "BOOK", to: "/book" },
+  { label: "BOOK A DISCOVERY CALL", to: "/book" },
   { label: "CASE STUDY", to: "/case-study" },
-  { label: "AUDIT", to: "/audit" },
+  { label: "GET YOUR FREE AUDIT", to: "/audit" },
   { label: "CLIENT SIGN IN", to: "/portal/login" },
   { label: "PRIVACY", to: "/privacy" },
   { label: "TERMS", to: "/terms" },
@@ -28,20 +28,20 @@ export function SiteFooter() {
           <div className="lg:col-span-4">
             <Link
               to="/"
-              className="font-display text-2xl uppercase tracking-tight text-white"
+              className="inline-flex min-h-11 items-center font-display text-2xl uppercase tracking-tight text-white"
             >
               THE ROY EFFECT
             </Link>
-            <p className="mt-3 max-w-sm font-mono text-xs leading-relaxed text-white/50">
+            <p className="mt-3 max-w-sm font-mono text-base leading-[1.6] text-white/90">
               Creative direction, UI/UX design and no-code builds for owner-run
               businesses that want to look premium and convert better.
             </p>
             <Link
               to="/audit"
-              className="mt-6 inline-flex items-center gap-2 bg-[#FF3333] px-5 py-3 font-mono text-[11px] font-bold tracking-widest text-black transition-all hover:bg-[#FF5555]"
+              className="mt-6 inline-flex min-h-11 items-center gap-2 bg-[#FF3333] px-5 py-3 font-mono text-xs font-bold tracking-widest text-black transition-all hover:bg-[#FF5555]"
             >
               <SearchCheck className="size-4" />
-              FREE 5-MINUTE AUDIT
+              GET YOUR FREE AUDIT
               <ArrowUpRight className="size-4" />
             </Link>
           </div>
@@ -56,14 +56,14 @@ export function SiteFooter() {
                 <Link
                   key={link.label}
                   to={link.to}
-                  className="font-mono text-xs tracking-widest text-white/60 transition-colors hover:text-[#FF3333]"
+                  className="inline-flex min-h-11 items-center py-2 font-mono text-[15px] tracking-widest text-white/90 transition-colors hover:text-[#FF3333]"
                 >
                   {link.label}
                 </Link>
               ))}
               <a
                 href="mailto:rory@theroyeffect.com"
-                className="font-mono text-xs tracking-widest text-white/60 transition-colors hover:text-[#FF3333]"
+                className="inline-flex min-h-11 items-center py-2 font-mono text-[15px] tracking-widest text-white/90 transition-colors hover:text-[#FF3333]"
               >
                 CONTACT
               </a>
@@ -79,7 +79,7 @@ export function SiteFooter() {
                 <Link
                   key={link.to}
                   to={link.to}
-                  className="font-mono text-xs tracking-widest text-white/60 transition-colors hover:text-[#FF3333]"
+                  className="inline-flex min-h-11 items-center py-2 font-mono text-[15px] tracking-widest text-white/90 transition-colors hover:text-[#FF3333]"
                 >
                   {link.label}
                 </Link>
@@ -92,39 +92,39 @@ export function SiteFooter() {
             <h3 className="font-mono text-[11px] tracking-widest text-white/40">
               CONTACT
             </h3>
-            <div className="mt-4 space-y-2 font-mono text-xs text-white/60">
+            <div className="mt-4 space-y-1 font-mono text-[15px] text-white/90">
               <a
                 href="mailto:rory@theroyeffect.com"
-                className="block transition-colors hover:text-[#FF3333]"
+                className="flex min-h-11 items-center py-2 transition-colors hover:text-[#FF3333]"
               >
                 rory@theroyeffect.com
               </a>
               <a
                 href="tel:281-323-0450"
-                className="block transition-colors hover:text-[#FF3333]"
+                className="flex min-h-11 items-center py-2 transition-colors hover:text-[#FF3333]"
               >
                 (281) 323-0450
               </a>
-              <p className="text-white/40">Houston, Texas</p>
+              <p className="flex min-h-11 items-center text-white/90">Houston, Texas</p>
             </div>
           </div>
         </div>
 
         {/* Bottom bar */}
         <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-6 md:flex-row">
-          <p className="font-mono text-[10px] text-white/40">
-            © {new Date().getFullYear()} THE ROY EFFECT. DIRT, REFINED INTO GOLD.
+          <p className="font-mono text-[15px] text-white/90">
+            © {new Date().getFullYear()} The Roy Effect
           </p>
-          <p className="font-mono text-[10px] text-white/40">
-            <Link to="/" className="transition-colors hover:text-[#FF3333]">
+          <p className="flex flex-wrap items-center font-mono text-[15px] text-white/90">
+            <Link to="/" className="inline-flex min-h-11 items-center px-2 transition-colors hover:text-[#FF3333]">
               HOME
             </Link>
             {" — "}
-            <Link to="/audit" className="transition-colors hover:text-[#FF3333]">
-              FREE AUDIT
+            <Link to="/audit" className="inline-flex min-h-11 items-center px-2 transition-colors hover:text-[#FF3333]">
+              GET YOUR FREE AUDIT
             </Link>
             {" — "}
-            <Link to="/clients" className="transition-colors hover:text-[#FF3333]">
+            <Link to="/clients" className="inline-flex min-h-11 items-center px-2 transition-colors hover:text-[#FF3333]">
               CLIENT PORTAL
             </Link>
           </p>
