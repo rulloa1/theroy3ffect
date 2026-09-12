@@ -16,7 +16,7 @@ export function ApprovalPromise() {
         <h2 className="mt-3 max-w-4xl font-display text-4xl uppercase leading-[0.95] text-white md:text-6xl">
           You approve the design. That design is what goes live.
         </h2>
-        <p className="mt-5 max-w-2xl font-mono text-sm leading-7 text-white/75">
+        <p className="mt-5 max-w-2xl font-mono text-base leading-[1.6] text-white/90">
           No bait-and-switch between the mockup and the build. You sign off on the design before any build work starts, and the site that launches is the one you approved. If something changes, it&apos;s because you asked for it.
         </p>
         <div className="mt-10 grid gap-4 md:grid-cols-3">
@@ -24,15 +24,15 @@ export function ApprovalPromise() {
             <div key={step} className="relative border border-white/10 bg-white/[0.02] p-6">
               <span className="absolute right-4 top-3 font-display text-5xl text-white/5">{step}</span>
               <h3 className="font-display text-xl uppercase text-white">{title}</h3>
-              <p className="mt-2 font-mono text-sm leading-6 text-white/75">{body}</p>
+              <p className="mt-2 font-mono text-base leading-[1.6] text-white/90">{body}</p>
             </div>
           ))}
         </div>
         <div className="mt-8 flex flex-wrap items-center gap-5">
-          <Link to="/audit" className="inline-flex items-center gap-2 bg-[#FF3333] px-5 py-3 font-mono text-[11px] font-bold tracking-widest text-black transition-colors hover:bg-[#FF5555]">
-            START WITH THE FREE AUDIT <ArrowUpRight className="size-4" />
+          <Link to="/audit" className="inline-flex min-h-11 items-center gap-2 bg-[#FF3333] px-5 py-3 font-mono text-xs font-bold tracking-widest text-black transition-colors hover:bg-[#FF5555]">
+            GET YOUR FREE AUDIT <ArrowUpRight className="size-4" />
           </Link>
-          <a href="/#pricing" className="font-mono text-xs tracking-widest text-[#DFBA73] hover:text-white">
+          <a href="/#pricing" className="inline-flex min-h-11 items-center py-2 font-mono text-[15px] tracking-widest text-[#DFBA73] hover:text-white">
             SEE THE INVESTMENT →
           </a>
         </div>

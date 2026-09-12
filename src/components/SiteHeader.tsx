@@ -13,22 +13,22 @@ export function SiteHeader({ onNavigate }: { onNavigate?: (target: NavTarget) =>
       </div>
 
       <nav aria-label="Primary" className="hidden shrink-0 items-center gap-5 lg:flex xl:gap-7">
-        <Link to="/work" className="font-mono text-xs tracking-widest text-white/50 transition-colors hover:text-[#FF3333]">WORK</Link>
+        <Link to="/work" className="inline-flex min-h-11 items-center font-mono text-xs tracking-widest text-white/90 transition-colors hover:text-[#FF3333]">WORK</Link>
         <Link
           to="/services"
-          className="font-mono text-xs tracking-widest text-white/50 transition-colors hover:text-[#FF3333]"
+          className="inline-flex min-h-11 items-center font-mono text-xs tracking-widest text-white/90 transition-colors hover:text-[#FF3333]"
         >
           SERVICES
         </Link>
         <Link
           to="/pricing"
-          className="font-mono text-xs tracking-widest text-white/50 transition-colors hover:text-[#FF3333]"
+          className="inline-flex min-h-11 items-center font-mono text-xs tracking-widest text-white/90 transition-colors hover:text-[#FF3333]"
         >
           PRICING
         </Link>
         <Link
           to="/case-study"
-          className="font-mono text-xs tracking-widest text-white/50 transition-colors hover:text-[#FF3333]"
+          className="inline-flex min-h-11 items-center font-mono text-xs tracking-widest text-white/90 transition-colors hover:text-[#FF3333]"
         >
           CASE STUDY
         </Link>
@@ -37,9 +37,9 @@ export function SiteHeader({ onNavigate }: { onNavigate?: (target: NavTarget) =>
       <div className="flex shrink-0 items-center gap-2 sm:gap-3">
         <Link
           to="/audit"
-          className="inline-flex items-center gap-1 rounded-full bg-[#FF3333] px-3 py-1.5 font-mono text-[10px] font-bold tracking-widest text-black transition-all hover:bg-[#FF5555] sm:px-4 sm:py-2 sm:text-xs"
+          className="inline-flex min-h-11 items-center gap-1 rounded-full bg-[#FF3333] px-3 py-2.5 font-mono text-[10px] font-bold tracking-widest text-black transition-all hover:bg-[#FF5555] sm:px-4 sm:text-xs"
         >
-          FREE AUDIT
+          GET YOUR FREE AUDIT
           <ArrowUpRight className="hidden size-3 sm:inline-block" />
         </Link>
 
@@ -47,16 +47,16 @@ export function SiteHeader({ onNavigate }: { onNavigate?: (target: NavTarget) =>
           type="button"
           aria-label="Open menu"
           onClick={() => onNavigate?.("MENU")}
-          className="rounded-full border border-white/20 px-3 py-1.5 font-mono text-[10px] tracking-widest text-white transition-colors hover:border-[#FF3333] sm:px-4 sm:py-2 sm:text-xs lg:hidden"
+          className="min-h-11 rounded-full border border-white/20 px-3 py-2.5 font-mono text-[10px] tracking-widest text-white transition-colors hover:border-[#FF3333] sm:px-4 sm:text-xs lg:hidden"
         >
           MENU
         </button>
 
         <Link
           to="/book"
-          className="hidden rounded-full border border-white/20 px-3.5 py-1.5 font-mono text-[10px] tracking-widest text-white transition-colors hover:border-[#FF3333] sm:px-5 sm:py-2 sm:text-xs md:inline-flex"
+          className="hidden min-h-11 items-center rounded-full border border-white/40 px-3.5 py-2.5 font-mono text-[10px] tracking-widest text-white transition-colors hover:border-[#DFBA73] sm:px-5 sm:text-xs md:inline-flex"
         >
-          BOOK A CALL
+          BOOK A DISCOVERY CALL
         </Link>
       </div>
     </header>
