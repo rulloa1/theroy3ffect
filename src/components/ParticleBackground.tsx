@@ -14,7 +14,7 @@ export function ParticleBackground() {
 
     // Skip entirely for headless browsers, bots, reduced-motion users,
     // low-power devices, and anywhere WebGL is unavailable.
-    if (!shouldRunHeavyEffects()) {
+    if (window.innerWidth < 768 || !shouldRunHeavyEffects()) {
       return;
     }
 
@@ -32,19 +32,18 @@ export function ParticleBackground() {
       const width = window.innerWidth;
       const height = window.innerHeight;
 
-      // Adaptive density for mobile / tablet / desktop
-      const isMobile = width < 768;
+      // Adaptive density for tablet / desktop. Small screens use the CSS fallback.
       const isTablet = width < 1200;
-      const COUNT = isMobile ? 3500 : isTablet ? 7500 : 15000;
-      const LINES = isMobile ? 140 : isTablet ? 280 : 530;
-      const maxDpr = isMobile ? 1 : 1.5;
+      const COUNT = isTablet ? 7500 : 15000;
+      const LINES = isTablet ? 280 : 530;
+      const maxDpr = 1.5;
 
       const scene = new THREE.Scene();
       const camera = new THREE.PerspectiveCamera(70, width / height, 0.1, 1000);
       camera.position.z = 60;
 
       const renderer = new THREE.WebGLRenderer({
-        antialias: !isMobile,
+        antialias: true,
         alpha: true,
         powerPreference: "high-performance",
       });
@@ -79,7 +78,7 @@ export function ParticleBackground() {
       geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
 
       const material = new THREE.PointsMaterial({
-        size: isMobile ? 0.6 : 0.5,
+        size: 0.5,
         vertexColors: true,
         transparent: true,
         opacity: 0.22,
@@ -128,7 +127,7 @@ export function ParticleBackground() {
       composer.addPass(new RenderPass(scene, camera));
       const bloom = new UnrealBloomPass(
         new THREE.Vector2(width, height),
-        isMobile ? 0.5 : 0.8,
+        0.8,
         0.1,
         1.0,
       );
@@ -165,6 +164,7 @@ export function ParticleBackground() {
 
       let raf = 0;
       let isRunning = true;
+      let heroVisible = true;
 
       const animate = () => {
         if (!isRunning) return;
@@ -235,17 +235,31 @@ export function ParticleBackground() {
         composer.render();
       };
 
+      const syncAnimation = () => {
+        const shouldAnimate = !document.hidden && heroVisible;
+        if (shouldAnimate && !isRunning) {
+          isRunning = true;
+          animate();
+        } else if (!shouldAnimate && isRunning) {
+          isRunning = false;
+          cancelAnimationFrame(raf);
+        }
+      };
+
       animate();
+
+      const hero = document.querySelector<HTMLElement>("[data-home-hero]");
+      const heroObserver = hero
+        ? new IntersectionObserver(([entry]) => {
+            heroVisible = entry?.isIntersecting ?? false;
+            syncAnimation();
+          }, { threshold: 0.01 })
+        : null;
+      if (hero && heroObserver) heroObserver.observe(hero);
 
       // Pause rendering when tab is hidden to conserve battery/GPU
       const onVisibilityChange = () => {
-        if (document.hidden) {
-          isRunning = false;
-          cancelAnimationFrame(raf);
-        } else if (!isRunning) {
-          isRunning = true;
-          animate();
-        }
+        syncAnimation();
       };
       document.addEventListener("visibilitychange", onVisibilityChange);
 
@@ -253,6 +267,7 @@ export function ParticleBackground() {
         isRunning = false;
         cancelAnimationFrame(raf);
         document.removeEventListener("visibilitychange", onVisibilityChange);
+        heroObserver?.disconnect();
         window.removeEventListener("pointermove", onMove);
         window.removeEventListener("resize", onResize);
         geometry.dispose();
@@ -278,7 +293,7 @@ export function ParticleBackground() {
     <div
       ref={holder}
       aria-hidden
-      className="pointer-events-none fixed inset-0 z-0 overflow-hidden"
+      className="particle-background pointer-events-none fixed inset-0 z-0 overflow-hidden"
     />
   );
 }

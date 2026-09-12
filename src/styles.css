@@ -75,6 +75,11 @@
     -webkit-font-smoothing: antialiased;
   }
 
+  body {
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
   h1,
   h2,
   h3,
@@ -87,6 +92,14 @@
     background: #ff3333;
     color: #000000;
   }
+}
+
+.particle-background {
+  background-color: #030014;
+  background-image:
+    linear-gradient(rgba(223, 186, 115, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 51, 51, 0.03) 1px, transparent 1px);
+  background-size: 44px 44px;
 }
 
 @utility text-stroke-thin {
