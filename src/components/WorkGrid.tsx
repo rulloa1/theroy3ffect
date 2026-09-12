@@ -40,7 +40,7 @@ function WorkCard({ entry, index, compact }: { entry: ShowcaseWorkEntry; index: 
       </div>
       <div className="p-5">
         <h3 className="font-display text-xl uppercase text-white">{entry.title}</h3>
-        <p className="mt-2 font-mono text-xs leading-relaxed text-white/60">{entry.result}</p>
+        <p className="mt-2 font-mono text-sm leading-6 text-white/75">{entry.result}</p>
         <Link to="/case-study" className="mt-5 inline-flex items-center gap-1 font-mono text-[10px] tracking-widest text-[#DFBA73] hover:text-white">
           SEE HOW I WORK <ArrowUpRight className="size-3" />
         </Link>
@@ -57,7 +57,7 @@ export function WorkGrid({ compact = false }: { compact?: boolean }) {
           <WorkCard key={entry.slug} entry={entry} index={index} compact={compact} />
         ))}
       </div>
-      <p className="mt-5 font-mono text-[11px] text-white/40">
+      <p className="mt-5 font-mono text-xs leading-6 text-white/65">
         Named client work is added with written permission — I&apos;ll walk you through live projects on the call.
       </p>
     </div>
