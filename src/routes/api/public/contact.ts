@@ -17,6 +17,7 @@ const briefSchema = z
     notes: z.string().trim().max(2000).optional().default(""),
     smsService: z.boolean().optional().default(false),
     smsMarketing: z.boolean().optional().default(false),
+    source: z.enum(["website_home_form"]).optional(),
   })
   .refine((data) => Boolean(data.websiteUrl) || data.message.length >= 10, {
     message: "Tell me a bit more about the project",
@@ -57,6 +58,7 @@ export const Route = createFileRoute("/api/public/contact")({
           notes,
           smsService,
           smsMarketing,
+          source,
         } = parsed.data;
         const submissionId = crypto.randomUUID();
         const pageUrl = request.headers.get("referer") ?? "";
@@ -92,7 +94,7 @@ export const Route = createFileRoute("/api/public/contact")({
             name,
             email,
             phone,
-            source: isAudit ? "website_audit_form" : "website_contact_form",
+            source: isAudit ? "website_audit_form" : (source ?? "website_contact_form"),
             projectType,
             message,
             websiteUrl,
