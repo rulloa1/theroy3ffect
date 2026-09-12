@@ -165,8 +165,8 @@ export function BookingCalendar() {
   if (result) {
     return (
       <div className="rounded border border-white/10 bg-white/[0.02] p-8 text-center md:p-12">
-        <div className="mx-auto mb-6 flex size-16 items-center justify-center rounded-full bg-[#FF3333]/10">
-          <Check className="size-8 text-[#FF3333]" />
+        <div className="mx-auto mb-6 flex size-16 items-center justify-center rounded-full bg-[#dfba73]/10">
+          <Check className="size-8 text-[#dfba73]" />
         </div>
         <h3 className="font-display text-2xl uppercase text-white md:text-3xl">
           You&apos;re booked
@@ -177,7 +177,7 @@ export function BookingCalendar() {
         </p>
         <a
           href="/brief"
-          className="mt-6 inline-flex items-center gap-2 rounded-full border border-[#FF3333] px-6 py-3 font-mono text-xs tracking-widest text-white transition-colors hover:bg-[#FF3333] hover:text-black"
+          className="mt-6 inline-flex items-center gap-2 rounded-full border border-[#dfba73] px-6 py-3 font-mono text-xs tracking-widest text-white transition-colors hover:bg-[#dfba73] hover:text-black"
         >
           Complete your intake <ArrowLeft className="size-3 rotate-180" />
         </a>
@@ -190,7 +190,7 @@ export function BookingCalendar() {
       <div className="rounded border border-white/10 bg-white/[0.02] p-5 md:p-8">
         <div className="mb-6 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <CreditCard className="size-5 text-[#FF3333]" />
+            <CreditCard className="size-5 text-[#dfba73]" />
             <h2 className="font-display text-xl uppercase text-white">
               Pay {DISCOVERY_FEE_LABEL} to confirm
             </h2>
@@ -229,7 +229,7 @@ export function BookingCalendar() {
         </p>
         <a
           href="mailto:rory@theroyeffect.com"
-          className="mt-4 inline-block font-mono text-xs text-[#FF3333] underline"
+          className="mt-4 inline-block font-mono text-xs text-[#dfba73] underline"
         >
           rory@theroyeffect.com
         </a>
@@ -240,7 +240,7 @@ export function BookingCalendar() {
   return (
     <div className="rounded border border-white/10 bg-white/[0.02] p-5 md:p-8">
       <div className="mb-6 flex items-center gap-3">
-        <Calendar className="size-5 text-[#FF3333]" />
+        <Calendar className="size-5 text-[#dfba73]" />
         <h2 className="font-display text-xl uppercase text-white">Pick a time</h2>
       </div>
 
@@ -257,7 +257,7 @@ export function BookingCalendar() {
               }}
               className={`rounded border px-3 py-3 text-left transition-all ${
                 active
-                  ? "border-[#FF3333] bg-[#FF3333]/10 text-white"
+                  ? "border-[#dfba73] bg-[#dfba73]/10 text-white"
                   : "border-white/10 bg-white/[0.02] text-white/60 hover:border-white/30 hover:text-white"
               }`}
             >
@@ -295,7 +295,7 @@ export function BookingCalendar() {
                     onClick={() => setSelectedSlot(slot.slot_start)}
                     className={`rounded border px-3 py-3 font-mono text-xs transition-all ${
                       active
-                        ? "border-[#FF3333] bg-[#FF3333] text-black"
+                        ? "border-[#dfba73] bg-[#dfba73] text-black"
                         : "border-white/10 bg-white/[0.02] text-white/70 hover:border-white/30 hover:text-white"
                     }`}
                   >
@@ -318,7 +318,7 @@ export function BookingCalendar() {
             onSubmit={handleSubmit}
             className="space-y-4 overflow-hidden border-t border-white/10 pt-6"
           >
-            <div className="mb-4 flex items-center gap-2 font-mono text-xs tracking-widest text-[#FF3333]">
+            <div className="mb-4 flex items-center gap-2 font-mono text-xs tracking-widest text-[#dfba73]">
               <User className="size-3" />
               YOUR DETAILS
             </div>
@@ -329,7 +329,7 @@ export function BookingCalendar() {
                 placeholder="Full name"
                 required
                 maxLength={120}
-                className="w-full border-0 border-b border-white/20 bg-transparent px-0 py-3 text-sm text-white placeholder:text-white/30 focus:border-[#FF3333] focus:outline-none"
+                className="w-full border-0 border-b border-white/20 bg-transparent px-0 py-3 text-sm text-white placeholder:text-white/30 focus:border-[#dfba73] focus:outline-none"
               />
               <input
                 name="email"
@@ -337,7 +337,7 @@ export function BookingCalendar() {
                 placeholder="Email address"
                 required
                 maxLength={255}
-                className="w-full border-0 border-b border-white/20 bg-transparent px-0 py-3 text-sm text-white placeholder:text-white/30 focus:border-[#FF3333] focus:outline-none"
+                className="w-full border-0 border-b border-white/20 bg-transparent px-0 py-3 text-sm text-white placeholder:text-white/30 focus:border-[#dfba73] focus:outline-none"
               />
             </div>
             <input
@@ -345,14 +345,14 @@ export function BookingCalendar() {
               type="tel"
               placeholder="Phone (optional)"
               maxLength={40}
-              className="w-full border-0 border-b border-white/20 bg-transparent px-0 py-3 text-sm text-white placeholder:text-white/30 focus:border-[#FF3333] focus:outline-none"
+              className="w-full border-0 border-b border-white/20 bg-transparent px-0 py-3 text-sm text-white placeholder:text-white/30 focus:border-[#dfba73] focus:outline-none"
             />
             <textarea
               name="notes"
               rows={3}
               placeholder="What would you like to discuss? (optional)"
               maxLength={2000}
-              className="w-full resize-none border-0 border-b border-white/20 bg-transparent px-0 py-3 text-sm text-white placeholder:text-white/30 focus:border-[#FF3333] focus:outline-none"
+              className="w-full resize-none border-0 border-b border-white/20 bg-transparent px-0 py-3 text-sm text-white placeholder:text-white/30 focus:border-[#dfba73] focus:outline-none"
             />
             <SmsConsent
               smsService={smsService}
@@ -365,7 +365,7 @@ export function BookingCalendar() {
             <div className="pt-2">
               <button
                 type="submit"
-                className="inline-flex items-center gap-2 rounded-full bg-[#FF3333] px-6 py-3 font-mono text-xs font-bold tracking-widest text-black transition-all hover:bg-[#FF5555] disabled:opacity-50"
+                className="inline-flex items-center gap-2 rounded-full bg-[#dfba73] px-6 py-3 font-mono text-xs font-bold tracking-widest text-black transition-all hover:bg-[#c8362b] disabled:opacity-50"
               >
                 <CreditCard className="size-4" /> CONTINUE TO PAYMENT — {DISCOVERY_FEE_LABEL}
               </button>

@@ -50,15 +50,15 @@ export const Route = createFileRoute("/services")({
 
 function ServicesPage() {
   return (
-    <main className="min-h-screen bg-[#030014] px-5 py-16 md:px-10 md:py-24">
+    <main className="min-h-screen bg-[#0a0a0a] px-5 py-16 md:px-10 md:py-24">
       <div className="mx-auto max-w-5xl">
         <Logo variant="compact" size="md" href="/" className="mb-10" />
 
-        <span className="font-mono text-xs tracking-widest text-[#FF3333]">SERVICES</span>
+        <span className="font-mono text-xs tracking-widest text-[#dfba73]">SERVICES</span>
         <h1 className="mt-3 font-display text-4xl uppercase leading-[0.9] text-white md:text-6xl">
           Design &amp; build services
         </h1>
-        <p className="mt-5 max-w-2xl font-mono text-xs leading-relaxed text-white/60 md:text-sm">
+        <p className="mt-5 max-w-2xl font-mono text-base leading-[1.6] text-white/90 md:text-sm">
           I&apos;m Rory Ulloa — a freelance UI/UX designer and no-code developer based near Houston,
           Texas, working remotely with founders and small teams across the US. My work sits between
           brand and build: identity systems, high-contrast interface design, and shipped,
@@ -70,17 +70,17 @@ function ServicesPage() {
             <article
               key={s.slug}
               id={s.slug}
-              className="border border-white/10 bg-white/[0.02] p-6 transition-colors hover:border-[#FF3333]/50"
+              className="border border-white/10 bg-white/[0.02] p-6 transition-colors hover:border-[#dfba73]/50"
             >
               <h2 className="font-display text-2xl uppercase tracking-wide text-white">{s.name}</h2>
-              <p className="mt-2 font-mono text-[11px] tracking-widest text-[#DFBA73]">
+              <p className="mt-2 font-mono text-[11px] tracking-widest text-[#dfba73]">
                 FROM {s.from}
               </p>
-              <p className="mt-3 font-mono text-xs leading-relaxed text-white/60">{s.summary}</p>
+              <p className="mt-3 font-mono text-base leading-[1.6] text-white/90">{s.summary}</p>
               <ul className="mt-5 space-y-2">
                 {s.deliverables.map((d) => (
                   <li key={d} className="flex items-start gap-2 font-mono text-xs text-white/70">
-                    <Check className="mt-0.5 size-3 shrink-0 text-[#FF3333]" />
+                    <Check className="mt-0.5 size-3 shrink-0 text-[#dfba73]" />
                     {d}
                   </li>
                 ))}
@@ -96,13 +96,13 @@ function ServicesPage() {
           <ol className="mt-8 space-y-6">
             {PROCESS_STEPS.map((item) => (
               <li key={item.step} className="border-l border-white/10 pl-4">
-                <span className="font-mono text-[10px] tracking-widest text-[#FF3333]">
+                <span className="font-mono text-[10px] tracking-widest text-[#dfba73]">
                   {item.step}
                 </span>
                 <h3 className="font-display text-xl uppercase tracking-wide text-white">
                   {item.title}
                 </h3>
-                <p className="mt-1 max-w-2xl font-mono text-xs leading-relaxed text-white/50">
+                <p className="mt-1 max-w-2xl font-mono text-[15px] leading-[1.6] text-white/90">
                   {item.body}
                 </p>
               </li>
@@ -113,13 +113,13 @@ function ServicesPage() {
         <div className="mt-16 flex flex-wrap gap-3">
           <Link
             to="/pricing"
-            className="inline-flex items-center bg-[#FF3333] px-5 py-3 font-mono text-xs tracking-widest text-black transition-opacity hover:opacity-90"
+            className="inline-flex items-center bg-[#dfba73] px-5 py-3 font-mono text-xs tracking-widest text-black transition-opacity hover:opacity-90"
           >
             SEE PRICING
           </Link>
           <Link
             to="/brief"
-            className="inline-flex items-center border border-white/20 px-5 py-3 font-mono text-xs tracking-widest text-white transition-colors hover:border-[#FF3333]"
+            className="inline-flex items-center border border-white/20 px-5 py-3 font-mono text-xs tracking-widest text-white transition-colors hover:border-[#dfba73]"
           >
             START A BRIEF
           </Link>

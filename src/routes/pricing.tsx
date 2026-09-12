@@ -46,15 +46,15 @@ export const Route = createFileRoute("/pricing")({
 function PricingPage() {
   const navigate = useNavigate();
   return (
-    <main className="min-h-screen bg-[#030014]">
+    <main className="min-h-screen bg-[#0a0a0a]">
       <Toaster />
       <div className="mx-auto max-w-7xl px-5 pt-16 md:px-10 md:pt-24">
         <Logo variant="compact" size="md" href="/" className="mb-10" />
-        <span className="font-mono text-xs tracking-widest text-[#FF3333]">PRICING</span>
+        <span className="font-mono text-xs tracking-widest text-[#dfba73]">PRICING</span>
         <h1 className="mt-3 font-display text-4xl uppercase leading-[0.9] text-white md:text-6xl">
           What it costs to work together
         </h1>
-        <p className="mt-5 max-w-2xl font-mono text-xs leading-relaxed text-white/60 md:text-sm">
+        <p className="mt-5 max-w-2xl font-mono text-base leading-[1.6] text-white/90 md:text-sm">
           Fixed starting points for brand, web design, full design-and-build and ongoing retainers.
           Every project is scoped and priced in writing before it starts — pay a 50% deposit to hold
           a slot, or use the scope calculator for a custom page count.
@@ -62,7 +62,7 @@ function PricingPage() {
         <div className="mt-6">
           <Link
             to="/services"
-            className="font-mono text-xs tracking-widest text-[#DFBA73] underline underline-offset-4 hover:text-white"
+            className="font-mono text-xs tracking-widest text-[#dfba73] underline underline-offset-4 hover:text-white"
           >
             SEE WHAT EACH SERVICE INCLUDES →
           </Link>

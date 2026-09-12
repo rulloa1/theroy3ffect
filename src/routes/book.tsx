@@ -42,19 +42,19 @@ function BookPage() {
   };
 
   return (
-    <main className="relative flex min-h-screen flex-col overflow-x-hidden bg-[#030014]">
+    <main className="relative flex min-h-screen flex-col overflow-x-hidden bg-[#0a0a0a]">
       <ParticleBackground />
       <SiteHeader onNavigate={handleNavigate} />
 
       <section className="relative z-10 flex-1 px-5 pt-32 pb-20 md:px-10 md:pt-40">
         <div className="mx-auto max-w-5xl">
-          <span className="font-mono text-xs tracking-widest text-[#FF3333]">
+          <span className="font-mono text-xs tracking-widest text-[#dfba73]">
             15-MINUTE DISCOVERY CALL — $49
           </span>
           <h1 className="mt-3 font-display text-4xl uppercase leading-[0.9] text-white md:text-6xl lg:text-7xl">
             Book a time to talk
           </h1>
-          <p className="mt-4 max-w-2xl font-mono text-sm leading-relaxed text-white/60">
+          <p className="mt-4 max-w-2xl font-mono text-base leading-[1.6] text-white/90">
             Pick a slot below and pay the $49 fee to lock it in. I&apos;ll call you at the scheduled time to discuss your project, scope, and
             timeline.
           </p>

@@ -82,7 +82,7 @@ export function ScopeEstimator({
     <div className="w-full border border-white/15 bg-white/[0.02] p-6 md:p-10 shadow-2xl">
       <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-6">
         <div>
-          <div className="inline-flex items-center gap-2 font-mono text-[10px] font-bold tracking-[0.25em] text-[#DFBA73] uppercase">
+          <div className="inline-flex items-center gap-2 font-mono text-[10px] font-bold tracking-[0.25em] text-[#dfba73] uppercase">
             <Calculator className="size-3.5" />
             INTERACTIVE SCOPE &amp; INVESTMENT ESTIMATOR
           </div>
@@ -116,20 +116,20 @@ export function ScopeEstimator({
                     }}
                     className={`flex flex-col justify-between border p-4 text-left transition-all ${
                       isSelected
-                        ? "border-[#DFBA73] bg-[#DFBA73]/10 text-white shadow-[0_0_20px_rgba(223,186,115,0.2)]"
+                        ? "border-[#dfba73] bg-[#dfba73]/10 text-white shadow-[0_0_20px_rgba(223,186,115,0.2)]"
                         : "border-white/10 bg-white/[0.01] text-white/70 hover:border-white/20 hover:text-white"
                     }`}
                   >
                     <div>
                       <div className="flex items-center justify-between">
                         <span className="font-display text-lg uppercase text-white">{pt.name}</span>
-                        {isSelected && <Check className="size-4 text-[#DFBA73]" />}
+                        {isSelected && <Check className="size-4 text-[#dfba73]" />}
                       </div>
                       <p className="mt-1 font-mono text-[11px] leading-relaxed text-white/50">
                         {pt.description}
                       </p>
                     </div>
-                    <span className="mt-3 font-mono text-xs font-semibold text-[#DFBA73]">
+                    <span className="mt-3 font-mono text-xs font-semibold text-[#dfba73]">
                       Starting at ${pt.basePrice.toLocaleString()} {pt.isRetainer ? "/mo" : ""}
                     </span>
                   </button>
@@ -145,7 +145,7 @@ export function ScopeEstimator({
                 <label className="font-mono text-xs uppercase tracking-wider text-white/70">
                   2. Number of Custom Pages
                 </label>
-                <span className="font-mono text-sm font-bold text-[#DFBA73]">
+                <span className="font-mono text-sm font-bold text-[#dfba73]">
                   {pageCount} {pageCount === 1 ? "Page" : "Pages"}
                 </span>
               </div>
@@ -156,7 +156,7 @@ export function ScopeEstimator({
                 step={1}
                 value={pageCount}
                 onChange={(e) => setPageCount(Number(e.target.value))}
-                className="mt-3 h-2 w-full cursor-pointer appearance-none rounded-lg bg-white/10 accent-[#DFBA73]"
+                className="mt-3 h-2 w-full cursor-pointer appearance-none rounded-lg bg-white/10 accent-[#dfba73]"
               />
               <div className="mt-1 flex justify-between font-mono text-[10px] text-white/40">
                 <span>{activeTypeObj.defaultPages} Pages (Base)</span>
@@ -181,7 +181,7 @@ export function ScopeEstimator({
                       onClick={() => toggleFeature(feat.id)}
                       className={`flex w-full items-center justify-between border p-3.5 text-left transition-all ${
                         isChecked
-                          ? "border-[#DFBA73]/60 bg-[#DFBA73]/10 text-white"
+                          ? "border-[#dfba73]/60 bg-[#dfba73]/10 text-white"
                           : "border-white/10 bg-white/[0.01] text-white/70 hover:border-white/20"
                       }`}
                     >
@@ -189,7 +189,7 @@ export function ScopeEstimator({
                         <div
                           className={`mt-0.5 flex size-4 shrink-0 items-center justify-center border ${
                             isChecked
-                              ? "border-[#DFBA73] bg-[#DFBA73] text-black"
+                              ? "border-[#dfba73] bg-[#dfba73] text-black"
                               : "border-white/30"
                           }`}
                         >
@@ -202,7 +202,7 @@ export function ScopeEstimator({
                           <p className="font-mono text-[11px] text-white/50">{feat.description}</p>
                         </div>
                       </div>
-                      <span className="shrink-0 font-mono text-xs font-semibold text-[#DFBA73]">
+                      <span className="shrink-0 font-mono text-xs font-semibold text-[#dfba73]">
                         +${feat.price.toLocaleString()}
                       </span>
                     </button>
@@ -214,10 +214,10 @@ export function ScopeEstimator({
         </div>
 
         {/* Right Summary Card (5 Cols) */}
-        <div className="flex flex-col justify-between border border-[#DFBA73]/30 bg-[#0a0a14] p-6 shadow-xl lg:col-span-5">
+        <div className="flex flex-col justify-between border border-[#dfba73]/30 bg-[#16130f] p-6 shadow-xl lg:col-span-5">
           <div className="space-y-6">
             <div className="border-b border-white/10 pb-4">
-              <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#DFBA73]">
+              <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#dfba73]">
                 PROJECT ESTIMATE BREAKDOWN
               </span>
               <h4 className="mt-1 font-display text-2xl uppercase text-white">
@@ -262,13 +262,13 @@ export function ScopeEstimator({
                 <span className="font-mono text-xs uppercase tracking-widest text-white/60">
                   Estimated Total:
                 </span>
-                <span className="font-display text-4xl text-[#E51924] drop-shadow-[0_0_16px_rgba(229,25,36,0.4)]">
+                <span className="font-display text-4xl text-[#c8362b] drop-shadow-[0_0_16px_rgba(229,25,36,0.4)]">
                   {formattedTotal}
                 </span>
               </div>
 
               {!activeTypeObj.isRetainer && (
-                <div className="mt-2 flex items-center justify-between border-t border-white/5 pt-2 font-mono text-xs text-[#DFBA73]">
+                <div className="mt-2 flex items-center justify-between border-t border-white/5 pt-2 font-mono text-xs text-[#dfba73]">
                   <span>50% Kickoff Deposit:</span>
                   <span className="font-bold">{formattedDeposit}</span>
                 </div>
@@ -276,7 +276,7 @@ export function ScopeEstimator({
             </div>
 
             <div className="flex items-center gap-2 border border-white/10 bg-white/[0.02] p-3 font-mono text-[10px] text-white/60">
-              <ShieldCheck className="size-4 shrink-0 text-[#DFBA73]" />
+              <ShieldCheck className="size-4 shrink-0 text-[#dfba73]" />
               <span>Deposits are 100% refundable prior to directional kickoff.</span>
             </div>
           </div>
@@ -288,7 +288,7 @@ export function ScopeEstimator({
                 scope_type: activeTypeObj.name,
                 scope_estimate: String(totalPrice),
               }}
-              className="flex w-full items-center justify-center gap-2 bg-[#E51924] py-3.5 font-mono text-xs font-bold tracking-widest text-white transition-all hover:bg-[#FF3333] hover:shadow-[0_0_24px_rgba(229,25,36,0.6)]"
+              className="flex w-full items-center justify-center gap-2 bg-[#c8362b] py-3.5 font-mono text-xs font-bold tracking-widest text-white transition-all hover:bg-[#dfba73] hover:shadow-[0_0_24px_rgba(229,25,36,0.6)]"
             >
               LOCK IN SCOPE &amp; SUBMIT BRIEF <ArrowRight className="size-4" />
             </Link>

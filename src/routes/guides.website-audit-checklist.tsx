@@ -183,10 +183,10 @@ function WebsiteAuditChecklistGuide() {
             {group.checks.map((check) => (
               <li
                 key={check.name}
-                className="border-l-2 border-[#FF3333]/60 bg-white/[0.02] py-4 pl-5 pr-4"
+                className="border-l-2 border-[#dfba73]/60 bg-white/[0.02] py-4 pl-5 pr-4"
               >
                 <p className="flex items-start gap-2 font-display text-base uppercase text-white">
-                  <Check className="mt-0.5 size-4 shrink-0 text-[#FF3333]" />
+                  <Check className="mt-0.5 size-4 shrink-0 text-[#dfba73]" />
                   {check.name}
                 </p>
                 <p className="mt-2 font-mono text-xs leading-relaxed text-white/60 md:text-sm">
@@ -208,14 +208,14 @@ function WebsiteAuditChecklistGuide() {
         <div className="mt-6 border border-white/10 bg-white/[0.02] p-6">
           <p className="font-mono text-xs leading-relaxed text-white/60 md:text-sm">
             If you scored 4 or above, the fastest next step is a{" "}
-            <a href="/audit" className="text-[#FF3333] underline underline-offset-4">
+            <a href="/audit" className="text-[#dfba73] underline underline-offset-4">
               free 5-minute video audit
             </a>{" "}
             — I'll show you exactly which failures are costing the most. If your score also made
             you curious about budget, here's{" "}
             <a
               href="/guides/houston-website-cost"
-              className="text-[#FF3333] underline underline-offset-4"
+              className="text-[#dfba73] underline underline-offset-4"
             >
               what a website actually costs in Houston
             </a>{" "}

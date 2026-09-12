@@ -40,15 +40,15 @@ export function GuideArticle({
   related,
 }: GuideArticleProps) {
   return (
-    <main className="min-h-screen bg-[#030014]">
+    <main className="min-h-screen bg-[#0a0a0a]">
       <div className="mx-auto max-w-4xl px-5 pt-16 md:px-10 md:pt-24">
         <Logo variant="compact" size="md" href="/" className="mb-10" />
 
-        <span className="font-mono text-xs tracking-widest text-[#FF3333]">{kicker}</span>
+        <span className="font-mono text-xs tracking-widest text-[#dfba73]">{kicker}</span>
         <h1 className="mt-3 font-display text-4xl uppercase leading-[0.9] text-white md:text-6xl">
           {title}
         </h1>
-        <p className="mt-5 max-w-2xl font-mono text-xs leading-relaxed text-white/60 md:text-sm">
+        <p className="mt-5 max-w-2xl font-mono text-base leading-[1.6] text-white/90 md:text-sm">
           {lede}
         </p>
         <p className="mt-4 font-mono text-[11px] tracking-widest text-white/40">
@@ -60,18 +60,18 @@ export function GuideArticle({
 
       {/* Closing CTA */}
       <section className="mx-auto mt-20 max-w-4xl px-5 pb-24 md:mt-28 md:px-10 md:pb-16">
-        <div className="border border-[#FF3333]/30 bg-[#FF3333]/5 p-8 md:p-12">
-          <span className="font-mono text-xs tracking-widest text-[#FF3333]">{cta.kicker}</span>
+        <div className="border border-[#dfba73]/30 bg-[#dfba73]/5 p-8 md:p-12">
+          <span className="font-mono text-xs tracking-widest text-[#dfba73]">{cta.kicker}</span>
           <h2 className="mt-3 font-display text-3xl uppercase leading-[0.9] text-white md:text-5xl">
             {cta.heading}
           </h2>
-          <p className="mt-4 max-w-xl font-mono text-xs leading-relaxed text-white/60 md:text-sm">
+          <p className="mt-4 max-w-xl font-mono text-base leading-[1.6] text-white/90 md:text-sm">
             {cta.body}
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
               to={cta.primary.to}
-              className="inline-flex items-center gap-2 bg-[#FF3333] px-6 py-4 font-mono text-xs font-bold tracking-widest text-black transition-all hover:bg-[#FF5555]"
+              className="inline-flex items-center gap-2 bg-[#dfba73] px-6 py-4 font-mono text-xs font-bold tracking-widest text-black transition-all hover:bg-[#c8362b]"
             >
               {cta.primary.label}
               <ArrowUpRight className="size-4" />
@@ -79,7 +79,7 @@ export function GuideArticle({
             {cta.secondary ? (
               <Link
                 to={cta.secondary.to}
-                className="inline-flex items-center gap-2 border border-white/20 px-6 py-4 font-mono text-xs tracking-widest text-white transition-colors hover:border-[#FF3333] hover:text-[#FF3333]"
+                className="inline-flex items-center gap-2 border border-white/20 px-6 py-4 font-mono text-xs tracking-widest text-white transition-colors hover:border-[#dfba73] hover:text-[#dfba73]"
               >
                 {cta.secondary.label}
               </Link>
@@ -98,13 +98,13 @@ export function GuideArticle({
             <Link
               key={r.to}
               to={r.to}
-              className="group border border-white/10 bg-white/[0.02] p-6 transition-colors hover:border-[#FF3333]/50"
+              className="group border border-white/10 bg-white/[0.02] p-6 transition-colors hover:border-[#dfba73]/50"
             >
-              <h3 className="font-display text-lg uppercase leading-tight text-white group-hover:text-[#FF3333]">
+              <h3 className="font-display text-lg uppercase leading-tight text-white group-hover:text-[#dfba73]">
                 {r.title}
               </h3>
-              <p className="mt-2 font-mono text-xs leading-relaxed text-white/50">{r.blurb}</p>
-              <span className="mt-4 inline-flex items-center gap-1 font-mono text-[11px] tracking-widest text-[#FF3333]">
+              <p className="mt-2 font-mono text-[15px] leading-[1.6] text-white/90">{r.blurb}</p>
+              <span className="mt-4 inline-flex items-center gap-1 font-mono text-[11px] tracking-widest text-[#dfba73]">
                 READ
                 <ArrowUpRight className="size-3" />
               </span>
@@ -136,7 +136,7 @@ export function GuideSection({
 
 export function GuideParagraph({ children }: { children: ReactNode }) {
   return (
-    <p className="max-w-2xl font-mono text-xs leading-relaxed text-white/60 md:text-sm">
+    <p className="max-w-2xl font-mono text-base leading-[1.6] text-white/90 md:text-sm">
       {children}
     </p>
   );

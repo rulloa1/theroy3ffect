@@ -10,9 +10,9 @@ const PROMISE_STEPS = [
 
 export function ApprovalPromise() {
   return (
-    <section className="relative z-20 border-t border-white/10 bg-[#0a0620] px-5 py-20 md:px-10 md:py-28">
+    <section className="relative z-20 border-t border-white/10 bg-[#16130f] px-5 py-20 md:px-10 md:py-28">
       <ScrollReveal className="mx-auto max-w-7xl">
-        <span className="font-mono text-xs tracking-widest text-[#DFBA73]">THE APPROVAL PROMISE</span>
+        <span className="font-mono text-xs tracking-widest text-[#dfba73]">THE APPROVAL PROMISE</span>
         <h2 className="mt-3 max-w-4xl font-display text-4xl uppercase leading-[0.95] text-white md:text-6xl">
           You approve the design. That design is what goes live.
         </h2>
@@ -29,10 +29,10 @@ export function ApprovalPromise() {
           ))}
         </div>
         <div className="mt-8 flex flex-wrap items-center gap-5">
-          <Link to="/audit" className="inline-flex min-h-11 items-center gap-2 bg-[#FF3333] px-5 py-3 font-mono text-xs font-bold tracking-widest text-black transition-colors hover:bg-[#FF5555]">
+          <Link to="/audit" className="inline-flex min-h-11 items-center gap-2 bg-[#dfba73] px-5 py-3 font-mono text-xs font-bold tracking-widest text-black transition-colors hover:bg-[#c8362b]">
             GET YOUR FREE AUDIT <ArrowUpRight className="size-4" />
           </Link>
-          <a href="/#pricing" className="inline-flex min-h-11 items-center py-2 font-mono text-[15px] tracking-widest text-[#DFBA73] hover:text-white">
+          <a href="/#pricing" className="inline-flex min-h-11 items-center py-2 font-mono text-[15px] tracking-widest text-[#dfba73] hover:text-white">
             SEE THE INVESTMENT →
           </a>
         </div>
