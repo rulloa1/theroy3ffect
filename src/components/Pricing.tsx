@@ -35,7 +35,7 @@ export function Pricing({ onCommission, mode = "homepage" }: { onCommission?: ()
             </h2>
           </div>
           <div className="flex flex-col gap-3">
-            <p className="max-w-md font-mono text-xs leading-relaxed text-white/50">
+            <p className="max-w-md font-mono text-base leading-[1.6] text-white/90">
               {mode === "homepage" ? "Starting prices. A typical designed-and-built site lands at $7–9k depending on pages and integrations." : "Transparent starting points and custom scopes. Pay a 50% deposit or calculate a custom page count below."}
             </p>
             {mode === "checkout" && (
@@ -98,20 +98,21 @@ export function Pricing({ onCommission, mode = "homepage" }: { onCommission?: ()
                     <h3 className="font-display text-xl uppercase tracking-wide text-white md:text-2xl">
                       {tier.name}
                     </h3>
-                    <div className="mt-4 flex items-baseline gap-1">
-                      <span className="font-mono text-xs text-white/40">{tier.note}</span>
+                    <div className="mt-4 flex items-baseline gap-2">
+                       {tier.note !== "/mo" ? <span className="font-mono text-[15px] text-white/90">{tier.note}</span> : null}
                       <span className="font-display text-4xl text-[#FF3333] md:text-5xl">
                         {tier.price}
                       </span>
+                       {tier.note === "/mo" ? <span className="font-mono text-[15px] text-white/90">/mo</span> : null}
                     </div>
-                    <p className="mt-3 font-mono text-xs leading-relaxed text-white/50">
+                    <p className="mt-3 font-mono text-base leading-[1.6] text-white/90">
                       {tier.description}
                     </p>
                     <ul className="mt-6 space-y-3">
                       {tier.features.map((feature) => (
                         <li
                           key={feature}
-                          className="flex items-start gap-2 font-mono text-xs text-white/70"
+                          className="flex items-start gap-2 font-mono text-[15px] leading-[1.6] text-white/90"
                         >
                           <Check className="mt-0.5 size-3 shrink-0 text-[#FF3333]" />
                           {feature}
@@ -161,7 +162,7 @@ export function Pricing({ onCommission, mode = "homepage" }: { onCommission?: ()
                     ) : (
                       <Link
                         to="/book"
-                        className={`flex w-full items-center justify-center gap-2 px-4 py-3 font-mono text-xs tracking-widest transition-all ${tier.featured ? "bg-[#FF3333] text-black hover:bg-[#FF3333]/90" : "border border-white/20 text-white hover:border-[#FF3333]"}`}
+                        className={`flex min-h-11 w-full items-center justify-center gap-2 px-4 py-3 font-mono text-xs tracking-widest transition-all ${tier.featured ? "bg-[#FF3333] font-bold text-black hover:bg-[#FF5555]" : "border border-white/40 text-white hover:border-[#DFBA73]"}`}
                       >
                         {tier.cta}<ArrowRight className="size-3" />
                       </Link>
@@ -169,7 +170,7 @@ export function Pricing({ onCommission, mode = "homepage" }: { onCommission?: ()
                     {mode === "checkout" ? <button
                       type="button"
                       onClick={onCommission}
-                      className="flex w-full items-center justify-center gap-2 px-4 py-2 font-mono text-[11px] tracking-widest text-white/50 transition-colors hover:text-[#FF3333]"
+                      className="flex min-h-11 w-full items-center justify-center gap-2 px-4 py-2 font-mono text-[15px] tracking-widest text-white/90 transition-colors hover:text-[#FF3333]"
                     >
                       {tier.cta}
                       <ArrowRight className="size-3" />
@@ -189,7 +190,7 @@ export function Pricing({ onCommission, mode = "homepage" }: { onCommission?: ()
                   >
                     <div>
                       <h3 className="font-display text-lg uppercase text-white">{addOn.name}</h3>
-                      <p className="mt-2 font-mono text-xs leading-relaxed text-white/50">
+                      <p className="mt-2 font-mono text-base leading-[1.6] text-white/90">
                         {addOn.description}
                       </p>
                     </div>
@@ -213,14 +214,14 @@ export function Pricing({ onCommission, mode = "homepage" }: { onCommission?: ()
               </div>
             </div>
 
-            <p className="mt-10 max-w-2xl font-mono text-[11px] leading-relaxed text-white/40">
+            <p className="mt-10 max-w-3xl font-mono text-[15px] leading-[1.6] text-white/90">
               All projects begin with a free 15-minute discovery call. Deposits are 50% of the
-              tier’s starting price, credited against your final invoice and fully refundable before
+              tier&apos;s starting price: Brand Sprint $1,250, Website / UI-UX $2,500, and Design + Build $4,000. Each deposit is credited against your final invoice and fully refundable before
               kickoff. Retainers bill monthly and can be paused or cancelled anytime. No account
               needed — you’ll get a receipt and a brief link by email right after checkout.
             </p>
             {mode === "homepage" ? (
-              <Link to="/pricing" className="mt-5 inline-flex font-mono text-xs tracking-widest text-[#DFBA73] hover:text-white">SEE FULL PRICING AND CHECKOUT →</Link>
+              <Link to="/pricing" className="mt-5 inline-flex min-h-11 items-center py-2 font-mono text-[15px] tracking-widest text-[#DFBA73] hover:text-white">SEE FULL PRICING AND CHECKOUT →</Link>
             ) : null}
           </>
         )}
