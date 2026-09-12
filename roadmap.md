@@ -12,6 +12,6 @@
 - [x] Complete the approved eight-item homepage conversion, accessibility, and performance pass
 - [x] Keep the 15-minute discovery call described as free while distinguishing it from the video audit
 - [x] Refine the shared footer hierarchy, navigation, contact details, and mobile usability
-- [ ] Port the approved cinematic prototype design system to the homepage and shared public chrome
-- [ ] Preserve live homepage content, pricing, contact/GHL wiring, metadata, and delayed chat behavior
+- [x] Port the approved cinematic prototype design system to the homepage and shared public chrome
+- [x] Preserve live homepage content, pricing, contact/GHL wiring, metadata, and delayed chat behavior
 - [ ] Validate desktop, 360px, reduced-motion, headless rendering, public routes, typecheck, and tests without publishing
