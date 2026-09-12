@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { Link } from "@tanstack/react-router";
 import { ArrowRight, Check, Sparkles, Lock, Plus, Calculator, Layers } from "lucide-react";
 import { DepositCheckoutModal } from "@/components/DepositCheckoutModal";
 import { ScopeEstimator } from "@/components/ScopeEstimator";
@@ -142,15 +143,6 @@ export function Pricing({ onCommission, mode = "homepage" }: { onCommission?: ()
                       PAY {tier.deposit.amountLabel}{" "}
                       {tier.name === "RETAINER" ? "FIRST MONTH" : "DEPOSIT"}
                     </button>
-                    </>
-                    ) : (
-                      <Link
-                        to="/book"
-                        className={`flex w-full items-center justify-center gap-2 px-4 py-3 font-mono text-xs tracking-widest transition-all ${tier.featured ? "bg-[#FF3333] text-black hover:bg-[#FF3333]/90" : "border border-white/20 text-white hover:border-[#FF3333]"}`}
-                      >
-                        {tier.cta}<ArrowRight className="size-3" />
-                      </Link>
-                    )}
                     <button
                       type="button"
                       onClick={() =>
@@ -163,18 +155,25 @@ export function Pricing({ onCommission, mode = "homepage" }: { onCommission?: ()
                       }
                       className="flex w-full items-center justify-center gap-2 border border-white/10 px-4 py-2.5 font-mono text-[11px] tracking-widest text-white/70 transition-colors hover:border-[#FF3333] hover:text-[#FF3333]"
                     >
-                      {tier.full.recurring
-                        ? `SUBSCRIBE ${tier.full.amountLabel}`
-                        : `PAY IN FULL ${tier.full.amountLabel}`}
+                      {tier.full.recurring ? `SUBSCRIBE ${tier.full.amountLabel}` : `PAY IN FULL ${tier.full.amountLabel}`}
                     </button>
-                    <button
+                    </>
+                    ) : (
+                      <Link
+                        to="/book"
+                        className={`flex w-full items-center justify-center gap-2 px-4 py-3 font-mono text-xs tracking-widest transition-all ${tier.featured ? "bg-[#FF3333] text-black hover:bg-[#FF3333]/90" : "border border-white/20 text-white hover:border-[#FF3333]"}`}
+                      >
+                        {tier.cta}<ArrowRight className="size-3" />
+                      </Link>
+                    )}
+                    {mode === "checkout" ? <button
                       type="button"
                       onClick={onCommission}
                       className="flex w-full items-center justify-center gap-2 px-4 py-2 font-mono text-[11px] tracking-widest text-white/50 transition-colors hover:text-[#FF3333]"
                     >
                       {tier.cta}
                       <ArrowRight className="size-3" />
-                    </button>
+                    </button> : null}
                   </div>
                 </motion.div>
               ))}
