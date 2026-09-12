@@ -32,18 +32,19 @@ function WorkCard({ entry, index, compact }: { entry: ShowcaseWorkEntry; index: 
             </span>
           </>
         ) : (
-          <>
-            <span className="absolute left-4 top-4 font-mono text-[9px] tracking-widest text-[#DFBA73]">{entry.eyebrow}</span>
-            <span className="absolute bottom-2 right-4 font-display text-6xl text-white/5">0{index + 1}</span>
-          </>
+          <div className="absolute inset-0 overflow-hidden bg-[#0a0620]" role="img" aria-label={entry.alt}>
+            <div className="absolute inset-x-[12%] top-[18%] h-[58%] border border-[#DFBA73]/50 bg-[#030014] shadow-[18px_18px_0_rgba(255,51,51,0.18)]" />
+            <div className="absolute left-[18%] top-[29%] h-2 w-[18%] bg-[#DFBA73]" />
+            <div className="absolute left-[18%] top-[39%] h-5 w-[48%] bg-white/90" />
+            <div className="absolute left-[18%] top-[51%] h-3 w-[35%] bg-white/30" />
+            <div className="absolute bottom-2 right-4 font-display text-6xl text-white/5">0{index + 1}</div>
+            <span className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-[#030014] to-transparent px-4 pb-3 pt-10 font-mono text-[10px] tracking-widest text-[#DFBA73]">{entry.eyebrow}</span>
+          </div>
         )}
       </div>
       <div className="p-5">
         <h3 className="font-display text-xl uppercase text-white">{entry.title}</h3>
-        <p className="mt-2 font-mono text-sm leading-6 text-white/75">{entry.result}</p>
-        <Link to="/case-study" className="mt-5 inline-flex items-center gap-1 font-mono text-[10px] tracking-widest text-[#DFBA73] hover:text-white">
-          SEE HOW I WORK <ArrowUpRight className="size-3" />
-        </Link>
+        <p className="mt-2 font-mono text-base leading-[1.6] text-white/90">{entry.result}</p>
       </div>
     </article>
   );
@@ -57,9 +58,12 @@ export function WorkGrid({ compact = false }: { compact?: boolean }) {
           <WorkCard key={entry.slug} entry={entry} index={index} compact={compact} />
         ))}
       </div>
-      <p className="mt-5 font-mono text-xs leading-6 text-white/65">
+      <p className="mt-5 font-mono text-[15px] leading-[1.6] text-white/90">
         Named client work is added with written permission — I&apos;ll walk you through live projects on the call.
       </p>
+      <Link to="/case-study" className="mt-4 inline-flex min-h-11 items-center gap-2 py-2 font-mono text-[15px] tracking-widest text-[#DFBA73] transition-colors hover:text-white">
+        SEE HOW I WORK <ArrowUpRight className="size-4" />
+      </Link>
     </div>
   );
 }

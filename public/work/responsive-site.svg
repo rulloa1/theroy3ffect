@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" role="img" aria-labelledby="title desc">
+  <title id="title">Responsive service website mockup</title>
+  <desc id="desc">A red, gold and near-black website displayed across laptop, tablet and phone screens.</desc>
+  <rect width="1200" height="900" fill="#030014"/>
+  <path d="M0 120h1200M0 450h1200M220 0v900M980 0v900" stroke="#DFBA73" stroke-opacity=".12"/>
+  <circle cx="1060" cy="130" r="210" fill="#FF3333" fill-opacity=".12"/>
+  <rect x="110" y="178" width="745" height="474" rx="18" fill="#0a0620" stroke="#DFBA73" stroke-width="5"/>
+  <rect x="135" y="206" width="695" height="405" fill="#05021a"/>
+  <rect x="135" y="206" width="695" height="34" fill="#15112c"/>
+  <circle cx="157" cy="223" r="5" fill="#FF3333"/><circle cx="176" cy="223" r="5" fill="#DFBA73"/>
+  <rect x="175" y="280" width="88" height="12" fill="#DFBA73"/>
+  <rect x="175" y="319" width="380" height="30" fill="#fff"/>
+  <rect x="175" y="362" width="305" height="30" fill="#fff"/>
+  <rect x="175" y="421" width="255" height="11" fill="#fff" fill-opacity=".72"/>
+  <rect x="175" y="446" width="215" height="11" fill="#fff" fill-opacity=".42"/>
+  <rect x="175" y="493" width="168" height="48" fill="#FF3333"/>
+  <path d="M90 673h790l82 45H21z" fill="#171329" stroke="#DFBA73" stroke-width="3"/>
+  <rect x="744" y="279" width="53" height="249" fill="#FF3333" fill-opacity=".18"/>
+  <rect x="680" y="306" width="87" height="222" fill="#DFBA73" fill-opacity=".15"/>
+  <rect x="772" y="315" width="250" height="390" rx="20" fill="#09051f" stroke="#DFBA73" stroke-width="4"/>
+  <rect x="791" y="351" width="212" height="316" fill="#05021a"/>
+  <rect x="815" y="384" width="54" height="8" fill="#DFBA73"/>
+  <rect x="815" y="423" width="150" height="22" fill="#fff"/>
+  <rect x="815" y="456" width="126" height="22" fill="#fff"/>
+  <rect x="815" y="506" width="133" height="39" fill="#FF3333"/>
+  <rect x="957" y="432" width="142" height="305" rx="28" fill="#0a0620" stroke="#FF3333" stroke-width="4"/>
+  <rect x="972" y="471" width="112" height="226" fill="#05021a"/>
+  <rect x="989" y="500" width="38" height="7" fill="#DFBA73"/>
+  <rect x="989" y="534" width="79" height="15" fill="#fff"/>
+  <rect x="989" y="558" width="68" height="15" fill="#fff"/>
+  <rect x="989" y="604" width="75" height="34" fill="#FF3333"/>
+  <text x="110" y="820" fill="#DFBA73" font-family="monospace" font-size="22" letter-spacing="5">RESPONSIVE DESIGN / THREE SCREENS</text>
+</svg>
