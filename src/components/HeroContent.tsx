@@ -10,7 +10,7 @@ export function HeroContent() {
       <h1 className="mt-4 max-w-3xl font-display text-[2.75rem] uppercase leading-[0.92] text-white sm:text-6xl md:text-7xl lg:text-8xl">
         A website that looks expensive and actually asks for the sale.
       </h1>
-      <p className="mt-5 max-w-2xl font-mono text-xs leading-relaxed text-white/70 sm:text-sm">
+      <p className="mt-5 max-w-2xl font-mono text-sm leading-7 text-white/85">
         I&apos;m Rory Ulloa. I design and ship high-contrast sites for founders and local service businesses in Houston and remote.
       </p>
       <div className="pointer-events-auto mt-6 flex flex-wrap gap-3">
@@ -21,7 +21,7 @@ export function HeroContent() {
           SEE THE WORK
         </Link>
       </div>
-      <div className="mt-5 flex max-w-2xl flex-wrap gap-2 font-mono text-[9px] tracking-wider text-white/70 sm:text-[10px]">
+      <div className="mt-5 flex max-w-2xl flex-wrap gap-2 font-mono text-[10px] tracking-wider text-white/80">
         <span className="border border-white/15 bg-white/[0.03] px-3 py-1 text-[#F6DC9A]">
           UI/UX DESIGN
         </span>

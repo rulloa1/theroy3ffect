@@ -8,6 +8,7 @@ import { InfoDrawer } from "@/components/InfoDrawer";
 import { Pricing } from "@/components/Pricing";
 import { WorkGrid } from "@/components/WorkGrid";
 import { ApprovalPromise } from "@/components/ApprovalPromise";
+import { ScrollReveal } from "@/components/ScrollReveal";
 import { ArrowUpRight, Check, SearchCheck, Zap, Smartphone, Timer } from "lucide-react";
 import portraitAsset from "@/assets/rory-portrait-clean.png.asset.json";
 import ogImageAsset from "@/assets/og-preview.jpg.asset.json";
@@ -69,16 +70,16 @@ function Home() {
       </section>
 
       <section id="work" className="relative z-20 bg-[#030014] px-5 py-20 md:px-10 md:py-28">
-<div className="mx-auto max-w-7xl"><span className="font-mono text-xs tracking-widest text-[#FF3333]">SELECTED WORK</span><h2 className="mt-3 font-display text-4xl uppercase text-white md:text-6xl">Recent work</h2><div className="mt-10"><WorkGrid compact /></div></div>
+<ScrollReveal className="mx-auto max-w-7xl"><span className="font-mono text-xs tracking-widest text-[#FF3333]">SELECTED WORK</span><h2 className="mt-3 font-display text-4xl uppercase text-white md:text-6xl">Recent work</h2><div className="mt-10"><WorkGrid compact /></div></ScrollReveal>
       </section>
 
       <ApprovalPromise />
 
       <section className="relative z-20 border-y border-white/10 bg-[#0a0620] px-5 py-20 md:px-10 md:py-28">
-        <div className="mx-auto max-w-7xl"><span className="font-mono text-xs tracking-widest text-[#DFBA73]">FIT</span><h2 className="mt-3 font-display text-4xl uppercase text-white md:text-6xl">Who it&apos;s for</h2><div className="mt-10 grid gap-8 md:grid-cols-2">
-          <div className="border-l-2 border-[#FF3333] pl-6"><h3 className="font-display text-2xl uppercase text-white">I take</h3><p className="mt-3 max-w-lg font-mono text-sm leading-relaxed text-white/60">Houston and remote founders, personal brands, and service businesses that already have demand and a weak site.</p></div>
-          <div className="border-l border-white/20 pl-6"><h3 className="font-display text-2xl uppercase text-white">I pass</h3><p className="mt-3 max-w-lg font-mono text-sm leading-relaxed text-white/60">Logo-only jobs with no strategy, 40-page brochure rebuilds on a $1,500 budget, and “make it pop” with no offer.</p></div>
-        </div></div>
+        <ScrollReveal className="mx-auto max-w-7xl"><span className="font-mono text-xs tracking-widest text-[#DFBA73]">FIT</span><h2 className="mt-3 font-display text-4xl uppercase text-white md:text-6xl">Who it&apos;s for</h2><div className="mt-10 grid gap-8 md:grid-cols-2">
+          <div className="border-l-2 border-[#FF3333] pl-6"><h3 className="font-display text-2xl uppercase text-white">I take</h3><p className="mt-3 max-w-lg font-mono text-sm leading-7 text-white/75">Houston and remote founders, personal brands, and service businesses that already have demand and a weak site.</p></div>
+          <div className="border-l border-white/20 pl-6"><h3 className="font-display text-2xl uppercase text-white">I pass</h3><p className="mt-3 max-w-lg font-mono text-sm leading-7 text-white/75">Logo-only jobs with no strategy, 40-page brochure rebuilds on a $1,500 budget, and “make it pop” with no offer.</p></div>
+        </div></ScrollReveal>
       </section>
 
       <Pricing />
