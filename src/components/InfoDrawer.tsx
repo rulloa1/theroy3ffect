@@ -9,6 +9,14 @@ import { ScopeEstimator } from "./ScopeEstimator";
 
 const MENU = ["PROJECTS", "PROCESS", "ABOUT", "RESUME", "PRICING", "LET'S WORK"] as const;
 type MenuItem = (typeof MENU)[number];
+const MENU_LINKS = [
+  { label: "WORK", to: "/work" as const },
+  { label: "SERVICES", to: "/services" as const },
+  { label: "PRICING", to: "/pricing" as const },
+  { label: "CASE STUDY", to: "/case-study" as const },
+  { label: "ABOUT", to: "/about" as const },
+  { label: "PROCESS", to: "/process" as const },
+];
 
 import {
   DEFAULT_SHOWCASE_PROJECTS,
@@ -154,18 +162,18 @@ export function InfoDrawer({
                     <Logo variant="full" size="md" href="/" />
                   </div>
                   <ul className="space-y-2">
-                    {MENU.map((item) => (
-                      <li key={item}>
-                        <button
-                          type="button"
-                          onClick={() => setActive(item)}
+                    {MENU_LINKS.map((item) => (
+                      <li key={item.label}>
+                        <Link
+                          to={item.to}
+                          onClick={close}
                           className="group flex w-full items-center justify-between border-b border-white/10 py-5 text-left"
                         >
                           <span className="font-display text-3xl uppercase tracking-wide text-white transition-colors group-hover:text-[#FF3333] md:text-5xl">
-                            {item}
+                            {item.label}
                           </span>
                           <span className="font-mono text-xs text-white/40">↗</span>
-                        </button>
+                        </Link>
                       </li>
                     ))}
                     <li>

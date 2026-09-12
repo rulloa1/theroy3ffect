@@ -49,7 +49,7 @@ export const PRICING_TIERS: CatalogTier[] = [
     name: "WEBSITE / UI-UX",
     price: "$5,000",
     note: "from",
-    description: "Full visual design and prototype for websites, apps, or digital products.",
+    description: "Full visual design and prototype for websites, apps, or digital products. Typical projects land at $5–7k.",
     features: [
       "UX audit & wireframes",
       "High-fidelity UI designs",
@@ -74,7 +74,7 @@ export const PRICING_TIERS: CatalogTier[] = [
     name: "DESIGN + BUILD",
     price: "$8,000",
     note: "from",
-    description: "End-to-end design paired with a no-code build on Webflow, Framer, or TanStack.",
+    description: "End-to-end design paired with a no-code build on Webflow, Framer, or TanStack. Typical sites land at $7–9k.",
     features: [
       "Everything in Website/UI-UX",
       "No-code development",
@@ -98,7 +98,7 @@ export const PRICING_TIERS: CatalogTier[] = [
     name: "RETAINER",
     price: "$3,000",
     note: "/mo",
-    description: "Ongoing design partnership for teams that need consistent creative output.",
+    description: "Monthly design capacity with weekly async sync; pause or cancel anytime.",
     features: [
       "Monthly design capacity",
       "Priority turnaround",
