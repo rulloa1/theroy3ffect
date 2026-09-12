@@ -67,6 +67,42 @@ export const SERVICES: ServiceEntry[] = [
   },
 ];
 
+export interface ShowcaseWorkEntry {
+  slug: string;
+  title: string;
+  eyebrow: string;
+  result: string;
+  image: string | null;
+  alt: string;
+}
+
+export const SHOWCASE_WORK: ShowcaseWorkEntry[] = [
+  {
+    slug: "responsive-site",
+    title: "Responsive service site",
+    eyebrow: "STUDIO WORK · DESIGN + BUILD",
+    result: "One brand, three screens. A homepage that reads clearly on a phone and asks for the enquiry.",
+    image: "/work/responsive-site.jpg",
+    alt: "Website shown across laptop, tablet and phone",
+  },
+  {
+    slug: "brand-identity",
+    title: "Brand identity system",
+    eyebrow: "STUDIO WORK · BRAND SYSTEM",
+    result: "Logo, palette and stationery that stay consistent from the website to the business card.",
+    image: "/work/brand-identity.jpg",
+    alt: "Brand identity stationery and colour system",
+  },
+  {
+    slug: "studio-presence",
+    title: "Studio presence",
+    eyebrow: "STUDIO WORK · CREATIVE DIRECTION",
+    result: "Art direction that makes an owner-run business look established before the first call.",
+    image: "/work/studio-presence.jpg",
+    alt: "Branded studio scene",
+  },
+];
+
 export interface ProcessStep {
   step: string;
   title: string;
