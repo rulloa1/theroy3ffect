@@ -13,7 +13,7 @@ function WorkCard({ entry, index, compact }: { entry: ShowcaseWorkEntry; index: 
         {showImage ? (
           <>
             <img
-              src={entry.image}
+              src={entry.image ?? ""}
               alt={entry.alt}
               loading="lazy"
               decoding="async"
