@@ -180,6 +180,11 @@ function AdminPage() {
   const selectVariantFn = useServerFn(adminSelectVariant);
   const syncProspectCrmFn = useServerFn(adminSyncProspectCrm);
   const prospectAnalyticsFn = useServerFn(adminProspectAnalytics);
+  const listOnboarding = useServerFn(adminListOnboarding);
+  const runOnboardingFn = useServerFn(adminRunOnboarding);
+  const approveOnboardingFn = useServerFn(adminApproveOnboarding);
+  const retryOnboardingFn = useServerFn(adminRetryOnboarding);
+  const dismissOnboardingFn = useServerFn(adminDismissOnboarding);
 
 
   const [currentView, setCurrentView] = useState<MainView>("PROJECTS");
