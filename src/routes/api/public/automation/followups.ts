@@ -15,7 +15,17 @@ export const Route = createFileRoute("/api/public/automation/followups")({
 
         const { runFollowupBatch } = await import("@/lib/automation/followups.server");
         const result = await runFollowupBatch("cron");
-        return Response.json(result, { status: result.ok ? 200 : 500 });
+
+        // Safety net: set up any paid purchase the webhook could not finish.
+        let onboarding = { processed: 0 };
+        try {
+          const { processPendingOnboarding } = await import("@/lib/automation/onboarding.server");
+          onboarding = await processPendingOnboarding();
+        } catch (error) {
+          console.error("[onboarding] scheduled sweep failed:", error);
+        }
+
+        return Response.json({ ...result, onboarding }, { status: result.ok ? 200 : 500 });
       },
     },
   },
