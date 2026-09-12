@@ -3,7 +3,7 @@ import { Logo } from "@/components/Logo";
 import { WorkGrid } from "@/components/WorkGrid";
 
 const TITLE = "Selected Work — The Roy Effect";
-const DESCRIPTION = "Selected brand, UI/UX and no-code work by Houston creative director Rory Ulloa, presented without invented client claims or results.";
+const DESCRIPTION = "Selected studio work across brand, UI/UX and no-code build by Houston creative director Rory Ulloa. Named client projects shown on the call, with permission.";
 
 export const Route = createFileRoute("/work")({
   head: () => ({
@@ -28,9 +28,8 @@ function WorkPage() {
         <Logo variant="compact" size="md" href="/" className="mb-12" />
         <span className="font-mono text-xs tracking-widest text-[#FF3333]">WORK</span>
         <h1 className="mt-3 max-w-3xl font-display text-5xl uppercase leading-[0.9] text-white md:text-7xl">Work built around the next action</h1>
-        <p className="mt-5 max-w-2xl font-mono text-sm leading-relaxed text-white/60">I&apos;m only publishing work I can describe honestly. These composite project views show the operational outcomes I design toward; named client work is added with permission.</p>
+        <p className="mt-5 max-w-2xl font-mono text-sm leading-relaxed text-white/60">Selected studio work across brand, UI/UX and no-code build. Named client projects are shown on the call, with permission.</p>
         <div className="mt-12"><WorkGrid /></div>
-        <p className="mt-6 font-mono text-xs text-white/40">More work with client permission incoming.</p>
         <div className="mt-10 flex flex-wrap gap-3">
           <Link to="/audit" className="bg-[#FF3333] px-5 py-3 font-mono text-xs font-bold tracking-widest text-black">GET A FREE AUDIT</Link>
           <Link to="/book" className="border border-white/20 px-5 py-3 font-mono text-xs tracking-widest text-white">BOOK A CALL</Link>

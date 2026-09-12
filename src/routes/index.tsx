@@ -7,6 +7,7 @@ import { HeroContent } from "@/components/HeroContent";
 import { InfoDrawer } from "@/components/InfoDrawer";
 import { Pricing } from "@/components/Pricing";
 import { WorkGrid } from "@/components/WorkGrid";
+import { ApprovalPromise } from "@/components/ApprovalPromise";
 import { ArrowUpRight, Check, SearchCheck, Zap, Smartphone, Timer } from "lucide-react";
 import portraitAsset from "@/assets/rory-portrait-clean.png.asset.json";
 import ogImageAsset from "@/assets/og-preview.jpg.asset.json";
@@ -68,8 +69,10 @@ function Home() {
       </section>
 
       <section id="work" className="relative z-20 bg-[#030014] px-5 py-20 md:px-10 md:py-28">
-        <div className="mx-auto max-w-7xl"><span className="font-mono text-xs tracking-widest text-[#FF3333]">SELECTED WORK</span><h2 className="mt-3 font-display text-4xl uppercase text-white md:text-6xl">Recent work</h2><div className="mt-10"><WorkGrid compact /></div><p className="mt-5 font-mono text-[11px] text-white/40">Named results and numbers go up with client permission.</p></div>
+<div className="mx-auto max-w-7xl"><span className="font-mono text-xs tracking-widest text-[#FF3333]">SELECTED WORK</span><h2 className="mt-3 font-display text-4xl uppercase text-white md:text-6xl">Recent work</h2><div className="mt-10"><WorkGrid compact /></div></div>
       </section>
+
+      <ApprovalPromise />
 
       <section className="relative z-20 border-y border-white/10 bg-[#0a0620] px-5 py-20 md:px-10 md:py-28">
         <div className="mx-auto max-w-7xl"><span className="font-mono text-xs tracking-widest text-[#DFBA73]">FIT</span><h2 className="mt-3 font-display text-4xl uppercase text-white md:text-6xl">Who it&apos;s for</h2><div className="mt-10 grid gap-8 md:grid-cols-2">
