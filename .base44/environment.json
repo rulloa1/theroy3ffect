@@ -1,0 +1,36 @@
+{
+  "previewPort": 3000,
+  "healthPath": "/",
+  "startCommand": "docker compose -f docker-compose.base44.yml up -d",
+  "secrets": [
+    {
+      "name": "SUPABASE_SERVICE_ROLE_KEY",
+      "description": "Supabase service role key for server-side admin operations (Supabase Dashboard → Settings → API → service_role key)",
+      "requiredAtBoot": false,
+      "generatedForDevelopment": true
+    },
+    {
+      "name": "STRIPE_SANDBOX_API_KEY",
+      "description": "Stripe sandbox/test API key for payment processing (Stripe Dashboard → Developers → API keys → Secret key)",
+      "requiredAtBoot": false,
+      "generatedForDevelopment": true
+    },
+    {
+      "name": "LOVABLE_API_KEY",
+      "description": "Lovable API key for the Stripe gateway connector (Lovable Dashboard → Project Settings → API)",
+      "requiredAtBoot": false,
+      "generatedForDevelopment": true
+    },
+    {
+      "name": "VAPI_SERVER_SECRET",
+      "description": "Vapi server secret for webhook verification (Vapi Dashboard → API Keys / Webhooks)",
+      "requiredAtBoot": false,
+      "generatedForDevelopment": true
+    },
+    {
+      "name": "GHL_INBOUND_WEBHOOK_URL",
+      "description": "GoHighLevel inbound webhook URL for lead sync (optional — form submissions work without it)",
+      "requiredAtBoot": false
+    }
+  ]
+}
