@@ -61,7 +61,8 @@ export const SERVICES: ServiceEntry[] = [
       "Ongoing design & build capacity",
       "Priority turnaround",
       "Design system upkeep",
-      "Monthly strategy call",
+      "Weekly async sync",
+      "Pause or cancel anytime",
     ],
   },
 ];
