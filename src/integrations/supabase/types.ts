@@ -370,6 +370,80 @@ export type Database = {
           },
         ]
       }
+      onboarding_runs: {
+        Row: {
+          amount_cents: number
+          approved_at: string | null
+          client_email: string
+          client_name: string | null
+          created_at: string
+          currency: string
+          error_message: string | null
+          id: string
+          model: string | null
+          plan: Json
+          product_name: string | null
+          project_id: string | null
+          rationale: string | null
+          source_id: string
+          source_table: string
+          status: string
+          trigger_type: string
+          updated_at: string
+          welcome_email_sent_at: string | null
+        }
+        Insert: {
+          amount_cents?: number
+          approved_at?: string | null
+          client_email: string
+          client_name?: string | null
+          created_at?: string
+          currency?: string
+          error_message?: string | null
+          id?: string
+          model?: string | null
+          plan?: Json
+          product_name?: string | null
+          project_id?: string | null
+          rationale?: string | null
+          source_id: string
+          source_table: string
+          status?: string
+          trigger_type: string
+          updated_at?: string
+          welcome_email_sent_at?: string | null
+        }
+        Update: {
+          amount_cents?: number
+          approved_at?: string | null
+          client_email?: string
+          client_name?: string | null
+          created_at?: string
+          currency?: string
+          error_message?: string | null
+          id?: string
+          model?: string | null
+          plan?: Json
+          product_name?: string | null
+          project_id?: string | null
+          rationale?: string | null
+          source_id?: string
+          source_table?: string
+          status?: string
+          trigger_type?: string
+          updated_at?: string
+          welcome_email_sent_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "onboarding_runs_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "client_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       orders: {
         Row: {
           amount_refunded: number

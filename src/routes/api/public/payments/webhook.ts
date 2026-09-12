@@ -150,6 +150,30 @@ async function handleCheckoutCompleted(
   // retries, and the customer has paid for an order that does not exist.
   if (error) throw new Error(`Order insert failed: ${error.message}`);
 
+  // Hand the purchase to the setup agent: portal project, milestone plan and
+  // the automatic welcome email. Idempotent on the checkout session id.
+  const purpose = full.metadata?.["purpose"];
+  if (customerEmail && purpose !== "commission_balance") {
+    const { startOnboarding } = await import("@/lib/automation/onboarding.server");
+    await startOnboarding({
+      triggerType:
+        purpose === "discovery_call" ? "discovery" : recurring ? "retainer" : "commission",
+      sourceTable: "orders",
+      sourceId: full.id,
+      clientEmail: customerEmail,
+      clientName: full.customer_details?.name ?? null,
+      productName,
+      amountCents: full.amount_total ?? 0,
+      currency: full.currency ?? "usd",
+      context: {
+        tier: full.metadata?.["tier_label"] ?? null,
+        isDeposit,
+        balanceDueCents: balanceDue,
+        slotStart: full.metadata?.["slot_start"] ?? null,
+      },
+    });
+  }
+
   if (alreadyEmailed) return;
 
   // Notify Rory, and send the client a receipt plus the brief link.
