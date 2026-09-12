@@ -11,3 +11,4 @@
 - [x] Improve public-site text readability and add lightweight scroll reveal animations
 - [x] Complete the approved eight-item homepage conversion, accessibility, and performance pass
 - [x] Keep the 15-minute discovery call described as free while distinguishing it from the video audit
+- [x] Refine the shared footer hierarchy, navigation, contact details, and mobile usability
