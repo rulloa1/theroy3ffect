@@ -297,6 +297,67 @@ function AdminPage() {
 
   const refreshAutopilot = () => queryClient.invalidateQueries({ queryKey: ["admin-autopilot"] });
 
+  const { data: onboardingData } = useQuery({
+    queryKey: ["admin-onboarding"],
+    queryFn: () => listOnboarding(),
+    retry: false,
+  });
+
+  const refreshOnboarding = () => queryClient.invalidateQueries({ queryKey: ["admin-onboarding"] });
+
+  const runOnboardingQueue = async () => {
+    setBusy("onboarding-run");
+    try {
+      const result = await runOnboardingFn();
+      toast.success(
+        result.processed > 0
+          ? `${result.processed} purchase(s) set up.`
+          : "Nothing waiting to set up.",
+      );
+      await refreshOnboarding();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Setup run failed");
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const approveOnboarding = async (id: string) => {
+    setBusy(id);
+    try {
+      await approveOnboardingFn({ data: { id } });
+      await refreshOnboarding();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not update");
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const retryOnboarding = async (id: string) => {
+    setBusy(id);
+    try {
+      const result = await retryOnboardingFn({ data: { id } });
+      if (result.ok) toast.success("Setup re-run.");
+      else toast.error(result.message ?? "Setup failed");
+      await refreshOnboarding();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Setup failed");
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const dismissOnboarding = async (id: string) => {
+    setBusy(id);
+    try {
+      await dismissOnboardingFn({ data: { id } });
+      await refreshOnboarding();
+    } finally {
+      setBusy(null);
+    }
+  };
+
   const runAutopilotScan = async () => {
     setBusy("autopilot-run");
     try {
