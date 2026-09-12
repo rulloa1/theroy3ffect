@@ -935,6 +935,11 @@ function AdminPage() {
               icon: Users,
             },
             {
+              id: "SETUP",
+              label: `NEW PURCHASE SETUP (${(onboardingData?.runs ?? []).filter((r) => r.status === "ready" || r.status === "failed").length})`,
+              icon: Rocket,
+            },
+            {
               id: "AUTOPILOT",
               label: `FOLLOW-UP AUTOPILOT (${(autopilotData?.drafts ?? []).filter((d) => d.status === "draft").length})`,
               icon: Bot,
@@ -1005,6 +1010,19 @@ function AdminPage() {
               busy={busy}
               money={money}
               date={date}
+            />
+          )}
+
+          {currentView === "SETUP" && (
+            <AdminOnboardingView
+              runs={onboardingData?.runs ?? []}
+              busy={busy}
+              onRunQueue={runOnboardingQueue}
+              onApprove={approveOnboarding}
+              onRetry={retryOnboarding}
+              onDismiss={dismissOnboarding}
+              date={date}
+              money={money}
             />
           )}
 
