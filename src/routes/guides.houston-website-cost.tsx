@@ -144,7 +144,7 @@ function HoustonWebsiteCostGuide() {
               {APPROACHES.map((row) => (
                 <tr key={row.approach} className="border-b border-white/5 align-top">
                   <td className="py-4 pr-4 font-display text-sm uppercase text-white">{row.approach}</td>
-                  <td className="py-4 pr-4 font-mono text-xs text-[#FF3333]">{row.typical}</td>
+                  <td className="py-4 pr-4 font-mono text-xs text-[#dfba73]">{row.typical}</td>
                   <td className="py-4 pr-4 font-mono text-xs leading-relaxed text-white/60">{row.youGet}</td>
                   <td className="py-4 font-mono text-xs leading-relaxed text-white/60">{row.bestFor}</td>
                 </tr>
@@ -176,7 +176,7 @@ function HoustonWebsiteCostGuide() {
           {MY_PRICES.map((p) => (
             <div key={p.name} className="border border-white/10 bg-white/[0.02] p-6">
               <h3 className="font-display text-lg uppercase text-white">{p.name}</h3>
-              <p className="mt-1 font-mono text-sm text-[#FF3333]">{p.price}</p>
+              <p className="mt-1 font-mono text-sm text-[#dfba73]">{p.price}</p>
               <p className="mt-2 font-mono text-xs leading-relaxed text-white/50">{p.note}</p>
             </div>
           ))}
@@ -198,7 +198,7 @@ function HoustonWebsiteCostGuide() {
           weighing a builder subscription against custom work, read my{" "}
           <a
             href="/guides/squarespace-vs-custom-website"
-            className="text-[#FF3333] underline underline-offset-4"
+            className="text-[#dfba73] underline underline-offset-4"
           >
             Squarespace vs custom cost breakdown
           </a>{" "}

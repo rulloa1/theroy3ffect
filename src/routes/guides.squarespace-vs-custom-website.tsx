@@ -89,7 +89,7 @@ function SquarespaceVsCustomGuide() {
             href="https://www.squarespace.com/pricing"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[#FF3333] underline underline-offset-4"
+            className="text-[#dfba73] underline underline-offset-4"
           >
             their pricing page
           </a>
@@ -123,7 +123,7 @@ function SquarespaceVsCustomGuide() {
           {BUILDER_WINS.map((item) => (
             <li
               key={item}
-              className="border-l-2 border-[#FF3333]/60 bg-white/[0.02] py-4 pl-5 pr-4 font-mono text-xs leading-relaxed text-white/70 md:text-sm"
+              className="border-l-2 border-[#dfba73]/60 bg-white/[0.02] py-4 pl-5 pr-4 font-mono text-xs leading-relaxed text-white/70 md:text-sm"
             >
               {item}
             </li>
@@ -134,7 +134,7 @@ function SquarespaceVsCustomGuide() {
             If that's you, use a builder with my blessing — and run your result through my{" "}
             <a
               href="/guides/website-audit-checklist"
-              className="text-[#FF3333] underline underline-offset-4"
+              className="text-[#dfba73] underline underline-offset-4"
             >
               15-point audit checklist
             </a>{" "}
@@ -148,7 +148,7 @@ function SquarespaceVsCustomGuide() {
           {CUSTOM_WINS.map((item) => (
             <li
               key={item}
-              className="border-l-2 border-[#FF3333]/60 bg-white/[0.02] py-4 pl-5 pr-4 font-mono text-xs leading-relaxed text-white/70 md:text-sm"
+              className="border-l-2 border-[#dfba73]/60 bg-white/[0.02] py-4 pl-5 pr-4 font-mono text-xs leading-relaxed text-white/70 md:text-sm"
             >
               {item}
             </li>
@@ -169,7 +169,7 @@ function SquarespaceVsCustomGuide() {
           Builders are the right tool until the website becomes a salesperson. When it does, the
           question stops being "what does a website cost?" and becomes "what does an underperforming
           one cost me every month?" If you're at that point, the next step isn't a quote — it's a{" "}
-          <a href="/audit" className="text-[#FF3333] underline underline-offset-4">
+          <a href="/audit" className="text-[#dfba73] underline underline-offset-4">
             free 5-minute audit
           </a>{" "}
           of whatever you have now, so any rebuild starts from evidence instead of taste.

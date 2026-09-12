@@ -42,13 +42,13 @@ function BookPage() {
   };
 
   return (
-    <main className="relative flex min-h-screen flex-col overflow-x-hidden bg-[#030014]">
+    <main className="relative flex min-h-screen flex-col overflow-x-hidden bg-[#0a0a0a]">
       <ParticleBackground />
       <SiteHeader onNavigate={handleNavigate} />
 
       <section className="relative z-10 flex-1 px-5 pt-32 pb-20 md:px-10 md:pt-40">
         <div className="mx-auto max-w-5xl">
-          <span className="font-mono text-xs tracking-widest text-[#FF3333]">
+          <span className="font-mono text-xs tracking-widest text-[#dfba73]">
             15-MINUTE DISCOVERY CALL — $49
           </span>
           <h1 className="mt-3 font-display text-4xl uppercase leading-[0.9] text-white md:text-6xl lg:text-7xl">

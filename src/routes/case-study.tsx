@@ -94,11 +94,11 @@ const OUTCOMES = [
 
 function CaseStudyPage() {
   return (
-    <main className="min-h-screen bg-[#030014]">
+    <main className="min-h-screen bg-[#0a0a0a]">
       <div className="mx-auto max-w-4xl px-5 pt-16 md:px-10 md:pt-24">
         <Logo variant="compact" size="md" href="/" className="mb-10" />
 
-        <span className="font-mono text-xs tracking-widest text-[#FF3333]">CASE STUDY</span>
+        <span className="font-mono text-xs tracking-widest text-[#dfba73]">CASE STUDY</span>
         <h1 className="mt-3 font-display text-4xl uppercase leading-[0.9] text-white md:text-6xl">
           From a cluttered website to a brand people trust
         </h1>
@@ -112,14 +112,14 @@ function CaseStudyPage() {
         <div className="mt-8 flex flex-wrap gap-3">
           <Link
             to="/audit"
-            className="inline-flex items-center gap-2 bg-[#FF3333] px-6 py-4 font-mono text-xs font-bold tracking-widest text-black transition-all hover:bg-[#FF5555]"
+            className="inline-flex items-center gap-2 bg-[#dfba73] px-6 py-4 font-mono text-xs font-bold tracking-widest text-black transition-all hover:bg-[#c8362b]"
           >
             GET THE SAME AUDIT, FREE
             <ArrowUpRight className="size-4" />
           </Link>
           <Link
             to="/pricing"
-            className="inline-flex items-center gap-2 border border-white/20 px-6 py-4 font-mono text-xs tracking-widest text-white transition-colors hover:border-[#FF3333] hover:text-[#FF3333]"
+            className="inline-flex items-center gap-2 border border-white/20 px-6 py-4 font-mono text-xs tracking-widest text-white transition-colors hover:border-[#dfba73] hover:text-[#dfba73]"
           >
             SEE PRICING
           </Link>
@@ -139,7 +139,7 @@ function CaseStudyPage() {
           {PROBLEMS.map((p) => (
             <li
               key={p}
-              className="border-l-2 border-[#FF3333]/60 bg-white/[0.02] py-4 pl-5 pr-4 font-mono text-xs leading-relaxed text-white/70 md:text-sm"
+              className="border-l-2 border-[#dfba73]/60 bg-white/[0.02] py-4 pl-5 pr-4 font-mono text-xs leading-relaxed text-white/70 md:text-sm"
             >
               {p}
             </li>
@@ -156,8 +156,8 @@ function CaseStudyPage() {
             { icon: MessageSquareText, step: "03", title: "Rebuilt first screen", body: "A direct service promise, local context and one obvious next step." },
             { icon: MousePointerClick, step: "04", title: "Quote above the fold", body: "The shortest useful request starts on the first mobile screen." },
           ].map(({ icon: Icon, step, title, body }) => (
-            <article key={step} className="min-h-56 border border-white/10 bg-[#0a0620] p-5">
-              <div className="flex items-center justify-between"><span className="font-mono text-[10px] text-[#DFBA73]">{step}</span><Icon className="size-5 text-[#FF3333]" /></div>
+            <article key={step} className="min-h-56 border border-white/10 bg-[#16130f] p-5">
+              <div className="flex items-center justify-between"><span className="font-mono text-[10px] text-[#dfba73]">{step}</span><Icon className="size-5 text-[#dfba73]" /></div>
               <h3 className="mt-12 font-display text-xl uppercase text-white">{title}</h3>
               <p className="mt-2 font-mono text-xs leading-relaxed text-white/50">{body}</p>
             </article>
@@ -173,7 +173,7 @@ function CaseStudyPage() {
         <div className="mt-8 space-y-4">
           {STEPS.map(({ icon: Icon, title, body }) => (
             <article key={title} className="border border-white/10 bg-white/[0.02] p-6 md:p-8">
-              <Icon className="mb-3 size-5 text-[#FF3333]" />
+              <Icon className="mb-3 size-5 text-[#dfba73]" />
               <h3 className="font-display text-xl uppercase text-white">{title}</h3>
               <p className="mt-2 font-mono text-xs leading-relaxed text-white/60 md:text-sm">
                 {body}
@@ -204,8 +204,8 @@ function CaseStudyPage() {
 
       {/* Closing CTA */}
       <section className="mx-auto mt-20 max-w-4xl px-5 pb-24 md:mt-28 md:px-10 md:pb-32">
-        <div className="border border-[#FF3333]/30 bg-[#FF3333]/5 p-8 md:p-12">
-          <span className="font-mono text-xs tracking-widest text-[#FF3333]">
+        <div className="border border-[#dfba73]/30 bg-[#dfba73]/5 p-8 md:p-12">
+          <span className="font-mono text-xs tracking-widest text-[#dfba73]">
             START THE SAME WAY
           </span>
           <h2 className="mt-3 font-display text-3xl uppercase leading-[0.9] text-white md:text-5xl">
@@ -218,14 +218,14 @@ function CaseStudyPage() {
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
               to="/audit"
-              className="inline-flex items-center gap-2 bg-[#FF3333] px-6 py-4 font-mono text-xs font-bold tracking-widest text-black transition-all hover:bg-[#FF5555]"
+              className="inline-flex items-center gap-2 bg-[#dfba73] px-6 py-4 font-mono text-xs font-bold tracking-widest text-black transition-all hover:bg-[#c8362b]"
             >
               CLAIM YOUR FREE AUDIT
               <ArrowUpRight className="size-4" />
             </Link>
             <Link
               to="/services"
-              className="inline-flex items-center gap-2 border border-white/20 px-6 py-4 font-mono text-xs tracking-widest text-white transition-colors hover:border-[#FF3333] hover:text-[#FF3333]"
+              className="inline-flex items-center gap-2 border border-white/20 px-6 py-4 font-mono text-xs tracking-widest text-white transition-colors hover:border-[#dfba73] hover:text-[#dfba73]"
             >
               SEE SERVICES
             </Link>

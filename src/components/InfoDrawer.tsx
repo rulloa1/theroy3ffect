@@ -28,7 +28,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { Logo } from "@/components/Logo";
 
 const fieldClass =
-  "w-full border-0 border-b border-white/30 bg-transparent px-0 py-3 text-sm text-white placeholder:text-white/40 focus:border-[#FF3333] focus:outline-none focus:ring-0";
+  "w-full border-0 border-b border-white/30 bg-transparent px-0 py-3 text-sm text-white placeholder:text-white/40 focus:border-[#dfba73] focus:outline-none focus:ring-0";
 
 const briefSchema = z.object({
   name: z.string().trim().min(1, "Please add your name").max(100, "Name is too long"),
@@ -133,14 +133,14 @@ export function InfoDrawer({
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", stiffness: 260, damping: 32 }}
-            className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto border-l border-white/10 bg-[#0a0a14] sm:max-w-xl md:max-w-2xl"
+            className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto border-l border-white/10 bg-[#16130f] sm:max-w-xl md:max-w-2xl"
           >
-            <div className="sticky top-0 z-10 flex items-center justify-between border-b border-white/5 bg-[#0a0a14]/95 px-6 py-5 backdrop-blur">
+            <div className="sticky top-0 z-10 flex items-center justify-between border-b border-white/5 bg-[#16130f]/95 px-6 py-5 backdrop-blur">
               <button
                 type="button"
                 aria-label={active ? "Back to menu" : "Menu"}
                 onClick={() => setActive(null)}
-                className="flex items-center gap-2 font-mono text-xs tracking-widest text-white/60 hover:text-[#FF3333]"
+                className="flex items-center gap-2 font-mono text-xs tracking-widest text-white/60 hover:text-[#dfba73]"
               >
                 {active ? <ArrowLeft className="size-4" /> : <Menu className="size-4" />}
                 {active ? "BACK" : "MENU"}
@@ -149,7 +149,7 @@ export function InfoDrawer({
                 type="button"
                 aria-label="Close menu"
                 onClick={close}
-                className="flex size-10 items-center justify-center rounded-full border border-white/15 text-white hover:bg-[#FF3333] hover:text-black"
+                className="flex size-10 items-center justify-center rounded-full border border-white/15 text-white hover:bg-[#dfba73] hover:text-black"
               >
                 <X className="size-4" />
               </button>
@@ -169,7 +169,7 @@ export function InfoDrawer({
                           onClick={close}
                           className="group flex w-full items-center justify-between border-b border-white/10 py-5 text-left"
                         >
-                          <span className="font-display text-3xl uppercase tracking-wide text-white transition-colors group-hover:text-[#FF3333] md:text-5xl">
+                          <span className="font-display text-3xl uppercase tracking-wide text-white transition-colors group-hover:text-[#dfba73] md:text-5xl">
                             {item.label}
                           </span>
                           <span className="font-mono text-xs text-white/40">↗</span>
@@ -182,7 +182,7 @@ export function InfoDrawer({
                         onClick={close}
                         className="group flex w-full items-center justify-between border-b border-white/10 py-5 text-left"
                       >
-                        <span className="font-display text-3xl uppercase tracking-wide text-white transition-colors group-hover:text-[#FF3333] md:text-5xl">
+                        <span className="font-display text-3xl uppercase tracking-wide text-white transition-colors group-hover:text-[#dfba73] md:text-5xl">
                           AUDIT
                         </span>
                         <span className="font-mono text-xs text-white/40">↗</span>
@@ -190,8 +190,8 @@ export function InfoDrawer({
                     </li>
                   </ul>
 
-                  <div className="mt-8 border border-[#DFBA73]/30 bg-[#DFBA73]/5 p-5">
-                    <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#F6DC9A]">
+                  <div className="mt-8 border border-[#dfba73]/30 bg-[#dfba73]/5 p-5">
+                    <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#efe8d8]">
                       THE 5-MINUTE AUDIT
                     </span>
                     <h3 className="mt-1 font-display text-xl uppercase text-white">
@@ -203,7 +203,7 @@ export function InfoDrawer({
                     <Link
                       to="/audit"
                       onClick={close}
-                      className="mt-4 inline-flex items-center gap-1.5 bg-[#E51924] px-4 py-2 font-mono text-xs font-bold tracking-widest text-white hover:bg-[#FF3333]"
+                      className="mt-4 inline-flex items-center gap-1.5 bg-[#c8362b] px-4 py-2 font-mono text-xs font-bold tracking-widest text-white hover:bg-[#dfba73]"
                     >
                       CLAIM FREE AUDIT →
                     </Link>
@@ -215,7 +215,7 @@ export function InfoDrawer({
                 <div className="space-y-6">
                   <div className="flex flex-wrap items-end justify-between gap-3">
                     <div>
-                      <span className="font-mono text-xs tracking-widest text-[#DFBA73]">
+                      <span className="font-mono text-xs tracking-widest text-[#dfba73]">
                         INVESTMENT &amp; SCOPE
                       </span>
                       <h2 className="mt-2 font-display text-4xl uppercase text-white">
@@ -229,7 +229,7 @@ export function InfoDrawer({
                         onClick={() => setPricingView("TIERS")}
                         className={`px-3 py-1 font-mono text-[10px] font-semibold tracking-wider transition-all ${
                           pricingView === "TIERS"
-                            ? "bg-[#E51924] text-white"
+                            ? "bg-[#c8362b] text-white"
                             : "text-white/60 hover:text-white"
                         }`}
                       >
@@ -240,7 +240,7 @@ export function InfoDrawer({
                         onClick={() => setPricingView("ESTIMATOR")}
                         className={`px-3 py-1 font-mono text-[10px] font-semibold tracking-wider transition-all ${
                           pricingView === "ESTIMATOR"
-                            ? "bg-[#DFBA73] text-black"
+                            ? "bg-[#dfba73] text-black"
                             : "text-white/60 hover:text-white"
                         }`}
                       >
@@ -256,9 +256,9 @@ export function InfoDrawer({
                       {PRICING_TIERS.map((tier) => (
                         <div
                           key={tier.name}
-                          className={`border p-4 transition-colors hover:border-[#FF3333]/50 ${
+                          className={`border p-4 transition-colors hover:border-[#dfba73]/50 ${
                             tier.featured
-                              ? "border-[#FF3333] bg-[#FF3333]/5"
+                              ? "border-[#dfba73] bg-[#dfba73]/5"
                               : "border-white/10 bg-white/[0.02]"
                           }`}
                         >
@@ -273,12 +273,12 @@ export function InfoDrawer({
                             </div>
                             <div className="text-right">
                               {tier.featured && (
-                                <span className="mb-1 flex items-center justify-end gap-1 font-mono text-[10px] text-[#FF3333]">
+                                <span className="mb-1 flex items-center justify-end gap-1 font-mono text-[10px] text-[#dfba73]">
                                   <Sparkles className="size-3" /> POPULAR
                                 </span>
                               )}
                               <span className="font-mono text-xs text-white/40">{tier.note}</span>
-                              <span className="block font-display text-3xl text-[#FF3333]">
+                              <span className="block font-display text-3xl text-[#dfba73]">
                                 {tier.price}
                               </span>
                             </div>
@@ -289,7 +289,7 @@ export function InfoDrawer({
                                 key={feature}
                                 className="flex items-start gap-2 font-mono text-xs text-white/70"
                               >
-                                <Check className="mt-0.5 size-3 shrink-0 text-[#FF3333]" />
+                                <Check className="mt-0.5 size-3 shrink-0 text-[#dfba73]" />
                                 {feature}
                               </li>
                             ))}
@@ -307,7 +307,7 @@ export function InfoDrawer({
 
               {active === "LET'S WORK" && (
                 <form className="space-y-6" onSubmit={handleSubmit}>
-                  <h2 className="font-display text-4xl uppercase text-[#FF3333]">
+                  <h2 className="font-display text-4xl uppercase text-[#dfba73]">
                     Let&apos;s work
                   </h2>
                   <input
@@ -333,13 +333,13 @@ export function InfoDrawer({
                     className={fieldClass}
                     defaultValue=""
                   >
-                    <option value="" disabled className="bg-[#333333]">
+                    <option value="" disabled className="bg-[#1f1a14]">
                       Project type
                     </option>
-                    <option className="bg-[#333333]">Brand identity</option>
-                    <option className="bg-[#333333]">Website / UI-UX</option>
-                    <option className="bg-[#333333]">No-code build</option>
-                    <option className="bg-[#333333]">Other</option>
+                    <option className="bg-[#1f1a14]">Brand identity</option>
+                    <option className="bg-[#1f1a14]">Website / UI-UX</option>
+                    <option className="bg-[#1f1a14]">No-code build</option>
+                    <option className="bg-[#1f1a14]">Other</option>
                   </select>
                   <textarea
                     aria-label="Project details"
@@ -354,7 +354,7 @@ export function InfoDrawer({
                   <button
                     type="submit"
                     disabled={sending}
-                    className="w-full bg-[#FF3333] px-6 py-4 font-mono text-xs tracking-widest text-black transition-opacity hover:opacity-90 disabled:opacity-50"
+                    className="w-full bg-[#dfba73] px-6 py-4 font-mono text-xs tracking-widest text-black transition-opacity hover:opacity-90 disabled:opacity-50"
                   >
                     {sending ? "SENDING..." : "SEND BRIEF"}
                   </button>
@@ -364,7 +364,7 @@ export function InfoDrawer({
               {active === "PROJECTS" && (
                 <div className="space-y-6">
                   <div>
-                    <span className="font-mono text-xs tracking-widest text-[#FF3333]">
+                    <span className="font-mono text-xs tracking-widest text-[#dfba73]">
                       SELECTED WORK
                     </span>
                     <h2 className="mt-2 font-display text-4xl uppercase text-white">Projects</h2>
@@ -379,7 +379,7 @@ export function InfoDrawer({
                         onClick={() => setProjectFilter(cat)}
                         className={`px-3 py-1.5 font-mono text-[11px] tracking-wider uppercase transition-colors ${
                           projectFilter === cat
-                            ? "bg-[#FF3333] text-black font-semibold"
+                            ? "bg-[#dfba73] text-black font-semibold"
                             : "border border-white/15 text-white/60 hover:border-white/30 hover:text-white"
                         }`}
                       >
@@ -392,7 +392,7 @@ export function InfoDrawer({
                     {filteredProjects.map((project) => (
                       <div
                         key={project.id || project.title}
-                        className="group block border border-white/10 bg-white/[0.02] p-5 transition-all hover:border-[#DFBA73]/50"
+                        className="group block border border-white/10 bg-white/[0.02] p-5 transition-all hover:border-[#dfba73]/50"
                       >
                         <div className="flex items-start justify-between gap-4">
                           <div>
@@ -401,7 +401,7 @@ export function InfoDrawer({
                                 {project.title}
                               </h3>
                               {project.metric && (
-                                <span className="bg-[#DFBA73]/15 border border-[#DFBA73]/30 px-2 py-0.5 font-mono text-[10px] font-medium text-[#F5DC9E]">
+                                <span className="bg-[#dfba73]/15 border border-[#dfba73]/30 px-2 py-0.5 font-mono text-[10px] font-medium text-[#F5DC9E]">
                                   {project.metric}
                                 </span>
                               )}
@@ -451,7 +451,7 @@ export function InfoDrawer({
                             <button
                               type="button"
                               onClick={() => setActive("LET'S WORK")}
-                              className="bg-[#E51924] px-3 py-1.5 font-mono text-[10px] font-bold tracking-widest text-white hover:bg-[#FF3333]"
+                              className="bg-[#c8362b] px-3 py-1.5 font-mono text-[10px] font-bold tracking-widest text-white hover:bg-[#dfba73]"
                             >
                               COMMISSION
                             </button>
@@ -471,10 +471,10 @@ export function InfoDrawer({
               {/* Case Study Deep Dive Modal */}
               {selectedCaseStudy && (
                 <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/85 p-4 backdrop-blur-md">
-                  <div className="relative max-h-[85vh] w-full max-w-xl overflow-y-auto border border-white/15 bg-[#030014] p-6 shadow-2xl">
+                  <div className="relative max-h-[85vh] w-full max-w-xl overflow-y-auto border border-white/15 bg-[#0a0a0a] p-6 shadow-2xl">
                     <div className="flex items-start justify-between border-b border-white/10 pb-4">
                       <div>
-                        <span className="font-mono text-[10px] uppercase tracking-widest text-[#DFBA73]">
+                        <span className="font-mono text-[10px] uppercase tracking-widest text-[#dfba73]">
                           FEATURED CASE STUDY &bull; {selectedCaseStudy.category}
                         </span>
                         <h2 className="mt-1 font-display text-3xl uppercase text-white">
@@ -495,8 +495,8 @@ export function InfoDrawer({
 
                     <div className="mt-6 space-y-5 font-mono text-xs">
                       {selectedCaseStudy.metric && (
-                        <div className="border border-[#DFBA73]/30 bg-[#DFBA73]/10 p-3">
-                          <span className="text-[10px] uppercase tracking-widest text-[#DFBA73]">
+                        <div className="border border-[#dfba73]/30 bg-[#dfba73]/10 p-3">
+                          <span className="text-[10px] uppercase tracking-widest text-[#dfba73]">
                             Key Outcome &amp; Impact
                           </span>
                           <p className="mt-0.5 font-display text-xl uppercase text-white">
@@ -536,7 +536,7 @@ export function InfoDrawer({
                         href={selectedCaseStudy.url}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex items-center gap-1.5 border border-white/20 px-4 py-2 font-mono text-xs text-white hover:border-[#DFBA73] hover:text-[#DFBA73]"
+                        className="inline-flex items-center gap-1.5 border border-white/20 px-4 py-2 font-mono text-xs text-white hover:border-[#dfba73] hover:text-[#dfba73]"
                       >
                         OPEN LIVE DEMO <ArrowUpRight className="size-3.5" />
                       </a>
@@ -548,7 +548,7 @@ export function InfoDrawer({
                             setSelectedCaseStudy(null);
                             setActive("LET'S WORK");
                           }}
-                          className="bg-[#E51924] px-5 py-2 font-mono text-xs font-bold tracking-widest text-white transition-opacity hover:opacity-90"
+                          className="bg-[#c8362b] px-5 py-2 font-mono text-xs font-bold tracking-widest text-white transition-opacity hover:opacity-90"
                         >
                           COMMISSION THIS SCOPE →
                         </button>
@@ -561,7 +561,7 @@ export function InfoDrawer({
               {active === "ABOUT" && (
                 <div className="space-y-6">
                   <div>
-                    <span className="font-mono text-xs tracking-widest text-[#FF3333]">ABOUT</span>
+                    <span className="font-mono text-xs tracking-widest text-[#dfba73]">ABOUT</span>
                     <h2 className="mt-2 font-display text-4xl uppercase text-white">Rory Ulloa</h2>
                   </div>
                   <div className="max-w-lg space-y-4 font-mono text-xs leading-relaxed text-white/60">
@@ -596,7 +596,7 @@ export function InfoDrawer({
                         key={item}
                         className="flex items-start gap-2 font-mono text-xs text-white/70"
                       >
-                        <Check className="mt-0.5 size-3 shrink-0 text-[#FF3333]" />
+                        <Check className="mt-0.5 size-3 shrink-0 text-[#dfba73]" />
                         {item}
                       </li>
                     ))}
@@ -610,7 +610,7 @@ export function InfoDrawer({
               {active === "PROCESS" && (
                 <div className="space-y-6">
                   <div>
-                    <span className="font-mono text-xs tracking-widest text-[#FF3333]">
+                    <span className="font-mono text-xs tracking-widest text-[#dfba73]">
                       HOW I WORK
                     </span>
                     <h2 className="mt-2 font-display text-4xl uppercase text-white">Process</h2>
@@ -644,7 +644,7 @@ export function InfoDrawer({
                       },
                     ].map((item) => (
                       <li key={item.step} className="border-l border-white/10 pl-4">
-                        <span className="font-mono text-[10px] tracking-widest text-[#FF3333]">
+                        <span className="font-mono text-[10px] tracking-widest text-[#dfba73]">
                           {item.step}
                         </span>
                         <h3 className="font-display text-xl uppercase tracking-wide text-white">
@@ -662,7 +662,7 @@ export function InfoDrawer({
               {active === "RESUME" && (
                 <div className="space-y-6">
                   <div>
-                    <span className="font-mono text-xs tracking-widest text-[#FF3333]">
+                    <span className="font-mono text-xs tracking-widest text-[#dfba73]">
                       CAPABILITIES
                     </span>
                     <h2 className="mt-2 font-display text-4xl uppercase text-white">Resume</h2>
@@ -694,7 +694,7 @@ export function InfoDrawer({
                       },
                     ].map((block) => (
                       <div key={block.heading}>
-                        <h3 className="font-mono text-xs uppercase tracking-widest text-[#FF3333]">
+                        <h3 className="font-mono text-xs uppercase tracking-widest text-[#dfba73]">
                           {block.heading}
                         </h3>
                         <ul className="mt-2 space-y-2">

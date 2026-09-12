@@ -83,7 +83,7 @@ const STEPS = [
 ];
 
 const inputClass =
-  "w-full border-b border-white/15 bg-transparent py-3 font-mono text-sm text-white placeholder:text-white/30 focus:border-[#FF3333] focus:outline-none";
+  "w-full border-b border-white/15 bg-transparent py-3 font-mono text-sm text-white placeholder:text-white/30 focus:border-[#dfba73] focus:outline-none";
 const labelClass = "block font-mono text-[10px] tracking-widest text-white/40";
 
 function BriefPage() {
@@ -216,9 +216,9 @@ function BriefPage() {
 
   if (done) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-[#030014] px-5 py-24">
+      <main className="flex min-h-screen items-center justify-center bg-[#0a0a0a] px-5 py-24">
         <div className="w-full max-w-lg border border-white/10 bg-white/[0.02] p-8">
-          <span className="font-mono text-[10px] tracking-widest text-[#FF3333]">
+          <span className="font-mono text-[10px] tracking-widest text-[#dfba73]">
             BRIEF RECEIVED
           </span>
           <h1 className="mt-4 font-display text-4xl uppercase leading-[0.9] text-white">
@@ -230,7 +230,7 @@ function BriefPage() {
           </p>
           <Link
             to="/"
-            className="mt-8 inline-flex items-center gap-2 bg-[#FF3333] px-5 py-3 font-mono text-xs tracking-widest text-black transition-opacity hover:opacity-90"
+            className="mt-8 inline-flex items-center gap-2 bg-[#dfba73] px-5 py-3 font-mono text-xs tracking-widest text-black transition-opacity hover:opacity-90"
           >
             BACK TO SITE
           </Link>
@@ -242,12 +242,12 @@ function BriefPage() {
   const current = STEPS[step]!;
 
   return (
-    <main className="min-h-screen bg-[#030014] px-5 py-20">
+    <main className="min-h-screen bg-[#0a0a0a] px-5 py-20">
       <Toaster />
       <div className="mx-auto max-w-2xl">
         <Logo variant="compact" size="md" href="/" className="mb-8" />
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <span className="font-mono text-[10px] tracking-widest text-[#FF3333]">
+          <span className="font-mono text-[10px] tracking-widest text-[#dfba73]">
             {sessionId ? "POST-PURCHASE INTAKE" : "PROJECT INTAKE"}
           </span>
           {lastSaved && (
@@ -268,7 +268,7 @@ function BriefPage() {
           {STEPS.map((s, index) => (
             <div
               key={s.title}
-              className={`h-[3px] flex-1 ${index <= step ? "bg-[#FF3333]" : "bg-white/10"}`}
+              className={`h-[3px] flex-1 ${index <= step ? "bg-[#dfba73]" : "bg-white/10"}`}
             />
           ))}
         </div>
@@ -335,11 +335,11 @@ function BriefPage() {
                   value={form.projectType}
                   onChange={(e) => set("projectType")(e.target.value)}
                 >
-                  <option value="" className="bg-[#030014]">
+                  <option value="" className="bg-[#0a0a0a]">
                     Select…
                   </option>
                   {PROJECT_TYPES.map((type) => (
-                    <option key={type} value={type} className="bg-[#030014]">
+                    <option key={type} value={type} className="bg-[#0a0a0a]">
                       {type}
                     </option>
                   ))}
@@ -426,11 +426,11 @@ function BriefPage() {
                   value={form.budget}
                   onChange={(e) => set("budget")(e.target.value)}
                 >
-                  <option value="" className="bg-[#030014]">
+                  <option value="" className="bg-[#0a0a0a]">
                     Select…
                   </option>
                   {BUDGETS.map((b) => (
-                    <option key={b} value={b} className="bg-[#030014]">
+                    <option key={b} value={b} className="bg-[#0a0a0a]">
                       {b}
                     </option>
                   ))}
@@ -446,11 +446,11 @@ function BriefPage() {
                   value={form.timeline}
                   onChange={(e) => set("timeline")(e.target.value)}
                 >
-                  <option value="" className="bg-[#030014]">
+                  <option value="" className="bg-[#0a0a0a]">
                     Select…
                   </option>
                   {TIMELINES.map((t) => (
-                    <option key={t} value={t} className="bg-[#030014]">
+                    <option key={t} value={t} className="bg-[#0a0a0a]">
                       {t}
                     </option>
                   ))}
@@ -496,7 +496,7 @@ function BriefPage() {
               <button
                 type="button"
                 onClick={next}
-                className="bg-[#FF3333] px-6 py-4 font-mono text-xs tracking-widest text-black transition-opacity hover:opacity-90"
+                className="bg-[#dfba73] px-6 py-4 font-mono text-xs tracking-widest text-black transition-opacity hover:opacity-90"
               >
                 NEXT STEP
               </button>
@@ -504,7 +504,7 @@ function BriefPage() {
               <button
                 type="submit"
                 disabled={sending}
-                className="bg-[#FF3333] px-6 py-4 font-mono text-xs tracking-widest text-black transition-opacity hover:opacity-90 disabled:opacity-50"
+                className="bg-[#dfba73] px-6 py-4 font-mono text-xs tracking-widest text-black transition-opacity hover:opacity-90 disabled:opacity-50"
               >
                 {sending ? "SENDING…" : "SEND BRIEF"}
               </button>

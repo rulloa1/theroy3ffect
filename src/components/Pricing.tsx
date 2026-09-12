@@ -22,12 +22,12 @@ export function Pricing({ onCommission, mode = "homepage" }: { onCommission?: ()
   return (
     <section
       id="pricing"
-      className="relative z-20 w-full bg-[#030014] px-5 py-20 md:px-10 md:py-32"
+      className="relative z-20 w-full bg-[#0a0a0a] px-5 py-20 md:px-10 md:py-32"
     >
       <div className="mx-auto max-w-7xl">
         <div className="mb-8 flex flex-col gap-4 md:mb-14 md:flex-row md:items-end md:justify-between">
           <div>
-            <span className="font-mono text-xs tracking-widest text-[#DFBA73]">
+            <span className="font-mono text-xs tracking-widest text-[#dfba73]">
               INVESTMENT &amp; SCOPE
             </span>
             <h2 className="mt-3 font-display text-4xl uppercase leading-[0.9] text-white md:text-6xl lg:text-7xl">
@@ -45,7 +45,7 @@ export function Pricing({ onCommission, mode = "homepage" }: { onCommission?: ()
                 onClick={() => setViewMode("TIERS")}
                 className={`inline-flex items-center gap-2 px-4 py-2 font-mono text-xs font-semibold tracking-wider transition-all ${
                   viewMode === "TIERS"
-                    ? "bg-[#E51924] text-white shadow-lg"
+                    ? "bg-[#c8362b] text-white shadow-lg"
                     : "text-white/60 hover:text-white"
                 }`}
               >
@@ -57,7 +57,7 @@ export function Pricing({ onCommission, mode = "homepage" }: { onCommission?: ()
                 onClick={() => setViewMode("ESTIMATOR")}
                 className={`inline-flex items-center gap-2 px-4 py-2 font-mono text-xs font-semibold tracking-wider transition-all ${
                   viewMode === "ESTIMATOR"
-                    ? "bg-[#DFBA73] text-black shadow-lg"
+                    ? "bg-[#dfba73] text-black shadow-lg"
                     : "text-white/60 hover:text-white"
                 }`}
               >
@@ -81,14 +81,14 @@ export function Pricing({ onCommission, mode = "homepage" }: { onCommission?: ()
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: "-50px" }}
                   transition={{ delay: i * 0.1, duration: 0.5 }}
-                  className={`group relative flex flex-col justify-between border p-5 transition-colors hover:border-[#FF3333]/50 md:p-6 ${
+                  className={`group relative flex flex-col justify-between border p-5 transition-colors hover:border-[#dfba73]/50 md:p-6 ${
                     tier.featured
-                      ? "border-[#FF3333] bg-[#FF3333]/5"
+                      ? "border-[#dfba73] bg-[#dfba73]/5"
                       : "border-white/10 bg-white/[0.02]"
                   }`}
                 >
                   {tier.featured && (
-                    <div className="absolute -top-3 left-5 flex items-center gap-1 bg-[#FF3333] px-2 py-1 font-mono text-[10px] font-bold tracking-widest text-black">
+                    <div className="absolute -top-3 left-5 flex items-center gap-1 bg-[#dfba73] px-2 py-1 font-mono text-[10px] font-bold tracking-widest text-black">
                       <Sparkles className="size-3" />
                       POPULAR
                     </div>
@@ -100,7 +100,7 @@ export function Pricing({ onCommission, mode = "homepage" }: { onCommission?: ()
                     </h3>
                     <div className="mt-4 flex items-baseline gap-2">
                        {tier.note !== "/mo" ? <span className="font-mono text-[15px] text-white/90">{tier.note}</span> : null}
-                      <span className="font-display text-4xl text-[#FF3333] md:text-5xl">
+                      <span className="font-display text-4xl text-[#dfba73] md:text-5xl">
                         {tier.price}
                       </span>
                        {tier.note === "/mo" ? <span className="font-mono text-[15px] text-white/90">/mo</span> : null}
@@ -114,7 +114,7 @@ export function Pricing({ onCommission, mode = "homepage" }: { onCommission?: ()
                           key={feature}
                           className="flex items-start gap-2 font-mono text-[15px] leading-[1.6] text-white/90"
                         >
-                          <Check className="mt-0.5 size-3 shrink-0 text-[#FF3333]" />
+                          <Check className="mt-0.5 size-3 shrink-0 text-[#dfba73]" />
                           {feature}
                         </li>
                       ))}
@@ -136,8 +136,8 @@ export function Pricing({ onCommission, mode = "homepage" }: { onCommission?: ()
                       }
                       className={`flex w-full items-center justify-center gap-2 px-4 py-3 font-mono text-xs tracking-widest transition-all ${
                         tier.featured
-                          ? "bg-[#FF3333] text-black hover:bg-[#FF3333]/90"
-                          : "border border-white/20 text-white hover:border-[#FF3333] hover:bg-[#FF3333] hover:text-black"
+                          ? "bg-[#dfba73] text-black hover:bg-[#dfba73]/90"
+                          : "border border-white/20 text-white hover:border-[#dfba73] hover:bg-[#dfba73] hover:text-black"
                       }`}
                     >
                       <Lock className="size-3" />
@@ -154,7 +154,7 @@ export function Pricing({ onCommission, mode = "homepage" }: { onCommission?: ()
                           kicker: tier.full.recurring ? "MONTHLY RETAINER" : "PAY IN FULL",
                         })
                       }
-                      className="flex w-full items-center justify-center gap-2 border border-white/10 px-4 py-2.5 font-mono text-[11px] tracking-widest text-white/70 transition-colors hover:border-[#FF3333] hover:text-[#FF3333]"
+                      className="flex w-full items-center justify-center gap-2 border border-white/10 px-4 py-2.5 font-mono text-[11px] tracking-widest text-white/70 transition-colors hover:border-[#dfba73] hover:text-[#dfba73]"
                     >
                       {tier.full.recurring ? `SUBSCRIBE ${tier.full.amountLabel}` : `PAY IN FULL ${tier.full.amountLabel}`}
                     </button>
@@ -162,7 +162,7 @@ export function Pricing({ onCommission, mode = "homepage" }: { onCommission?: ()
                     ) : (
                       <Link
                         to="/book"
-                        className={`flex min-h-11 w-full items-center justify-center gap-2 px-4 py-3 font-mono text-xs tracking-widest transition-all ${tier.featured ? "bg-[#FF3333] font-bold text-black hover:bg-[#FF5555]" : "border border-white/40 text-white hover:border-[#DFBA73]"}`}
+                        className={`flex min-h-11 w-full items-center justify-center gap-2 px-4 py-3 font-mono text-xs tracking-widest transition-all ${tier.featured ? "bg-[#dfba73] font-bold text-black hover:bg-[#c8362b]" : "border border-white/40 text-white hover:border-[#dfba73]"}`}
                       >
                         {tier.cta}<ArrowRight className="size-3" />
                       </Link>
@@ -170,7 +170,7 @@ export function Pricing({ onCommission, mode = "homepage" }: { onCommission?: ()
                     {mode === "checkout" ? <button
                       type="button"
                       onClick={onCommission}
-                      className="flex min-h-11 w-full items-center justify-center gap-2 px-4 py-2 font-mono text-[15px] tracking-widest text-white/90 transition-colors hover:text-[#FF3333]"
+                      className="flex min-h-11 w-full items-center justify-center gap-2 px-4 py-2 font-mono text-[15px] tracking-widest text-white/90 transition-colors hover:text-[#dfba73]"
                     >
                       {tier.cta}
                       <ArrowRight className="size-3" />
@@ -181,12 +181,12 @@ export function Pricing({ onCommission, mode = "homepage" }: { onCommission?: ()
             </div>
 
             <div className="mt-16 opacity-70">
-              <span className="font-mono text-xs tracking-widest text-[#FF3333]">ADD-ONS</span>
+              <span className="font-mono text-xs tracking-widest text-[#dfba73]">ADD-ONS</span>
               <div className="mt-5 grid gap-4 sm:grid-cols-3">
                 {ADD_ONS.map((addOn) => (
                   <div
                     key={addOn.priceId}
-                    className="flex flex-col justify-between border border-white/10 bg-white/[0.02] p-5 transition-colors hover:border-[#FF3333]/50"
+                    className="flex flex-col justify-between border border-white/10 bg-white/[0.02] p-5 transition-colors hover:border-[#dfba73]/50"
                   >
                     <div>
                       <h3 className="font-display text-lg uppercase text-white">{addOn.name}</h3>
@@ -204,7 +204,7 @@ export function Pricing({ onCommission, mode = "homepage" }: { onCommission?: ()
                           kicker: "ADD-ON",
                         })
                       }
-                      className="mt-6 flex w-full items-center justify-center gap-2 border border-white/20 px-4 py-2.5 font-mono text-[11px] tracking-widest text-white transition-colors hover:border-[#FF3333] hover:bg-[#FF3333] hover:text-black"
+                      className="mt-6 flex w-full items-center justify-center gap-2 border border-white/20 px-4 py-2.5 font-mono text-[11px] tracking-widest text-white transition-colors hover:border-[#dfba73] hover:bg-[#dfba73] hover:text-black"
                     >
                       <Plus className="size-3" />
                       ADD {addOn.amountLabel}
@@ -221,7 +221,7 @@ export function Pricing({ onCommission, mode = "homepage" }: { onCommission?: ()
               needed — you’ll get a receipt and a brief link by email right after checkout.
             </p>
             {mode === "homepage" ? (
-              <Link to="/pricing" className="mt-5 inline-flex min-h-11 items-center py-2 font-mono text-[15px] tracking-widest text-[#DFBA73] hover:text-white">SEE FULL PRICING AND CHECKOUT →</Link>
+              <Link to="/pricing" className="mt-5 inline-flex min-h-11 items-center py-2 font-mono text-[15px] tracking-widest text-[#dfba73] hover:text-white">SEE FULL PRICING AND CHECKOUT →</Link>
             ) : null}
           </>
         )}

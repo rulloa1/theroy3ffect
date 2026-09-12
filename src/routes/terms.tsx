@@ -41,7 +41,7 @@ function TermsPage() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-[#030014]">
+    <div className="min-h-screen bg-[#0a0a0a]">
       <SiteHeader onNavigate={() => void navigate({ to: "/" })} />
       <main className="px-5 pb-16 pt-28 md:px-10 md:pt-36">
         <article className="mx-auto max-w-3xl">
