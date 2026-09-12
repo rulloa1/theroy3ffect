@@ -64,7 +64,7 @@ function Home() {
 
       <section className="relative min-h-[42rem] overflow-hidden md:min-h-screen">
         <HeroContent />
-        <img src={HERO_IMAGE} alt="Rory Ulloa — Creative Director, UI/UX Designer and no-code developer" loading="eager" decoding="async" fetchPriority="high" width={1200} height={1600} className="pointer-events-none absolute bottom-0 right-[-18%] z-10 h-[38%] w-auto max-w-none object-contain object-bottom opacity-40 grayscale contrast-125 sm:right-0 sm:h-[55%] sm:opacity-55 md:h-[84%] md:opacity-70 lg:right-[2%]" />
+        <img src={HERO_IMAGE} alt="Rory Ulloa — Creative Director, UI/UX Designer and no-code developer" loading="eager" decoding="async" fetchPriority="high" width={1200} height={1600} className="pointer-events-none absolute bottom-0 right-[-18%] z-10 h-[38%] w-auto max-w-none object-contain object-bottom opacity-40 grayscale contrast-125 sm:right-0 sm:h-[55%] sm:opacity-55 md:right-[-3%] md:h-[72%] md:opacity-70 lg:right-[2%] lg:h-[78%]" />
       </section>
 
       <section id="work" className="relative z-20 bg-[#030014] px-5 py-20 md:px-10 md:py-28">

@@ -5,7 +5,7 @@ export function HeroContent() {
   return (
     <div className="pointer-events-none relative z-20 flex min-h-[42rem] w-full flex-col justify-start px-5 pt-28 sm:px-8 md:min-h-screen md:justify-center md:px-10 md:pt-24">
       <div className="mx-auto w-full max-w-7xl">
-      <div className="max-w-3xl">
+      <div className="max-w-3xl md:max-w-[54%]">
       <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#DFBA73] sm:text-xs">Houston · brand, UI/UX, no-code build</p>
       <h1 className="mt-4 max-w-3xl font-display text-[2.75rem] uppercase leading-[0.92] text-white sm:text-6xl md:text-7xl lg:text-8xl">
         A website that looks expensive and actually asks for the sale.

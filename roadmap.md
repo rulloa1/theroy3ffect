@@ -4,4 +4,4 @@
 - [x] Repair/create Work, About, and Process pages and navigation
 - [x] Align Pricing, Services, and Case Study copy and CTAs
 - [x] Simplify header/footer and delay chat behavior
-- [ ] Verify metadata, mobile layout, routes, and interactions
+- [x] Verify metadata, mobile layout, routes, and interactions
