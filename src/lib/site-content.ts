@@ -61,7 +61,8 @@ export const SERVICES: ServiceEntry[] = [
       "Ongoing design & build capacity",
       "Priority turnaround",
       "Design system upkeep",
-      "Monthly strategy call",
+      "Weekly async sync",
+      "Pause or cancel anytime",
     ],
   },
 ];
@@ -81,7 +82,7 @@ export const PROCESS_STEPS: ProcessStep[] = [
   {
     step: "02",
     title: "Direction",
-    body: "One focused round of visual direction: type, colour, layout language and the tone of the interface. We lock a single direction before any production work starts.",
+    body: "One focused round of visual direction: type, colour, layout language and the tone of the interface. I lock a single direction with you before any production work starts.",
   },
   {
     step: "03",

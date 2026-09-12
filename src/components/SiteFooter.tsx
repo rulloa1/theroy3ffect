@@ -2,11 +2,13 @@ import { Link } from "@tanstack/react-router";
 import { ArrowUpRight, SearchCheck } from "lucide-react";
 
 const FOOTER_LINKS = [
+  { label: "WORK", to: "/work" },
   { label: "SERVICES", to: "/services" },
   { label: "PRICING", to: "/pricing" },
   { label: "BOOK", to: "/book" },
   { label: "CASE STUDY", to: "/case-study" },
   { label: "AUDIT", to: "/audit" },
+  { label: "CLIENT SIGN IN", to: "/portal/login" },
   { label: "PRIVACY", to: "/privacy" },
   { label: "TERMS", to: "/terms" },
 ];

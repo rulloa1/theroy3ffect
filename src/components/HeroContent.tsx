@@ -1,102 +1,41 @@
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import { ScrambleText } from "./ScrambleText";
-import { shouldRunHeavyEffects } from "@/lib/effects-guard";
-
-const WORDS = ["PURPOSE", "IMPACT", "INTENT"];
-const HEADLINES = [
-  "MAKE YOUR BUSINESS IMPOSSIBLE TO IGNORE.",
-  "YOUR NEXT WEBSITE STARTS HERE.",
-  "YOUR BUSINESS NEEDS A WEBSITE.",
-];
-const BIO =
-  "I'm Rory Ulloa — Creative Director, UI/UX Designer & No-Code Developer based in Houston, Texas, crafting high-impact web design that makes your brand impossible to ignore.";
+import { Link } from "@tanstack/react-router";
+import { ArrowUpRight } from "lucide-react";
 
 export function HeroContent() {
-  const [wordIndex, setWordIndex] = useState(0);
-  const [headlineIndex, setHeadlineIndex] = useState(0);
-  const [bioKey, setBioKey] = useState(0);
-  const [animated, setAnimated] = useState(false);
-
-  useEffect(() => {
-    setAnimated(shouldRunHeavyEffects());
-  }, []);
-
-  useEffect(() => {
-    if (!animated) return;
-    const id = setInterval(() => {
-      setWordIndex((i) => (i + 1) % WORDS.length);
-      setHeadlineIndex((i) => (i + 1) % HEADLINES.length);
-    }, 4500);
-    return () => clearInterval(id);
-  }, [animated]);
-
-  useEffect(() => {
-    if (!animated) return;
-    const id = setInterval(() => setBioKey((k) => k + 1), 8000);
-    return () => clearInterval(id);
-  }, [animated]);
-
   return (
-    <div className="pointer-events-none relative z-20 flex w-full flex-1 flex-col items-center justify-center px-5 pt-24 text-center md:justify-end md:pb-[26vh] md:pt-0">
-      {/* High Impact Banner Kicker */}
-      <motion.div
-        key={`headline-${headlineIndex}`}
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="mb-4 inline-flex items-center gap-2 border border-[#DFBA73]/40 bg-[#DFBA73]/10 px-3.5 py-1.5 font-mono text-[10px] font-bold tracking-[0.25em] text-[#F6DC9A] uppercase sm:text-xs"
-      >
-        <span className="text-[#FF3333]">★</span> {HEADLINES[headlineIndex]}
-      </motion.div>
-
-      <h1 className="flex w-full flex-col items-center leading-[0.82]">
-        <span className="mb-2 font-mono text-[9px] uppercase tracking-[0.28em] text-white/70 sm:text-xs sm:tracking-[0.35em]">
-          Rory Ulloa — Creative Director &amp; UI/UX Designer
-        </span>
-        <span className="text-stroke-thin font-display text-[8vw] uppercase tracking-[0.18em] sm:text-[6.5vw] sm:tracking-[0.22em] md:[-webkit-text-stroke:2px_white]">
-          DESIGN WITH
-        </span>
-        <ScrambleText
-          text={WORDS[wordIndex]!}
-          className="font-display text-[17vw] uppercase leading-[0.78] tracking-tight text-[#FF3333] sm:text-[14vw]"
-        />
+    <div className="pointer-events-none relative z-20 flex min-h-[42rem] w-full flex-col justify-start px-5 pt-28 sm:px-8 md:min-h-screen md:justify-center md:px-10 md:pt-24">
+      <div className="mx-auto w-full max-w-7xl">
+      <div className="max-w-3xl md:max-w-[54%]">
+      <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#DFBA73] sm:text-xs">Houston · brand, UI/UX, no-code build</p>
+      <h1 className="mt-4 max-w-3xl font-display text-[2.75rem] uppercase leading-[0.92] text-white sm:text-6xl md:text-7xl lg:text-8xl">
+        A website that looks expensive and actually asks for the sale.
       </h1>
-
-      {/* 3 Core Business Pillars Badges */}
-      <div className="mt-4 flex flex-wrap items-center justify-center gap-2 font-mono text-[10px] font-semibold tracking-wider text-white/80 sm:text-xs">
+      <p className="mt-5 max-w-2xl font-mono text-xs leading-relaxed text-white/70 sm:text-sm">
+        I&apos;m Rory Ulloa. I design and ship high-contrast sites for founders and local service businesses. You approve the design. That design is what goes live.
+      </p>
+      <div className="pointer-events-auto mt-6 flex flex-wrap gap-3">
+        <Link to="/audit" className="inline-flex items-center gap-2 bg-[#FF3333] px-5 py-3 font-mono text-[11px] font-bold tracking-widest text-black transition-colors hover:bg-[#FF5555]">
+          GET A FREE 5-MINUTE AUDIT <ArrowUpRight className="size-4" />
+        </Link>
+        <Link to="/work" className="hidden items-center gap-2 border border-white/20 px-5 py-3 font-mono text-[11px] tracking-widest text-white transition-colors hover:border-[#DFBA73] sm:inline-flex">
+          SEE THE WORK
+        </Link>
+      </div>
+      <div className="mt-5 flex max-w-2xl flex-wrap gap-2 font-mono text-[9px] tracking-wider text-white/70 sm:text-[10px]">
         <span className="border border-white/15 bg-white/[0.03] px-3 py-1 text-[#F6DC9A]">
-          ❖ UI/UX DESIGN
+          UI/UX DESIGN
         </span>
         <span className="border border-white/15 bg-white/[0.03] px-3 py-1 text-[#FF3333]">
-          ❖ NO-CODE WEBSITE DEVELOPMENT
+          NO-CODE DEVELOPMENT
         </span>
         <span className="border border-white/15 bg-white/[0.03] px-3 py-1 text-white">
-          ❖ CREATIVE DIRECTION
+          CREATIVE DIRECTION
         </span>
       </div>
-
-      <motion.p
-        key={bioKey}
-        className="mt-4 max-w-lg font-mono text-[11px] leading-relaxed text-white/70 sm:text-xs"
-      >
-        {animated
-          ? BIO.split("").map((ch, i) => (
-              <motion.span
-                key={`${bioKey}-${i}`}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: i * 0.015, duration: 0.04 }}
-              >
-                {ch}
-              </motion.span>
-            ))
-          : BIO}
-      </motion.p>
-
-      {/* Slogan Punchline */}
-      <div className="mt-3 font-mono text-[10px] font-bold tracking-[0.3em] text-[#DFBA73] uppercase">
+      <p className="mt-4 font-mono text-[9px] font-bold tracking-[0.22em] text-[#DFBA73] uppercase sm:text-[10px]">
         YOUR IDEA. <span className="text-[#FF3333]">YOUR BRAND.</span> YOUR IMPACT.
+      </p>
+      </div>
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowUpRight, Compass, LayoutGrid, PenTool, Rocket, Smartphone } from "lucide-react";
+import { ArrowUpRight, Compass, LayoutGrid, MessageSquareText, MousePointerClick, PenTool, Rocket, Smartphone } from "lucide-react";
 import { Logo } from "@/components/Logo";
 
 const TITLE = "Case Study — Redesigning a Houston Service Business Site | The Roy Effect";
@@ -145,6 +145,24 @@ function CaseStudyPage() {
             </li>
           ))}
         </ul>
+      </section>
+
+      <section className="mx-auto mt-20 max-w-4xl px-5 md:mt-28 md:px-10">
+        <h2 className="font-display text-3xl uppercase leading-[0.95] text-white md:text-4xl">Visual storyboard</h2>
+        <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {[
+            { icon: LayoutGrid, step: "01", title: "Problem", body: "The first screen talks about the company before it answers the visitor." },
+            { icon: Smartphone, step: "02", title: "Phone friction", body: "The quote action is buried and the form asks for too much too soon." },
+            { icon: MessageSquareText, step: "03", title: "Rebuilt first screen", body: "A direct service promise, local context and one obvious next step." },
+            { icon: MousePointerClick, step: "04", title: "Quote above the fold", body: "The shortest useful request starts on the first mobile screen." },
+          ].map(({ icon: Icon, step, title, body }) => (
+            <article key={step} className="min-h-56 border border-white/10 bg-[#0a0620] p-5">
+              <div className="flex items-center justify-between"><span className="font-mono text-[10px] text-[#DFBA73]">{step}</span><Icon className="size-5 text-[#FF3333]" /></div>
+              <h3 className="mt-12 font-display text-xl uppercase text-white">{title}</h3>
+              <p className="mt-2 font-mono text-xs leading-relaxed text-white/50">{body}</p>
+            </article>
+          ))}
+        </div>
       </section>
 
       {/* Approach */}

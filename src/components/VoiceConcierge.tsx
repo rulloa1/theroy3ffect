@@ -14,10 +14,13 @@ const ASSISTANT_ID = import.meta.env["VITE_VAPI_ASSISTANT_ID"] as string | undef
 export function VoiceConcierge() {
   const [state, setState] = useState<CallState>("idle");
   const [transcript, setTranscript] = useState("");
+  const [visible, setVisible] = useState(false);
   const vapiRef = useRef<any>(null);
 
   useEffect(() => {
+    const timer = window.setTimeout(() => setVisible(true), 20_000);
     return () => {
+      window.clearTimeout(timer);
       vapiRef.current?.stop?.();
       vapiRef.current = null;
     };
@@ -73,7 +76,7 @@ export function VoiceConcierge() {
     setTranscript("");
   }, []);
 
-  if (!PUBLIC_KEY || !ASSISTANT_ID) return null;
+  if (!PUBLIC_KEY || !ASSISTANT_ID || !visible) return null;
 
   const active = state === "active";
 
@@ -88,7 +91,7 @@ export function VoiceConcierge() {
         type="button"
         onClick={active ? endCall : startCall}
         disabled={state === "connecting"}
-        aria-label={active ? "End voice call" : "Talk to the studio concierge"}
+        aria-label={active ? "End voice call" : "Talk to me"}
         className={cn(
           "group flex items-center gap-2 rounded-full border px-4 py-3 text-xs font-bold uppercase tracking-[0.18em] transition-colors",
           active
@@ -104,7 +107,7 @@ export function VoiceConcierge() {
           <Mic className="h-4 w-4" aria-hidden="true" />
         )}
         <span className="hidden sm:inline">
-          {state === "connecting" ? "Connecting" : active ? "End call" : "Talk to us"}
+          {state === "connecting" ? "Connecting" : active ? "End call" : "Talk to me"}
         </span>
       </button>
     </div>

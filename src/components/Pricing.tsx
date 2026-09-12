@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { Link } from "@tanstack/react-router";
 import { ArrowRight, Check, Sparkles, Lock, Plus, Calculator, Layers } from "lucide-react";
 import { DepositCheckoutModal } from "@/components/DepositCheckoutModal";
 import { ScopeEstimator } from "@/components/ScopeEstimator";
@@ -14,7 +15,7 @@ interface ActivePurchase {
   kicker: string;
 }
 
-export function Pricing({ onCommission }: { onCommission?: () => void }) {
+export function Pricing({ onCommission, mode = "homepage" }: { onCommission?: () => void; mode?: "homepage" | "checkout" }) {
   const [active, setActive] = useState<ActivePurchase | null>(null);
   const [viewMode, setViewMode] = useState<"TIERS" | "ESTIMATOR">("TIERS");
 
@@ -35,10 +36,9 @@ export function Pricing({ onCommission }: { onCommission?: () => void }) {
           </div>
           <div className="flex flex-col gap-3">
             <p className="max-w-md font-mono text-xs leading-relaxed text-white/50">
-              Transparent starting points &amp; custom scopes. Pay a 50% deposit or calculate custom
-              page count &amp; 3D features below.
+              {mode === "homepage" ? "Starting prices. A typical designed-and-built site lands at $7–9k depending on pages and integrations." : "Transparent starting points and custom scopes. Pay a 50% deposit or calculate a custom page count below."}
             </p>
-            {/* View Toggle Tabs */}
+            {mode === "checkout" && (
             <div className="inline-flex rounded-sm border border-white/15 bg-white/[0.02] p-1">
               <button
                 type="button"
@@ -65,6 +65,7 @@ export function Pricing({ onCommission }: { onCommission?: () => void }) {
                 SCOPE CALCULATOR
               </button>
             </div>
+            )}
           </div>
         </div>
 
@@ -119,7 +120,9 @@ export function Pricing({ onCommission }: { onCommission?: () => void }) {
                     </ul>
                   </div>
 
-                  <div className="mt-8 flex flex-col gap-2">
+                   <div className="mt-8 flex flex-col gap-2">
+                    {mode === "checkout" ? (
+                    <>
                     <button
                       type="button"
                       onClick={() =>
@@ -152,24 +155,31 @@ export function Pricing({ onCommission }: { onCommission?: () => void }) {
                       }
                       className="flex w-full items-center justify-center gap-2 border border-white/10 px-4 py-2.5 font-mono text-[11px] tracking-widest text-white/70 transition-colors hover:border-[#FF3333] hover:text-[#FF3333]"
                     >
-                      {tier.full.recurring
-                        ? `SUBSCRIBE ${tier.full.amountLabel}`
-                        : `PAY IN FULL ${tier.full.amountLabel}`}
+                      {tier.full.recurring ? `SUBSCRIBE ${tier.full.amountLabel}` : `PAY IN FULL ${tier.full.amountLabel}`}
                     </button>
-                    <button
+                    </>
+                    ) : (
+                      <Link
+                        to="/book"
+                        className={`flex w-full items-center justify-center gap-2 px-4 py-3 font-mono text-xs tracking-widest transition-all ${tier.featured ? "bg-[#FF3333] text-black hover:bg-[#FF3333]/90" : "border border-white/20 text-white hover:border-[#FF3333]"}`}
+                      >
+                        {tier.cta}<ArrowRight className="size-3" />
+                      </Link>
+                    )}
+                    {mode === "checkout" ? <button
                       type="button"
                       onClick={onCommission}
                       className="flex w-full items-center justify-center gap-2 px-4 py-2 font-mono text-[11px] tracking-widest text-white/50 transition-colors hover:text-[#FF3333]"
                     >
                       {tier.cta}
                       <ArrowRight className="size-3" />
-                    </button>
+                    </button> : null}
                   </div>
                 </motion.div>
               ))}
             </div>
 
-            <div className="mt-16">
+            <div className="mt-16 opacity-70">
               <span className="font-mono text-xs tracking-widest text-[#FF3333]">ADD-ONS</span>
               <div className="mt-5 grid gap-4 sm:grid-cols-3">
                 {ADD_ONS.map((addOn) => (
@@ -183,7 +193,7 @@ export function Pricing({ onCommission }: { onCommission?: () => void }) {
                         {addOn.description}
                       </p>
                     </div>
-                    <button
+                    {mode === "checkout" ? <button
                       type="button"
                       onClick={() =>
                         setActive({
@@ -197,7 +207,7 @@ export function Pricing({ onCommission }: { onCommission?: () => void }) {
                     >
                       <Plus className="size-3" />
                       ADD {addOn.amountLabel}
-                    </button>
+                    </button> : null}
                   </div>
                 ))}
               </div>
@@ -209,6 +219,9 @@ export function Pricing({ onCommission }: { onCommission?: () => void }) {
               kickoff. Retainers bill monthly and can be paused or cancelled anytime. No account
               needed — you’ll get a receipt and a brief link by email right after checkout.
             </p>
+            {mode === "homepage" ? (
+              <Link to="/pricing" className="mt-5 inline-flex font-mono text-xs tracking-widest text-[#DFBA73] hover:text-white">SEE FULL PRICING AND CHECKOUT →</Link>
+            ) : null}
           </>
         )}
       </div>
