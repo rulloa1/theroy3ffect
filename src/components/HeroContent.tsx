@@ -11,7 +11,7 @@ export function HeroContent() {
         A website that looks expensive and actually asks for the sale.
       </h1>
       <p className="mt-5 max-w-2xl font-mono text-xs leading-relaxed text-white/70 sm:text-sm">
-        I&apos;m Rory Ulloa. I design and ship high-contrast sites for founders and local service businesses. You approve the design. That design is what goes live.
+        I&apos;m Rory Ulloa. I design and ship high-contrast sites for founders and local service businesses in Houston and remote.
       </p>
       <div className="pointer-events-auto mt-6 flex flex-wrap gap-3">
         <Link to="/audit" className="inline-flex items-center gap-2 bg-[#FF3333] px-5 py-3 font-mono text-[11px] font-bold tracking-widest text-black transition-colors hover:bg-[#FF5555]">
