@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, ArrowUpRight, Check, Mail, Phone, SearchCheck, Smartphone, Timer, Zap } from "lucide-react";
+import { ArrowUpRight, Check, Mail, SearchCheck, Smartphone, Timer, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SiteHeader, type NavTarget } from "@/components/SiteHeader";
 import { InfoDrawer } from "@/components/InfoDrawer";

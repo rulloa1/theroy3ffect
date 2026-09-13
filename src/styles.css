@@ -105,10 +105,11 @@
 }
 
 .particle-background {
-  background-color: #030014;
+  background-color: var(--ink);
   background-image:
-    linear-gradient(rgba(223, 186, 115, 0.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 51, 51, 0.03) 1px, transparent 1px);
+    radial-gradient(circle at 70% 20%, color-mix(in srgb, var(--gold) 8%, transparent), transparent 34%),
+    linear-gradient(color-mix(in srgb, var(--gold) 2.5%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--gold) 2.5%, transparent) 1px, transparent 1px);
   background-size: 44px 44px;
 }
 
@@ -291,6 +292,7 @@
 @media (max-width: 680px) {
   .cinematic-wrap { width: min(100% - 32px, 1280px); }.cinematic-section { padding-block: 74px; }
   .cinematic-nav { min-height: 68px; padding-inline: 12px; }.cinematic-brand > span:last-child { display: none; }.cinematic-brand-mark { width: 40px; height: 40px; }.cinematic-nav .solid { max-width: 170px; font-size: 9px; }
+  .cinematic-nav a[href="/book"] { display: none; }
   .cinematic-hero { min-height: 760px; padding-inline: 20px; }.cinematic-portrait { inset: 0 -90% 0 -12%; opacity: .44; }.cinematic-portrait img { object-position: 68% 25%; }
   .cinematic-hero h1 { font-size: clamp(64px,22vw,88px); }.cinematic-tagline { flex-direction: column; gap: 2px; }.cinematic-lede { font-size: 16px !important; }
   .cinematic-hero-actions { align-items: flex-end; flex-wrap: wrap; }.work-badge { width: 78px; height: 78px; }
@@ -310,13 +312,32 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .animate-marquee {
+  .animate-marquee,
+  .cinematic-marquee > div,
+  .cinematic-eyebrow > span,
+  .cinematic-hero h1 .line > *,
+  .cinematic-tagline i,
+  .work-badge svg,
+  .scroll-cue i::after,
+  .cinematic-grain {
     animation: none !important;
   }
 
   .scroll-reveal {
     opacity: 1;
     transform: none;
+    transition: none;
+  }
+
+  .cinematic-reveal-ready,
+  .cinematic-reveal-in {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .process-step::before {
+    transform: scaleX(1);
     transition: none;
   }
 }
