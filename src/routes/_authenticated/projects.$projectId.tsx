@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useParams } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import {
   ArrowLeft,
@@ -7,12 +8,18 @@ import {
   Circle,
   ExternalLink,
   Loader2,
+  MessageSquareText,
+  ShieldCheck,
 } from "lucide-react";
+import { toast } from "sonner";
+import { Toaster } from "@/components/ui/sonner";
 import { Logo } from "@/components/Logo";
-import { getMyPortal, type PortalMilestone, type PortalProject } from "@/utils/portal.functions";
+import { decideMilestoneApproval, getMyPortal, type PortalMilestone, type PortalProject } from "@/utils/portal.functions";
 import { getMyProposals, type ProjectProposal } from "@/utils/proposals.functions";
 
 export const Route = createFileRoute("/_authenticated/projects/$projectId")({
+  validateSearch: (search: Record<string, unknown>): { approval?: string } =>
+    typeof search["approval"] === "string" ? { approval: search["approval"] as string } : {},
   head: () => ({
     meta: [
       { title: "Project Details — theroyeffect.com" },
@@ -64,9 +71,31 @@ function Fact({ label, value }: { label: string; value: string }) {
   );
 }
 
-function MilestoneRow({ m }: { m: PortalMilestone }) {
+function MilestoneRow({ m, focused }: { m: PortalMilestone; focused: boolean }) {
+  const queryClient = useQueryClient();
+  const decide = useServerFn(decideMilestoneApproval);
+  const [feedback, setFeedback] = useState("");
+  const [showFeedback, setShowFeedback] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const current = m.approvals[0];
+  const awaiting = current?.status === "awaiting_review";
+  const decideNow = async (decision: "approved" | "changes_requested") => {
+    if (!current) return;
+    setBusy(true);
+    try {
+      await decide({ data: { approvalId: current.id, decision, feedback: feedback.trim() } });
+      toast.success(decision === "approved" ? "Stage approved" : "Change request sent");
+      setFeedback("");
+      setShowFeedback(false);
+      await queryClient.invalidateQueries({ queryKey: ["client-portal"] });
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not save your decision");
+    } finally {
+      setBusy(false);
+    }
+  };
   return (
-    <li className="relative">
+    <li id={current ? `approval-${current.id}` : undefined} className={`relative scroll-mt-8 ${focused ? "border border-[#DFBA73]/50 bg-[#DFBA73]/5 p-4" : ""}`}>
       <span className="absolute -left-[31px] top-0.5 flex size-5 items-center justify-center rounded-full bg-[#030014]">
         {m.status === "done" ? (
           <CheckCircle2 className="size-4 text-emerald-400" />
@@ -84,6 +113,9 @@ function MilestoneRow({ m }: { m: PortalMilestone }) {
         >
           {m.title}
         </span>
+        <span className="border border-white/15 px-2 py-0.5 font-mono text-[9px] tracking-widest text-white/50">
+          {m.stage_type.toUpperCase()}
+        </span>
         {m.due_date && m.status !== "done" && (
           <span className="font-mono text-[10px] tracking-widest text-white/40">
             DUE {date(m.due_date).toUpperCase()}
@@ -96,15 +128,53 @@ function MilestoneRow({ m }: { m: PortalMilestone }) {
         )}
       </div>
       {m.note && <p className="mt-1 font-mono text-xs text-white/50">{m.note}</p>}
-      {m.link && (
+      {(current?.review_url || m.link) && (
         <a
-          href={m.link}
+          href={current?.review_url || m.link || undefined}
           target="_blank"
           rel="noreferrer"
           className="mt-2 inline-flex items-center gap-1.5 border border-[#FF3333]/40 bg-[#FF3333]/10 px-3 py-1.5 font-mono text-[11px] tracking-widest text-[#FF3333] transition-colors hover:bg-[#FF3333] hover:text-black"
         >
           VIEW DELIVERABLE <ExternalLink className="size-3" />
         </a>
+      )}
+      {current && (
+        <div className={`mt-3 border p-4 ${
+          current.status === "approved" ? "border-emerald-500/40 bg-emerald-500/5" :
+          current.status === "changes_requested" ? "border-[#FF3333]/40 bg-[#FF3333]/5" :
+          "border-[#DFBA73]/40 bg-[#DFBA73]/5"
+        }`}>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="font-mono text-[10px] tracking-widest text-[#DFBA73]">
+              {current.status.replace(/_/g, " ").toUpperCase()}
+            </p>
+            <p className="font-mono text-[10px] text-white/40">
+              {current.decided_at ? `SIGNED OFF ${date(current.decided_at).toUpperCase()}` : `SENT ${date(current.requested_at).toUpperCase()}`}
+            </p>
+          </div>
+          {current.review_note && <p className="mt-2 font-mono text-xs leading-relaxed text-white/70">{current.review_note}</p>}
+          {current.client_feedback && <p className="mt-3 border-l-2 border-[#FF3333] pl-3 font-mono text-xs leading-relaxed text-white/80">{current.client_feedback}</p>}
+          {awaiting && !showFeedback && (
+            <div className="mt-4 flex flex-wrap gap-2">
+              <button type="button" disabled={busy} onClick={() => void decideNow("approved")} className="inline-flex min-h-11 items-center gap-2 bg-[#DFBA73] px-4 font-mono text-[10px] font-bold tracking-widest text-black hover:bg-white disabled:opacity-50">
+                <ShieldCheck className="size-4" /> APPROVE STAGE
+              </button>
+              <button type="button" disabled={busy} onClick={() => setShowFeedback(true)} className="inline-flex min-h-11 items-center gap-2 border border-white/20 px-4 font-mono text-[10px] tracking-widest text-white hover:border-[#FF3333] hover:text-[#FF3333] disabled:opacity-50">
+                <MessageSquareText className="size-4" /> REQUEST CHANGES
+              </button>
+            </div>
+          )}
+          {awaiting && showFeedback && (
+            <div className="mt-4 space-y-3">
+              <label className="block font-mono text-[10px] tracking-widest text-white/60" htmlFor={`feedback-${current.id}`}>WHAT SHOULD CHANGE?</label>
+              <textarea id={`feedback-${current.id}`} value={feedback} onChange={(e) => setFeedback(e.target.value)} rows={4} maxLength={3000} className="w-full border border-white/15 bg-black/20 p-3 font-mono text-sm text-white focus:border-[#DFBA73] focus:outline-none" />
+              <div className="flex flex-wrap gap-2">
+                <button type="button" disabled={busy || !feedback.trim()} onClick={() => void decideNow("changes_requested")} className="min-h-11 bg-[#FF3333] px-4 font-mono text-[10px] font-bold tracking-widest text-black disabled:opacity-40">SEND CHANGE REQUEST</button>
+                <button type="button" disabled={busy} onClick={() => setShowFeedback(false)} className="min-h-11 border border-white/20 px-4 font-mono text-[10px] tracking-widest text-white/70">CANCEL</button>
+              </div>
+            </div>
+          )}
+        </div>
       )}
     </li>
   );
@@ -146,6 +216,7 @@ function ProposalCard({ p }: { p: ProjectProposal }) {
 
 function ProjectDetailPage() {
   const { projectId } = useParams({ from: "/_authenticated/projects/$projectId" });
+  const { approval: focusedApproval } = Route.useSearch();
   const fetchPortal = useServerFn(getMyPortal);
   const fetchProposals = useServerFn(getMyProposals);
 
@@ -174,6 +245,7 @@ function ProjectDetailPage() {
 
   return (
     <main className="min-h-screen bg-[#030014] px-5 py-12 md:px-10">
+      <Toaster />
       <div className="mx-auto max-w-4xl">
         <Logo variant="compact" size="md" href="/" className="mb-6" />
         <Link
@@ -230,7 +302,7 @@ function ProjectDetailPage() {
 
             <section className="mt-10">
               <h2 className="mb-5 font-mono text-[11px] tracking-widest text-white/40">
-                MILESTONES
+                LIVE PROJECT TIMELINE &amp; APPROVALS
               </h2>
               {project.milestones.length === 0 ? (
                 <p className="font-mono text-xs text-white/40">
@@ -239,7 +311,7 @@ function ProjectDetailPage() {
               ) : (
                 <ol className="relative space-y-6 border-l border-white/10 pl-6">
                   {project.milestones.map((m) => (
-                    <MilestoneRow key={m.id} m={m} />
+                    <MilestoneRow key={m.id} m={m} focused={m.approvals.some((a) => a.id === focusedApproval)} />
                   ))}
                 </ol>
               )}
