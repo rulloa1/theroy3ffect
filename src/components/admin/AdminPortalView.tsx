@@ -2,15 +2,17 @@ import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { FolderKanban, Plus, Trash2 } from "lucide-react";
+import { ExternalLink, FolderKanban, Plus, Send, Trash2 } from "lucide-react";
 import {
   PROJECT_STATUSES,
   MILESTONE_STATUSES,
+  STAGE_TYPES,
   adminCreatePortalProject,
   adminDeleteMilestone,
   adminDeletePortalProject,
   adminListPortalProjects,
   adminSaveMilestone,
+  adminRequestMilestoneApproval,
   adminUpdatePortalProject,
   type PortalProject,
 } from "@/utils/portal.functions";
@@ -31,10 +33,11 @@ function ProjectRow({ project }: { project: PortalProject }) {
   const updateProject = useServerFn(adminUpdatePortalProject);
   const deleteProject = useServerFn(adminDeletePortalProject);
   const saveMilestone = useServerFn(adminSaveMilestone);
+  const requestApproval = useServerFn(adminRequestMilestoneApproval);
   const deleteMilestone = useServerFn(adminDeleteMilestone);
 
   const [busy, setBusy] = useState(false);
-  const [newMilestone, setNewMilestone] = useState({ title: "", note: "", link: "", due_date: "" });
+  const [newMilestone, setNewMilestone] = useState({ title: "", note: "", link: "", due_date: "", stage_type: "design" as "design" | "build" });
 
   const refresh = () => queryClient.invalidateQueries({ queryKey: ["admin-portal"] });
 
@@ -160,6 +163,7 @@ function ProjectRow({ project }: { project: PortalProject }) {
                         status: e.target.value as never,
                         position: m.position,
                         due_date: m.due_date ?? undefined,
+                        stage_type: m.stage_type,
                       },
                     }),
                   "Milestone updated",
@@ -173,6 +177,21 @@ function ProjectRow({ project }: { project: PortalProject }) {
                 </option>
               ))}
             </select>
+            <select
+              value={m.stage_type}
+              disabled={busy}
+              onChange={(e) => void run(() => saveMilestone({ data: {
+                id: m.id, project_id: project.id, title: m.title,
+                note: m.note ?? undefined, link: m.link ?? undefined,
+                status: m.status as never, position: m.position,
+                due_date: m.due_date ?? undefined,
+                stage_type: e.target.value as "design" | "build",
+              }}), "Stage type updated")}
+              className="border border-white/15 bg-[#030014] px-2 py-1 font-mono text-[11px] text-white focus:border-[#FF3333] focus:outline-none"
+              aria-label={`Stage type for ${m.title}`}
+            >
+              {STAGE_TYPES.map((type) => <option key={type} value={type}>{type.toUpperCase()}</option>)}
+            </select>
             <span className="font-mono text-xs text-white/80">{m.title}</span>
             {m.link && (
               <a
@@ -185,6 +204,36 @@ function ProjectRow({ project }: { project: PortalProject }) {
               </a>
             )}
             {m.note && <span className="font-mono text-[11px] text-white/40">— {m.note}</span>}
+            {m.approvals[0] && (
+              <span className={`border px-2 py-1 font-mono text-[9px] tracking-widest ${
+                m.approvals[0].status === "approved" ? "border-emerald-500/40 text-emerald-400" :
+                m.approvals[0].status === "changes_requested" ? "border-[#FF3333]/50 text-[#FF3333]" :
+                "border-[#DFBA73]/50 text-[#DFBA73]"
+              }`}>
+                {m.approvals[0].status.replace(/_/g, " ").toUpperCase()}
+              </span>
+            )}
+            {m.approvals[0]?.client_feedback && (
+              <span className="w-full border-l-2 border-[#FF3333] pl-3 font-mono text-[11px] text-white/70">
+                CLIENT: {m.approvals[0].client_feedback}
+              </span>
+            )}
+            <button
+              type="button"
+              disabled={busy || !m.link}
+              onClick={() => {
+                if (!m.link) return;
+                void run(() => requestApproval({ data: {
+                  milestoneId: m.id,
+                  reviewUrl: m.link ?? "",
+                  reviewNote: m.note ?? "",
+                }}), "Review request sent");
+              }}
+              className="inline-flex min-h-9 items-center gap-1 border border-[#DFBA73]/50 px-2.5 font-mono text-[9px] tracking-widest text-[#DFBA73] hover:bg-[#DFBA73] hover:text-black disabled:cursor-not-allowed disabled:opacity-30"
+              title={m.link ? "Email the client a protected sign-off link" : "Add a deliverable link first"}
+            >
+              <Send className="size-3" /> READY FOR REVIEW
+            </button>
             <button
               type="button"
               disabled={busy}
@@ -216,10 +265,11 @@ function ProjectRow({ project }: { project: PortalProject }) {
                     status: "pending",
                     position: project.milestones.length,
                     due_date: newMilestone.due_date || undefined,
+                      stage_type: newMilestone.stage_type,
                   },
                 }),
               "Milestone added",
-            ).then(() => setNewMilestone({ title: "", note: "", link: "", due_date: "" }));
+            ).then(() => setNewMilestone({ title: "", note: "", link: "", due_date: "", stage_type: "design" }));
           }}
         >
           <input
@@ -229,6 +279,14 @@ function ProjectRow({ project }: { project: PortalProject }) {
             onChange={(e) => setNewMilestone((s) => ({ ...s, title: e.target.value }))}
             className={`${inputCls} max-w-[220px]`}
           />
+          <select
+            value={newMilestone.stage_type}
+            onChange={(e) => setNewMilestone((s) => ({ ...s, stage_type: e.target.value as "design" | "build" }))}
+            className={`${inputCls} max-w-[130px]`}
+            aria-label="New milestone stage type"
+          >
+            {STAGE_TYPES.map((type) => <option key={type} value={type}>{type.toUpperCase()}</option>)}
+          </select>
           <input
             type="text"
             placeholder="Note (optional)"

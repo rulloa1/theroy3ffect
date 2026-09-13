@@ -90,7 +90,7 @@ function ClientsPage() {
               </Link>
             ) : (
               <Link
-                to="/portal/login"
+                to="/portal/login" search={{}}
                 className="inline-flex items-center gap-2 bg-[#FF3333] px-6 py-3.5 font-mono text-xs font-bold tracking-widest text-black transition-opacity hover:opacity-90"
               >
                 <LockKeyhole className="size-3.5" /> SIGN IN TO YOUR PORTAL

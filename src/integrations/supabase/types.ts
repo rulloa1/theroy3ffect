@@ -163,6 +163,7 @@ export type Database = {
           note: string | null
           position: number
           project_id: string
+          stage_type: string
           status: string
           title: string
           updated_at: string
@@ -176,6 +177,7 @@ export type Database = {
           note?: string | null
           position?: number
           project_id: string
+          stage_type?: string
           status?: string
           title: string
           updated_at?: string
@@ -189,6 +191,7 @@ export type Database = {
           note?: string | null
           position?: number
           project_id?: string
+          stage_type?: string
           status?: string
           title?: string
           updated_at?: string
@@ -590,6 +593,78 @@ export type Database = {
           website?: string | null
         }
         Relationships: []
+      }
+      project_approvals: {
+        Row: {
+          client_feedback: string | null
+          client_notified_at: string | null
+          created_at: string
+          decided_at: string | null
+          decided_by_email: string | null
+          decided_by_user_id: string | null
+          id: string
+          milestone_id: string
+          owner_notified_at: string | null
+          project_id: string
+          requested_at: string
+          review_note: string | null
+          review_url: string | null
+          stage_type: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          client_feedback?: string | null
+          client_notified_at?: string | null
+          created_at?: string
+          decided_at?: string | null
+          decided_by_email?: string | null
+          decided_by_user_id?: string | null
+          id?: string
+          milestone_id: string
+          owner_notified_at?: string | null
+          project_id: string
+          requested_at?: string
+          review_note?: string | null
+          review_url?: string | null
+          stage_type?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          client_feedback?: string | null
+          client_notified_at?: string | null
+          created_at?: string
+          decided_at?: string | null
+          decided_by_email?: string | null
+          decided_by_user_id?: string | null
+          id?: string
+          milestone_id?: string
+          owner_notified_at?: string | null
+          project_id?: string
+          requested_at?: string
+          review_note?: string | null
+          review_url?: string | null
+          stage_type?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_approvals_milestone_id_fkey"
+            columns: ["milestone_id"]
+            isOneToOne: false
+            referencedRelation: "client_milestones"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_approvals_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "client_projects"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       project_briefs: {
         Row: {

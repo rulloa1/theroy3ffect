@@ -8,8 +8,8 @@ export const Route = createFileRoute("/_authenticated")({
     if (error || !data.user) {
       // Portal visitors go to the portal-only sign-in; everything else uses
       // the account sign-in with a redirect-back to where they were headed.
-      if (location.pathname.startsWith("/portal")) {
-        throw redirect({ to: "/portal/login" });
+      if (location.pathname.startsWith("/portal") || location.pathname.startsWith("/projects/")) {
+        throw redirect({ to: "/portal/login", search: { next: location.href } });
       }
       throw redirect({ to: "/auth", search: { next: location.href } });
     }

@@ -12,6 +12,7 @@ import {
   LayoutDashboard,
   Loader2,
   LogOut,
+  ShieldCheck,
   UserRound,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -368,10 +369,11 @@ function Proposals({ proposals }: { proposals: ProjectProposal[] }) {
   );
 }
 
-type Tab = "overview" | "timeline" | "proposals" | "invoices" | "profile";
+type Tab = "overview" | "approvals" | "timeline" | "proposals" | "invoices" | "profile";
 
 const TABS: { key: Tab; label: string; icon: typeof LayoutDashboard }[] = [
   { key: "overview", label: "OVERVIEW", icon: LayoutDashboard },
+  { key: "approvals", label: "APPROVALS", icon: ShieldCheck },
   { key: "timeline", label: "TIMELINE", icon: CalendarDays },
   { key: "proposals", label: "PROPOSALS", icon: FileSignature },
   { key: "invoices", label: "INVOICES", icon: FileText },
@@ -444,6 +446,14 @@ function PortalPage() {
 
   const projects = data?.projects ?? [];
   const invoices = data?.invoices ?? [];
+  const approvals = projects.flatMap((project) =>
+    project.milestones.flatMap((milestone) =>
+      milestone.approvals
+        .filter((approval) => approval.status !== "superseded")
+        .map((approval) => ({ approval, milestone, project })),
+    ),
+  );
+  const awaitingApprovals = approvals.filter(({ approval }) => approval.status === "awaiting_review");
   const activeProject = useMemo(
     () => projects.find((p) => p.id === activeProjectId) ?? projects[0] ?? null,
     [projects, activeProjectId],
@@ -453,7 +463,7 @@ function PortalPage() {
     await queryClient.cancelQueries();
     queryClient.clear();
     await supabase.auth.signOut();
-    void navigate({ to: "/portal/login", replace: true });
+    void navigate({ to: "/portal/login", search: {}, replace: true });
   };
 
   if (payingOrderId) {
@@ -607,6 +617,7 @@ function PortalPage() {
                       <Link
                         to="/projects/$projectId"
                         params={{ projectId: p.id }}
+                        search={{}}
                         className="inline-flex items-center gap-1.5 border border-white/15 px-3 py-1.5 font-mono text-[10px] tracking-widest text-white transition-colors hover:border-[#FF3333] hover:text-[#FF3333]"
                       >
                         OPEN PROJECT PAGE →
@@ -626,6 +637,44 @@ function PortalPage() {
                 ) : (
                   <p className="font-mono text-xs text-white/40">No timeline yet.</p>
                 ))}
+
+              {tab === "approvals" && (
+                <section>
+                  <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
+                    <div>
+                      <p className="font-mono text-[10px] tracking-widest text-[#DFBA73]">SIGN-OFF QUEUE</p>
+                      <h2 className="mt-2 font-display text-2xl uppercase text-white">{awaitingApprovals.length} NEED YOUR APPROVAL</h2>
+                    </div>
+                    <p className="max-w-md font-mono text-xs leading-relaxed text-white/60">Review each deliverable on its project page, then approve it or send me a written change request.</p>
+                  </div>
+                  {approvals.length === 0 ? (
+                    <p className="border border-dashed border-white/10 p-8 font-mono text-xs text-white/50">No review requests yet. They will appear here when a design stage or build step is ready.</p>
+                  ) : (
+                    <div className="divide-y divide-white/10 border border-white/10">
+                      {approvals.map(({ approval, milestone, project }) => (
+                        <div key={approval.id} className="flex flex-wrap items-center gap-4 p-5">
+                          <div className="min-w-0 flex-1">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <p className="font-display text-lg uppercase text-white">{milestone.title}</p>
+                              <span className="border border-white/15 px-2 py-0.5 font-mono text-[9px] tracking-widest text-white/50">{approval.stage_type.toUpperCase()}</span>
+                            </div>
+                            <p className="mt-1 font-mono text-[11px] text-white/45">{project.title} · {approval.status.replace(/_/g, " ").toUpperCase()}</p>
+                            {approval.client_feedback && <p className="mt-2 font-mono text-xs text-white/70">{approval.client_feedback}</p>}
+                          </div>
+                          <Link
+                            to="/projects/$projectId"
+                            params={{ projectId: project.id }}
+                            search={{ approval: approval.id }}
+                            className={`inline-flex min-h-11 items-center px-4 font-mono text-[10px] font-bold tracking-widest ${approval.status === "awaiting_review" ? "bg-[#DFBA73] text-black" : "border border-white/20 text-white"}`}
+                          >
+                            {approval.status === "awaiting_review" ? "REVIEW & SIGN OFF" : "VIEW DECISION"} →
+                          </Link>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </section>
+              )}
 
               {tab === "proposals" && <Proposals proposals={proposalsData ?? []} />}
 
