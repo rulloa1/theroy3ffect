@@ -14,4 +14,4 @@
 - [x] Refine the shared footer hierarchy, navigation, contact details, and mobile usability
 - [x] Port the approved cinematic prototype design system to the homepage and shared public chrome
 - [x] Preserve live homepage content, pricing, contact/GHL wiring, metadata, and delayed chat behavior
-- [ ] Validate desktop, 360px, reduced-motion, headless rendering, public routes, typecheck, and tests without publishing
+- [x] Validate desktop, 360px, reduced-motion, headless rendering, public routes, typecheck, and tests without publishing
