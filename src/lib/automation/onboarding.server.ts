@@ -221,7 +221,7 @@ async function applyPlan(input: OnboardingInput, plan: KickoffPlan): Promise<str
       project_id: projectId,
       title: milestone.title,
       note: milestone.note || null,
-      status: "todo",
+      status: "pending",
       position,
       due_date: dueDate(milestone.dueInDays),
     });

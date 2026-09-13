@@ -10,6 +10,9 @@ import { useAuth } from "@/hooks/useAuth";
 import { Logo } from "@/components/Logo";
 
 export const Route = createFileRoute("/portal/login")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    next: typeof search.next === "string" && search.next.startsWith("/") && !search.next.startsWith("//") ? search.next : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Client Portal Sign In — theroyeffect.com" },
@@ -41,6 +44,7 @@ const inputClass =
 
 function PortalLoginPage() {
   const navigate = useNavigate();
+  const { next } = Route.useSearch();
   const { user, loading } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -48,8 +52,11 @@ function PortalLoginPage() {
 
   // Clients land straight in the dashboard — never on an admin surface.
   useEffect(() => {
-    if (!loading && user) void navigate({ to: "/portal", replace: true });
-  }, [user, loading, navigate]);
+    if (!loading && user) {
+      if (next) window.location.assign(next);
+      else void navigate({ to: "/portal", replace: true });
+    }
+  }, [user, loading, navigate, next]);
 
   // Surface OAuth failures: the provider redirects back here with error params.
   useEffect(() => {
@@ -95,7 +102,7 @@ function PortalLoginPage() {
     try {
       const { error } = await supabase.auth.signInWithOtp({
         email: parsed.data,
-        options: { emailRedirectTo: `${window.location.origin}/portal` },
+        options: { emailRedirectTo: `${window.location.origin}/portal/login${next ? `?next=${encodeURIComponent(next)}` : ""}` },
       });
       if (error) throw error;
       toast.success("Check your inbox for a sign-in link");

@@ -15,3 +15,7 @@
 - [x] Port the approved cinematic prototype design system to the homepage and shared public chrome
 - [x] Preserve live homepage content, pricing, contact/GHL wiring, metadata, and delayed chat behavior
 - [x] Validate desktop, 360px, reduced-motion, headless rendering, public routes, typecheck, and tests without publishing
+- [ ] Build authenticated design/build approval records and ownership checks
+- [ ] Add admin review controls and two-way approval notifications
+- [ ] Add the client approval queue, live timeline, and sign-off actions
+- [ ] Validate approval flows, protected links, desktop/mobile views, typecheck, and tests without publishing
