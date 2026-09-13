@@ -617,6 +617,7 @@ function PortalPage() {
                       <Link
                         to="/projects/$projectId"
                         params={{ projectId: p.id }}
+                        search={{}}
                         className="inline-flex items-center gap-1.5 border border-white/15 px-3 py-1.5 font-mono text-[10px] tracking-widest text-white transition-colors hover:border-[#FF3333] hover:text-[#FF3333]"
                       >
                         OPEN PROJECT PAGE →

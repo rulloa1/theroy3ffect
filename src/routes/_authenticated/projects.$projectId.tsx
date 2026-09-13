@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useParams } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import {
@@ -242,6 +242,14 @@ function ProjectDetailPage() {
   );
   const shown = related.length > 0 ? related : (proposals ?? []);
   const invoices = data?.invoices ?? [];
+
+  useEffect(() => {
+    if (!focusedApproval || !project) return;
+    document.getElementById(`approval-${focusedApproval}`)?.scrollIntoView({
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+      block: "center",
+    });
+  }, [focusedApproval, project]);
 
   return (
     <main className="min-h-screen bg-[#030014] px-5 py-12 md:px-10">

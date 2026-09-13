@@ -119,7 +119,7 @@ function PortalLoginPage() {
   const google = async () => {
     try {
       await lovable.auth.signInWithOAuth("google", {
-        redirect_uri: `${window.location.origin}/portal/login`,
+        redirect_uri: `${window.location.origin}/portal/login${next ? `?next=${encodeURIComponent(next)}` : ""}`,
       });
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Google sign-in failed");

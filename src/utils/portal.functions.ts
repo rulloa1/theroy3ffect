@@ -349,16 +349,23 @@ export const adminRequestMilestoneApproval = createServerFn({ method: "POST" })
     if (milestoneError || !milestone) throw new Error("Milestone not found");
     const project = milestone.client_projects as unknown as { title: string; client_email: string };
 
-    await supabaseAdmin.from("project_approvals").update({ status: "superseded" })
-      .eq("milestone_id", milestone.id).eq("status", "awaiting_review");
-    const { data: approval, error } = await supabaseAdmin.from("project_approvals").insert({
-      project_id: milestone.project_id,
-      milestone_id: milestone.id,
-      stage_type: milestone.stage_type === "design" ? "design" : "build",
-      status: "awaiting_review",
-      review_url: data.reviewUrl,
-      review_note: data.reviewNote || null,
-    }).select("id").single();
+    const { data: openApproval } = await supabaseAdmin.from("project_approvals")
+      .select("id").eq("milestone_id", milestone.id).eq("status", "awaiting_review").maybeSingle();
+    const approvalQuery = openApproval
+      ? supabaseAdmin.from("project_approvals").update({
+          stage_type: milestone.stage_type === "design" ? "design" : "build",
+          review_url: data.reviewUrl,
+          review_note: data.reviewNote || null,
+        }).eq("id", openApproval.id).select("id").single()
+      : supabaseAdmin.from("project_approvals").insert({
+          project_id: milestone.project_id,
+          milestone_id: milestone.id,
+          stage_type: milestone.stage_type === "design" ? "design" : "build",
+          status: "awaiting_review",
+          review_url: data.reviewUrl,
+          review_note: data.reviewNote || null,
+        }).select("id").single();
+    const { data: approval, error } = await approvalQuery;
     if (error) throw new Error(error.message);
 
     let emailed = false;
