@@ -96,7 +96,7 @@ export function SiteFooter() {
               </a>
               <p className="flex min-h-11 items-center gap-3 text-foreground/90"><MapPin className="size-4 shrink-0 text-primary" /> Houston, Texas</p>
             </div>
-            <Link to="/portal/login" className="mt-5 inline-flex min-h-11 items-center gap-2 font-mono text-xs font-bold tracking-widest text-primary transition-colors hover:text-foreground">
+            <Link to="/portal/login" search={{}} className="mt-5 inline-flex min-h-11 items-center gap-2 font-mono text-xs font-bold tracking-widest text-primary transition-colors hover:text-foreground">
               CLIENT SIGN IN <ArrowUpRight className="size-4" />
             </Link>
           </div>

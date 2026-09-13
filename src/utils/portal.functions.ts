@@ -14,6 +14,21 @@ export const PROJECT_STATUSES = [
   "complete",
 ] as const;
 export const MILESTONE_STATUSES = ["pending", "active", "done"] as const;
+export const STAGE_TYPES = ["design", "build"] as const;
+
+export interface ProjectApproval {
+  id: string;
+  project_id: string;
+  milestone_id: string;
+  stage_type: "design" | "build";
+  status: "awaiting_review" | "approved" | "changes_requested" | "superseded";
+  review_url: string | null;
+  review_note: string | null;
+  client_feedback: string | null;
+  decided_by_email: string | null;
+  requested_at: string;
+  decided_at: string | null;
+}
 
 export interface PortalMilestone {
   id: string;
@@ -26,6 +41,8 @@ export interface PortalMilestone {
   due_date: string | null;
   completed_at: string | null;
   updated_at: string;
+  stage_type: "design" | "build";
+  approvals: ProjectApproval[];
 }
 
 export interface PortalProject {
@@ -59,6 +76,22 @@ function toProject(row: Record<string, unknown>): PortalProject {
   const milestones = Array.isArray(row["client_milestones"])
     ? (row["client_milestones"] as Record<string, unknown>[])
     : [];
+  const approvals = Array.isArray(row["project_approvals"])
+    ? (row["project_approvals"] as Record<string, unknown>[])
+    : [];
+  const mappedApprovals: ProjectApproval[] = approvals.map((a) => ({
+    id: String(a["id"]),
+    project_id: String(a["project_id"]),
+    milestone_id: String(a["milestone_id"]),
+    stage_type: a["stage_type"] === "design" ? "design" : "build",
+    status: String(a["status"] ?? "awaiting_review") as ProjectApproval["status"],
+    review_url: typeof a["review_url"] === "string" ? a["review_url"] : null,
+    review_note: typeof a["review_note"] === "string" ? a["review_note"] : null,
+    client_feedback: typeof a["client_feedback"] === "string" ? a["client_feedback"] : null,
+    decided_by_email: typeof a["decided_by_email"] === "string" ? a["decided_by_email"] : null,
+    requested_at: String(a["requested_at"] ?? ""),
+    decided_at: typeof a["decided_at"] === "string" ? a["decided_at"] : null,
+  }));
   return {
     id: String(row["id"]),
     user_id: typeof row["user_id"] === "string" ? row["user_id"] : null,
@@ -83,6 +116,10 @@ function toProject(row: Record<string, unknown>): PortalProject {
         due_date: typeof m["due_date"] === "string" ? m["due_date"] : null,
         completed_at: typeof m["completed_at"] === "string" ? m["completed_at"] : null,
         updated_at: String(m["updated_at"] ?? ""),
+        stage_type: m["stage_type"] === "design" ? "design" as const : "build" as const,
+        approvals: mappedApprovals
+          .filter((a) => a.milestone_id === String(m["id"]))
+          .sort((a, b) => b.requested_at.localeCompare(a.requested_at)),
       }))
       .sort((a, b) => a.position - b.position || a.updated_at.localeCompare(b.updated_at)),
   };
@@ -97,7 +134,7 @@ export const getMyPortal = createServerFn({ method: "GET" })
     }): Promise<{ projects: PortalProject[]; invoices: PortalInvoice[]; email: string }> => {
       const db = context.supabase as AnyClient;
       const [projectsRes, ordersRes, invoicesRes] = await Promise.all([
-        db.from("client_projects").select("*, client_milestones(*)").order("created_at", {
+        db.from("client_projects").select("*, client_milestones(*), project_approvals(*)").order("created_at", {
           ascending: false,
         }),
         db
@@ -171,7 +208,7 @@ export const adminListPortalProjects = createServerFn({ method: "GET" })
     const db = context.supabase as AnyClient;
     const { data, error } = await db
       .from("client_projects")
-      .select("*, client_milestones(*)")
+      .select("*, client_milestones(*), project_approvals(*)")
       .order("created_at", { ascending: false });
     if (error) throw new Error(error.message);
     return { projects: (data ?? []).map(toProject) };
@@ -253,6 +290,7 @@ const milestoneInput = z.object({
   status: z.enum(MILESTONE_STATUSES).default("pending"),
   position: z.number().int().min(0).max(999).default(0),
   due_date: z.string().trim().regex(/^\d{4}-\d{2}-\d{2}$/).optional().or(z.literal("")),
+  stage_type: z.enum(STAGE_TYPES).default("build"),
 });
 
 export const adminSaveMilestone = createServerFn({ method: "POST" })
@@ -271,6 +309,7 @@ export const adminSaveMilestone = createServerFn({ method: "POST" })
       due_date: data.due_date || null,
       completed_at: data.status === "done" ? new Date().toISOString() : null,
       updated_at: new Date().toISOString(),
+      stage_type: data.stage_type,
     };
     const { error } = data.id
       ? await db.from("client_milestones").update(row).eq("id", data.id)
@@ -288,6 +327,127 @@ export const adminDeleteMilestone = createServerFn({ method: "POST" })
     const { error } = await db.from("client_milestones").delete().eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
+  });
+
+const reviewInput = z.object({
+  milestoneId: z.string().uuid(),
+  reviewUrl: z.string().trim().url().refine((v) => /^https?:\/\//i.test(v), "Review link must use http(s)"),
+  reviewNote: z.string().trim().max(2000).optional().or(z.literal("")),
+});
+
+export const adminRequestMilestoneApproval = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) => reviewInput.parse(input))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: milestone, error: milestoneError } = await supabaseAdmin
+      .from("client_milestones")
+      .select("id, project_id, title, stage_type, client_projects!inner(title, client_email)")
+      .eq("id", data.milestoneId)
+      .maybeSingle();
+    if (milestoneError || !milestone) throw new Error("Milestone not found");
+    const project = milestone.client_projects as unknown as { title: string; client_email: string };
+
+    await supabaseAdmin.from("project_approvals").update({ status: "superseded" })
+      .eq("milestone_id", milestone.id).eq("status", "awaiting_review");
+    const { data: approval, error } = await supabaseAdmin.from("project_approvals").insert({
+      project_id: milestone.project_id,
+      milestone_id: milestone.id,
+      stage_type: milestone.stage_type === "design" ? "design" : "build",
+      status: "awaiting_review",
+      review_url: data.reviewUrl,
+      review_note: data.reviewNote || null,
+    }).select("id").single();
+    if (error) throw new Error(error.message);
+
+    let emailed = false;
+    try {
+      const { sendTemplateEmail } = await import("@/lib/email-templates/send-email");
+      const result = await sendTemplateEmail("approval-review-ready", project.client_email, {
+        idempotencyKey: `approval-review-ready-${approval.id}`,
+        replyTo: "rory@theroyeffect.com",
+        templateData: {
+          clientName: project.client_email.split("@")[0] || "there",
+          projectTitle: project.title,
+          stageTitle: milestone.title,
+          reviewNote: data.reviewNote || "",
+          approvalUrl: `https://www.theroyeffect.com/projects/${milestone.project_id}?approval=${approval.id}`,
+        },
+      });
+      emailed = result.sent;
+      if (emailed) await supabaseAdmin.from("project_approvals").update({ client_notified_at: new Date().toISOString() }).eq("id", approval.id);
+    } catch (emailError) {
+      console.error("Approval review email failed", emailError);
+    }
+    return { ok: true, approvalId: approval.id as string, emailed };
+  });
+
+const decisionInput = z.object({
+  approvalId: z.string().uuid(),
+  decision: z.enum(["approved", "changes_requested"]),
+  feedback: z.string().trim().max(3000).optional().or(z.literal("")),
+}).superRefine((value, ctx) => {
+  if (value.decision === "changes_requested" && !value.feedback) {
+    ctx.addIssue({ code: "custom", path: ["feedback"], message: "Tell me what should change." });
+  }
+});
+
+export const decideMilestoneApproval = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) => decisionInput.parse(input))
+  .handler(async ({ data, context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const email = String((context.claims as { email?: string } | undefined)?.email ?? "").toLowerCase();
+    const { data: approval, error } = await supabaseAdmin.from("project_approvals")
+      .select("id, status, project_id, milestone_id, client_projects!inner(title, client_email, user_id), client_milestones!inner(title)")
+      .eq("id", data.approvalId).maybeSingle();
+    if (error || !approval) throw new Error("Approval request not found");
+    const project = approval.client_projects as unknown as { title: string; client_email: string; user_id: string | null };
+    if (project.user_id !== context.userId && project.client_email.toLowerCase() !== email) {
+      throw new Error("You do not have access to this approval request");
+    }
+    if (approval.status !== "awaiting_review") return { ok: true, unchanged: true };
+
+    const now = new Date().toISOString();
+    const { data: changed, error: updateError } = await supabaseAdmin.from("project_approvals").update({
+      status: data.decision,
+      client_feedback: data.feedback || null,
+      decided_by_user_id: context.userId,
+      decided_by_email: email,
+      decided_at: now,
+    }).eq("id", approval.id).eq("status", "awaiting_review").select("id").maybeSingle();
+    if (updateError) throw new Error(updateError.message);
+    if (!changed) return { ok: true, unchanged: true };
+
+    await supabaseAdmin.from("client_milestones").update({
+      status: data.decision === "approved" ? "done" : "active",
+      completed_at: data.decision === "approved" ? now : null,
+      updated_at: now,
+    }).eq("id", approval.milestone_id);
+
+    const milestone = approval.client_milestones as unknown as { title: string };
+    let emailed = false;
+    try {
+      const { sendTemplateEmail } = await import("@/lib/email-templates/send-email");
+      const result = await sendTemplateEmail("approval-decision", "rory@theroyeffect.com", {
+        idempotencyKey: `approval-decision-${approval.id}-${data.decision}`,
+        replyTo: email || project.client_email,
+        templateData: {
+          clientEmail: email || project.client_email,
+          projectTitle: project.title,
+          stageTitle: milestone.title,
+          decision: data.decision,
+          feedback: data.feedback || "",
+          adminUrl: "https://www.theroyeffect.com/admin",
+        },
+      });
+      emailed = result.sent;
+      if (emailed) await supabaseAdmin.from("project_approvals").update({ owner_notified_at: now }).eq("id", approval.id);
+    } catch (emailError) {
+      console.error("Approval decision email failed", emailError);
+    }
+    return { ok: true, unchanged: false, emailed };
   });
 
 // ---------- Client profile & onboarding ----------

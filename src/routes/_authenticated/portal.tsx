@@ -453,7 +453,7 @@ function PortalPage() {
     await queryClient.cancelQueries();
     queryClient.clear();
     await supabase.auth.signOut();
-    void navigate({ to: "/portal/login", replace: true });
+    void navigate({ to: "/portal/login", search: {}, replace: true });
   };
 
   if (payingOrderId) {
