@@ -17,7 +17,7 @@ export function BeforeAfterSlider() {
         <div className="before-mock">
           <div className="old-bar"><span>Welcome to our Website!!</span><span>Home &nbsp; About &nbsp; Services</span></div>
           <div className="old-head"><b>Marlow &amp; Sons Custom Cabinetry</b><small>Serving the greater Houston area — Call today!</small></div>
-          <div className="old-copy"><h3>Welcome!</h3><p>We are a family owned and operated business specializing in custom cabinets, kitchens, bathrooms, closets, and much more.</p><aside>Get a Quote<br /><br />Hours: Mon–Fri</aside></div>
+          <div className="old-copy"><h3>Welcome!</h3><p>Family owned and operated. Custom cabinets, kitchens, bathrooms, closets, and much more.</p><aside>Get a Quote<br /><br />Hours: Mon–Fri</aside></div>
           <div className="old-ticker">★ Custom work for Houston homes ★</div>
         </div>
       </div>
